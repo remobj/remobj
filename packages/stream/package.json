@@ -23,6 +23,25 @@
     "api-extract:prod": "api-extractor run",
     "api-docs": "api-documenter markdown --input-folder temp --output-folder ../../docs/api/stream"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remobj/remobj.git"
+  },
+  "homepage": "https://github.com/remobj/remobj#readme",
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "keywords": [
+    "remobj",
+    "remote-object",
+    "stream",
+    "readable",
+    "writable",
+    "cross-context",
+    "communication",
+    "typescript",
+    "web-streams"
+  ],
   "dependencies": {
     "@remobj/core": "workspace:*"
   },
@@ -33,7 +52,7 @@
     "vite": "~7.0.6",
     "typescript": "~5.8.3"
   },
-  "author": "",
-  "license": "PROPRIETARY",
+  "author": "RemObj Team",
+  "license": "SEE LICENSE IN LICENSE",
   "description": "Stream utilities for remobj - bidirectional communication with Web Streams API"
 }

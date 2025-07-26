@@ -24,9 +24,29 @@
     "api-extract:prod": "api-extractor run",
     "api-docs": "api-documenter markdown --input-folder temp --output-folder ../../docs/api/core"
   },
-  "author": "",
-  "license": "PROPRIETARY",
-  "description": "",
+  "author": "RemObj Team",
+  "license": "SEE LICENSE IN LICENSE",
+  "description": "Zero-dependency TypeScript library for seamless cross-context communication",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remobj/remobj.git"
+  },
+  "homepage": "https://github.com/remobj/remobj#readme",
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "keywords": [
+    "remobj",
+    "remote-object",
+    "postmessage",
+    "cross-context",
+    "communication",
+    "typescript",
+    "webworker",
+    "iframe",
+    "rpc",
+    "zero-dependency"
+  ],
   "devDependencies": {
     "vitest": "~3.2.4",
     "@microsoft/api-documenter": "~7.26.30",

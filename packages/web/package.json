@@ -22,6 +22,25 @@
     "api-extract:prod": "api-extractor run",
     "api-docs": "api-documenter markdown --input-folder temp --output-folder ../../docs/api/web"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remobj/remobj.git"
+  },
+  "homepage": "https://github.com/remobj/remobj#readme",
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "keywords": [
+    "remobj",
+    "remote-object",
+    "webrtc",
+    "websocket",
+    "datachannel",
+    "cross-context",
+    "communication",
+    "typescript",
+    "adapter"
+  ],
   "dependencies": {
     "@remobj/core": "workspace:*"
   },
@@ -31,7 +50,7 @@
     "vite": "~7.0.6",
     "typescript": "~5.8.3"
   },
-  "author": "",
-  "license": "PROPRIETARY",
+  "author": "RemObj Team",
+  "license": "SEE LICENSE IN LICENSE",
   "description": "Web API adapters for remobj - WebRTC DataChannels and WebSocket support"
 }

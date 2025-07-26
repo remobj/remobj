@@ -24,9 +24,28 @@
     "api-extract:prod": "api-extractor run",
     "api-docs": "api-documenter markdown --input-folder temp --output-folder ../../docs/api/dev-core"
   },
-  "author": "",
-  "license": "PROPRIETARY",
+  "author": "RemObj Team",
+  "license": "SEE LICENSE IN LICENSE",
   "description": "Development tools for @remobj/core",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remobj/remobj.git"
+  },
+  "homepage": "https://github.com/remobj/remobj#readme",
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "keywords": [
+    "remobj",
+    "remote-object",
+    "devtools",
+    "debugging",
+    "monitoring",
+    "cross-context",
+    "communication",
+    "typescript",
+    "vue-reactivity"
+  ],
   "dependencies": {
     "@remobj/core": "workspace:*",
     "@vue/reactivity": "^3.5.13"

@@ -22,9 +22,27 @@
     "api-extract:prod": "api-extractor run",
     "api-docs": "api-documenter markdown --input-folder temp --output-folder ../../docs/api/node"
   },
-  "author": "",
-  "license": "PROPRIETARY",
+  "author": "RemObj Team",
+  "license": "SEE LICENSE IN LICENSE",
   "description": "Node.js-specific adapters for remobj cross-context communication",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remobj/remobj.git"
+  },
+  "homepage": "https://github.com/remobj/remobj#readme",
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "keywords": [
+    "remobj",
+    "remote-object",
+    "nodejs",
+    "child-process",
+    "cross-context",
+    "communication",
+    "typescript",
+    "adapter"
+  ],
   "devDependencies": {
     "vitest": "~3.2.4",
     "@microsoft/api-documenter": "~7.26.30",

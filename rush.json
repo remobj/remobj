@@ -443,47 +443,62 @@
     {
       "packageName": "@remobj/core",
       "projectFolder": "packages/core",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true,
+      "versionPolicyName": "remobj-lockstep"
     },
     {
       "packageName": "@remobj/node",
       "projectFolder": "packages/node",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true,
+      "versionPolicyName": "remobj-lockstep"
     },
     {
       "packageName": "@remobj/web",
       "projectFolder": "packages/web",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true,
+      "versionPolicyName": "remobj-lockstep"
     },
     {
       "packageName": "@remobj/stream",
       "projectFolder": "packages/stream",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true,
+      "versionPolicyName": "remobj-lockstep"
     },
     {
       "packageName": "@remobj/docs",
       "projectFolder": "docs",
-      "reviewCategory": "tools"
+      "reviewCategory": "tools",
+      "shouldPublish": false
     },
     {
       "packageName": "@remobj/playground",
       "projectFolder": "playground",
-      "reviewCategory": "tools"
+      "reviewCategory": "tools",
+      "shouldPublish": false
     },
     {
       "packageName": "@remobj/testing",
       "projectFolder": "packages/testing",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true,
+      "versionPolicyName": "remobj-lockstep"
     },
     {
       "packageName": "@remobj/dev-core",
       "projectFolder": "devtools/core",
-      "reviewCategory": "tools"
+      "reviewCategory": "tools",
+      "shouldPublish": true,
+      "versionPolicyName": "remobj-lockstep"
     },
     {
       "packageName": "remobj-minimal-app",
       "projectFolder": "test/minimal-app",
-      "reviewCategory": "tools"
+      "reviewCategory": "tools",
+      "shouldPublish": false
     }
   ]
 }
