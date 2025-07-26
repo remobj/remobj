@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-07-25T05:01:33.771Z",
+  "commit": "local",
+  "branch": "local",
+  "files": {
+    "assets\\index-Brh71LVb.js": {
+      "type": "js",
+      "raw": 5080,
+      "gzip": 2068,
+      "brotli": 1654,
+      "rawFormatted": "4.96 KB",
+      "gzipFormatted": "2.02 KB",
+      "brotliFormatted": "1.62 KB"
+    }
+  },
+  "totals": {
+    "raw": 5080,
+    "gzip": 2068,
+    "brotli": 1654,
+    "rawFormatted": "4.96 KB",
+    "gzipFormatted": "2.02 KB",
+    "brotliFormatted": "1.62 KB"
+  }
+}

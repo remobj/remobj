@@ -1,0 +1,37 @@
+{
+  "name": "@remobj/web",
+  "version": "1.0.0",
+  "main": "dist/remobj-web.js",
+  "module": "dist/remobj-web.es.js",
+  "types": "dist/remobj-web.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/remobj-web.d.ts",
+      "import": "./dist/remobj-web.es.js",
+      "require": "./dist/remobj-web.js"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly && npm run api-extract:prod && npm run api-docs",
+    "build-local": "vite build && tsc --emitDeclarationOnly && npm run api-extract && npm run api-docs",
+    "api-extract": "api-extractor run --local",
+    "api-extract:prod": "api-extractor run",
+    "api-docs": "api-documenter markdown --input-folder temp --output-folder ../../docs/api/web"
+  },
+  "dependencies": {
+    "@remobj/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@microsoft/api-documenter": "~7.26.30",
+    "@microsoft/api-extractor": "~7.52.9",
+    "vite": "~7.0.6",
+    "typescript": "~5.8.3"
+  },
+  "author": "",
+  "license": "PROPRIETARY",
+  "description": "Web API adapters for remobj - WebRTC DataChannels and WebSocket support"
+}

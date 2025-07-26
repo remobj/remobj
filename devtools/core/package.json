@@ -1,0 +1,42 @@
+{
+  "name": "@remobj/dev-core",
+  "version": "1.0.0",
+  "main": "dist/remobj-dev.js",
+  "module": "dist/remobj-dev.es.js",
+  "types": "dist/remobj-dev.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/remobj-dev.d.ts",
+      "import": "./dist/remobj-dev.es.js",
+      "require": "./dist/remobj-dev.js"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly && npm run api-extract:prod && npm run api-docs",
+    "build-local": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly && npm run api-extract && npm run api-docs",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "api-extract": "api-extractor run --local",
+    "api-extract:prod": "api-extractor run",
+    "api-docs": "api-documenter markdown --input-folder temp --output-folder ../../docs/api/dev-core"
+  },
+  "author": "",
+  "license": "PROPRIETARY",
+  "description": "Development tools for @remobj/core",
+  "dependencies": {
+    "@remobj/core": "workspace:*",
+    "@vue/reactivity": "^3.5.13"
+  },
+  "devDependencies": {
+    "vite": "~7.0.6",
+    "typescript": "~5.8.3",
+    "@types/node": "^20.0.0",
+    "vitest": "~3.2.4",
+    "@microsoft/api-documenter": "~7.26.30",
+    "@microsoft/api-extractor": "~7.52.9"
+  }
+}

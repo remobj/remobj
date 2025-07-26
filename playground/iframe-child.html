@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remobj Iframe Child</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      margin: 0;
+      background: linear-gradient(45deg, #f0f8ff, #e6f3ff);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    body.dark {
+      background: linear-gradient(45deg, #2d3748, #4a5568);
+      color: white;
+    }
+
+    h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+
+    body.dark h2 {
+      color: #90cdf4;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #5a67d8;
+    }
+
+    .status {
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 6px;
+      font-size: 12px;
+      border-left: 4px solid #667eea;
+    }
+
+    body.dark .status {
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+    }
+
+    .calculator {
+      margin-top: 15px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 6px;
+    }
+
+    body.dark .calculator {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #cbd5e0;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    body.dark input {
+      background: #4a5568;
+      border-color: #718096;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2>🖼️ Iframe Child Window</h2>
+  
+  <div class="controls">
+    <button onclick="sendToParent()">Send to Parent</button>
+    <button onclick="notifyParent()">Notify Parent</button>
+    <button onclick="requestFromParent()">Request from Parent</button>
+  </div>
+  
+  <div class="status" id="status">
+    Ready for communication with parent window
+  </div>
+  
+  <div class="calculator">
+    <h3>Calculator</h3>
+    <input type="text" id="expression" placeholder="Enter expression (e.g., 2+2*3)" value="2+2*3">
+    <button onclick="calculate()">Calculate</button>
+    <div id="result"></div>
+  </div>
+
+  <script type="module">
+    import { provide, consume } from '@remobj/core'
+
+    // API that this iframe provides to the parent
+    const iframeAPI = {
+      async setTheme(theme) {
+        document.body.className = theme === 'dark' ? 'dark' : ''
+        updateStatus(`Theme changed to: ${theme}`)
+      },
+
+      async getData() {
+        return {
+          message: 'Hello from iframe!',
+          timestamp: Date.now()
+        }
+      },
+
+      async calculate(expression) {
+        try {
+          // Simple expression evaluator (be careful in production!)
+          const result = Function(`"use strict"; return (${expression})`)()
+          updateStatus(`Calculated: ${expression} = ${result}`)
+          return result
+        } catch (error) {
+          updateStatus(`Calculation error: ${error.message}`)
+          throw new Error(`Invalid expression: ${expression}`)
+        }
+      }
+    }
+
+    // API that the parent provides
+    let parentAPI = null
+
+    function updateStatus(message) {
+      const status = document.getElementById('status')
+      const timestamp = new Date().toLocaleTimeString()
+      status.textContent = `[${timestamp}] ${message}`
+    }
+
+    // Initialize communication
+    try {
+      // Provide our API to the parent
+      provide(iframeAPI, window)
+      
+      // Consume the parent's API
+      parentAPI = consume(window.parent)
+      
+      updateStatus('✅ Communication established with parent')
+      
+      // Notify parent that we're ready
+      parentAPI?.logMessage?.('Iframe child is ready for communication')
+      
+    } catch (error) {
+      updateStatus(`❌ Communication setup failed: ${error.message}`)
+    }
+
+    // Global functions for button handlers
+    window.sendToParent = async () => {
+      try {
+        if (parentAPI?.showNotification) {
+          await parentAPI.showNotification('Hello from iframe child!')
+          updateStatus('Message sent to parent')
+        } else {
+          updateStatus('Parent API not available')
+        }
+      } catch (error) {
+        updateStatus(`Send error: ${error.message}`)
+      }
+    }
+
+    window.notifyParent = async () => {
+      try {
+        if (parentAPI?.logMessage) {
+          await parentAPI.logMessage(`Iframe notification at ${new Date().toLocaleTimeString()}`)
+          updateStatus('Notification sent to parent')
+        } else {
+          updateStatus('Parent API not available')
+        }
+      } catch (error) {
+        updateStatus(`Notify error: ${error.message}`)
+      }
+    }
+
+    window.requestFromParent = async () => {
+      try {
+        // This would call a method on the parent if it existed
+        updateStatus('Request functionality would go here')
+      } catch (error) {
+        updateStatus(`Request error: ${error.message}`)
+      }
+    }
+
+    window.calculate = async () => {
+      const expression = document.getElementById('expression').value
+      const resultDiv = document.getElementById('result')
+      
+      try {
+        const result = await iframeAPI.calculate(expression)
+        resultDiv.textContent = `Result: ${result}`
+        resultDiv.style.color = 'green'
+      } catch (error) {
+        resultDiv.textContent = `Error: ${error.message}`
+        resultDiv.style.color = 'red'
+      }
+    }
+
+    // Handle visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        updateStatus('Iframe became visible')
+      }
+    })
+
+    // Log that we're ready
+    console.log('🖼️ Iframe child ready')
+  </script>
+</body>
+</html>

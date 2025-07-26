@@ -1,0 +1,86 @@
+name: Bundle Size Monitor
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'test/minimal-app/**'
+      - 'packages/core/**'
+      - '.github/workflows/bundle-size-monitor.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'test/minimal-app/**'
+      - 'packages/core/**'
+      - '.github/workflows/bundle-size-monitor.yml'
+
+jobs:
+  bundle-size:
+    name: Monitor Bundle Size
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: common/temp/package-lock.json
+
+      - name: Install Rush
+        run: npm install -g @microsoft/rush@5.156.0
+
+      - name: Install dependencies
+        run: rush update
+
+      - name: Build core package
+        run: rush build --to @remobj/core
+
+      - name: Install minimal app dependencies
+        working-directory: test/minimal-app
+        run: npm install
+
+      - name: Build and analyze minimal app
+        working-directory: test/minimal-app
+        run: npm run build:stats
+
+      - name: Upload bundle stats artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-stats-${{ github.sha }}
+          path: test/minimal-app/.bundle-stats/
+          retention-days: 30
+
+      - name: Comment bundle report on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            const reportPath = path.join('test/minimal-app/.bundle-stats/report.md');
+            if (fs.existsSync(reportPath)) {
+              const report = fs.readFileSync(reportPath, 'utf8');
+              
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 📦 Bundle Size Report\n\n${report}`
+              });
+            }
+
+      - name: Save baseline for main branch
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache@v4
+        with:
+          path: test/minimal-app/.bundle-stats/current.json
+          key: bundle-baseline-${{ github.sha }}
+          restore-keys: |
+            bundle-baseline-

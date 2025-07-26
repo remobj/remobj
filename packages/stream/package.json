@@ -1,0 +1,39 @@
+{
+  "name": "@remobj/stream",
+  "version": "1.0.0",
+  "main": "dist/remobj-stream.js",
+  "module": "dist/remobj-stream.es.js",
+  "types": "dist/remobj-stream.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/remobj-stream.d.ts",
+      "import": "./dist/remobj-stream.es.js",
+      "require": "./dist/remobj-stream.js"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly && npm run api-extract:prod && npm run api-docs",
+    "build-local": "vite build && tsc --emitDeclarationOnly && npm run api-extract && npm run api-docs",
+    "test": "vitest run tests",
+    "api-extract": "api-extractor run --local",
+    "api-extract:prod": "api-extractor run",
+    "api-docs": "api-documenter markdown --input-folder temp --output-folder ../../docs/api/stream"
+  },
+  "dependencies": {
+    "@remobj/core": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "~3.2.4",
+    "@microsoft/api-documenter": "~7.26.30",
+    "@microsoft/api-extractor": "~7.52.9",
+    "vite": "~7.0.6",
+    "typescript": "~5.8.3"
+  },
+  "author": "",
+  "license": "PROPRIETARY",
+  "description": "Stream utilities for remobj - bidirectional communication with Web Streams API"
+}

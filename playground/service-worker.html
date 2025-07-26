@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remobj ServiceWorker Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      margin: 0;
+      background: linear-gradient(45deg, #e8f5e8, #f0fff0);
+      border-radius: 8px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: #2d5a2d;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .demo-section {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #4ade80;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #15803d;
+    }
+
+    button:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+    }
+
+    .status {
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      border: 1px solid #d1d5db;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .status-connected {
+      background: #48bb78;
+    }
+
+    .status-disconnected {
+      background: #f56565;
+    }
+
+    .status-connecting {
+      background: #ed8936;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <h1>⚙️ ServiceWorker Communication Demo</h1>
+  
+  <div class="demo-section">
+    <h2>ServiceWorker Registration</h2>
+    <p>This demo shows how to communicate with a ServiceWorker using @remobj/core.</p>
+    
+    <div class="controls">
+      <button id="register-sw">Register ServiceWorker</button>
+      <button id="unregister-sw" disabled>Unregister ServiceWorker</button>
+      <button id="update-sw" disabled>Update ServiceWorker</button>
+    </div>
+    
+    <div class="status" id="registration-status">
+      <span class="status-indicator status-disconnected"></span>ServiceWorker not registered
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h2>Background Processing</h2>
+    <p>Send tasks to the ServiceWorker for background processing.</p>
+    
+    <div class="controls">
+      <button id="bg-task" disabled>Run Background Task</button>
+      <button id="cache-resources" disabled>Cache Resources</button>
+      <button id="sync-data" disabled>Background Sync</button>
+    </div>
+    
+    <div class="status" id="task-status">
+      <span class="status-indicator status-disconnected"></span>No background tasks
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h2>Cache Management</h2>
+    <p>Manage cached resources through the ServiceWorker.</p>
+    
+    <div class="controls">
+      <button id="cache-list" disabled>List Cache</button>
+      <button id="cache-clear" disabled>Clear Cache</button>
+      <button id="cache-size" disabled>Cache Size</button>
+    </div>
+    
+    <div class="status" id="cache-status">
+      <span class="status-indicator status-disconnected"></span>Cache management not available
+    </div>
+  </div>
+
+  <script type="module">
+    import { provide, consume } from '@remobj/core'
+
+    let serviceWorkerAPI = null
+    let registration = null
+
+    function updateStatus(elementId, message, connected = false) {
+      const element = document.getElementById(elementId)
+      const indicator = element.querySelector('.status-indicator')
+      const timestamp = new Date().toLocaleTimeString()
+      
+      element.textContent = `[${timestamp}] ${message}`
+      element.insertBefore(indicator, element.firstChild)
+      
+      indicator.className = `status-indicator ${connected ? 'status-connected' : 'status-disconnected'}`
+    }
+
+    function updateButtons(enabled) {
+      const buttons = ['bg-task', 'cache-resources', 'sync-data', 'cache-list', 'cache-clear', 'cache-size']
+      buttons.forEach(id => {
+        document.getElementById(id).disabled = !enabled
+      })
+      document.getElementById('unregister-sw').disabled = !enabled
+      document.getElementById('update-sw').disabled = !enabled
+    }
+
+    // ServiceWorker registration
+    document.getElementById('register-sw').addEventListener('click', async () => {
+      try {
+        updateStatus('registration-status', 'Registering ServiceWorker...', false)
+        
+        registration = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/'
+        })
+
+        updateStatus('registration-status', `ServiceWorker registered: ${registration.scope}`, true)
+        updateButtons(true)
+
+        // Set up communication with the ServiceWorker
+        if (registration.active) {
+          serviceWorkerAPI = consume(registration.active)
+          updateStatus('task-status', 'Communication established with ServiceWorker', true)
+          updateStatus('cache-status', 'Cache management available', true)
+        } else {
+          // Wait for ServiceWorker to become active
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'activated') {
+                serviceWorkerAPI = consume(newWorker)
+                updateStatus('task-status', 'Communication established with ServiceWorker', true)
+                updateStatus('cache-status', 'Cache management available', true)
+              }
+            })
+          })
+        }
+
+      } catch (error) {
+        updateStatus('registration-status', `Registration failed: ${error.message}`, false)
+        console.error('ServiceWorker registration failed:', error)
+      }
+    })
+
+    // ServiceWorker unregistration
+    document.getElementById('unregister-sw').addEventListener('click', async () => {
+      try {
+        if (registration) {
+          await registration.unregister()
+          updateStatus('registration-status', 'ServiceWorker unregistered', false)
+          updateButtons(false)
+          serviceWorkerAPI = null
+          registration = null
+          updateStatus('task-status', 'ServiceWorker communication closed', false)
+          updateStatus('cache-status', 'Cache management not available', false)
+        }
+      } catch (error) {
+        updateStatus('registration-status', `Unregistration failed: ${error.message}`, false)
+      }
+    })
+
+    // ServiceWorker update
+    document.getElementById('update-sw').addEventListener('click', async () => {
+      try {
+        if (registration) {
+          await registration.update()
+          updateStatus('registration-status', 'ServiceWorker update check completed', true)
+        }
+      } catch (error) {
+        updateStatus('registration-status', `Update failed: ${error.message}`, true)
+      }
+    })
+
+    // Background task
+    document.getElementById('bg-task').addEventListener('click', async () => {
+      try {
+        if (serviceWorkerAPI?.processTask) {
+          updateStatus('task-status', 'Starting background task...', true)
+          const result = await serviceWorkerAPI.processTask({
+            type: 'heavy-computation',
+            data: Array.from({length: 1000}, (_, i) => i)
+          })
+          updateStatus('task-status', `Background task completed: ${JSON.stringify(result)}`, true)
+        } else {
+          updateStatus('task-status', 'ServiceWorker API not available', false)
+        }
+      } catch (error) {
+        updateStatus('task-status', `Background task failed: ${error.message}`, false)
+      }
+    })
+
+    // Cache resources
+    document.getElementById('cache-resources').addEventListener('click', async () => {
+      try {
+        if (serviceWorkerAPI?.cacheResources) {
+          updateStatus('cache-status', 'Caching resources...', true)
+          const result = await serviceWorkerAPI.cacheResources([
+            '/',
+            '/index.html',
+            '/iframe-child.html',
+            '/service-worker.html'
+          ])
+          updateStatus('cache-status', `Resources cached: ${result.cached} items`, true)
+        } else {
+          updateStatus('cache-status', 'ServiceWorker API not available', false)
+        }
+      } catch (error) {
+        updateStatus('cache-status', `Caching failed: ${error.message}`, false)
+      }
+    })
+
+    // Background sync
+    document.getElementById('sync-data').addEventListener('click', async () => {
+      try {
+        if (serviceWorkerAPI?.scheduleSync) {
+          updateStatus('task-status', 'Scheduling background sync...', true)
+          await serviceWorkerAPI.scheduleSync('data-sync')
+          updateStatus('task-status', 'Background sync scheduled', true)
+        } else {
+          updateStatus('task-status', 'ServiceWorker API not available', false)
+        }
+      } catch (error) {
+        updateStatus('task-status', `Background sync failed: ${error.message}`, false)
+      }
+    })
+
+    // List cache
+    document.getElementById('cache-list').addEventListener('click', async () => {
+      try {
+        if (serviceWorkerAPI?.listCache) {
+          const cacheList = await serviceWorkerAPI.listCache()
+          updateStatus('cache-status', `Cache contents: ${JSON.stringify(cacheList, null, 2)}`, true)
+        } else {
+          updateStatus('cache-status', 'ServiceWorker API not available', false)
+        }
+      } catch (error) {
+        updateStatus('cache-status', `Cache list failed: ${error.message}`, false)
+      }
+    })
+
+    // Clear cache
+    document.getElementById('cache-clear').addEventListener('click', async () => {
+      try {
+        if (serviceWorkerAPI?.clearCache) {
+          await serviceWorkerAPI.clearCache()
+          updateStatus('cache-status', 'Cache cleared successfully', true)
+        } else {
+          updateStatus('cache-status', 'ServiceWorker API not available', false)
+        }
+      } catch (error) {
+        updateStatus('cache-status', `Cache clear failed: ${error.message}`, false)
+      }
+    })
+
+    // Cache size
+    document.getElementById('cache-size').addEventListener('click', async () => {
+      try {
+        if (serviceWorkerAPI?.getCacheSize) {
+          const size = await serviceWorkerAPI.getCacheSize()
+          updateStatus('cache-status', `Cache size: ${size} bytes`, true)
+        } else {
+          updateStatus('cache-status', 'ServiceWorker API not available', false)
+        }
+      } catch (error) {
+        updateStatus('cache-status', `Cache size check failed: ${error.message}`, false)
+      }
+    })
+
+    // Check if ServiceWorker is already registered
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg) {
+          registration = reg
+          updateStatus('registration-status', `ServiceWorker already registered: ${reg.scope}`, true)
+          updateButtons(true)
+          
+          if (reg.active) {
+            serviceWorkerAPI = consume(reg.active)
+            updateStatus('task-status', 'Communication available with existing ServiceWorker', true)
+            updateStatus('cache-status', 'Cache management available', true)
+          }
+        }
+      })
+    } else {
+      updateStatus('registration-status', 'ServiceWorker not supported in this browser', false)
+    }
+
+    console.log('⚙️ ServiceWorker demo page ready')
+  </script>
+</body>
+</html>

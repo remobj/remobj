@@ -1,0 +1,54 @@
+{
+  "name": "@remobj/testing",
+  "version": "1.0.0",
+  "description": "Testing utilities and test suites for remobj - comprehensive endpoint testing framework",
+  "main": "dist/remobj-testing.js",
+  "module": "dist/remobj-testing.es.js",
+  "types": "dist/remobj-testing.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/remobj-testing.d.ts",
+      "import": "./dist/remobj-testing.es.js",
+      "require": "./dist/remobj-testing.js"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly && npm run api-extract:prod && npm run api-docs",
+    "build-local": "vite build && tsc --emitDeclarationOnly && npm run api-extract && npm run api-docs",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "api-extract": "api-extractor run --local",
+    "api-extract:prod": "api-extractor run",
+    "api-docs": "api-documenter markdown --input-folder temp --output-folder ../../docs/api/testing"
+  },
+  "dependencies": {
+    "@remobj/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@microsoft/api-documenter": "~7.26.30",
+    "@microsoft/api-extractor": "~7.52.9",
+    "vite": "~7.0.6",
+    "typescript": "~5.8.3",
+    "vitest": "~3.2.4",
+    "@vitest/ui": "~3.2.4",
+    "@vitest/coverage-v8": "~3.2.4"
+  },
+  "keywords": [
+    "remobj",
+    "remote-object",
+    "testing",
+    "postmessage",
+    "endpoints",
+    "mock",
+    "utilities",
+    "cross-context",
+    "communication"
+  ],
+  "author": "",
+  "license": "PROPRIETARY"
+}
