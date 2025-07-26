@@ -1,6 +1,6 @@
 {
   "name": "@remobj/web",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "dist/remobj-web.js",
   "module": "dist/remobj-web.es.js",
   "types": "dist/remobj-web.d.ts",

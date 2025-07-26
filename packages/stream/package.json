@@ -1,6 +1,6 @@
 {
   "name": "@remobj/stream",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "dist/remobj-stream.js",
   "module": "dist/remobj-stream.es.js",
   "types": "dist/remobj-stream.d.ts",
