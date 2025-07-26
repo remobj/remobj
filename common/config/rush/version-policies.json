@@ -16,7 +16,7 @@
      */
     "definitionName": "lockStepVersion",
     "policyName": "remobj-lockstep",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "nextBump": "patch",
     "mainProject": "@remobj/core"
   },

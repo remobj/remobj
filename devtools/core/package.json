@@ -1,6 +1,6 @@
 {
   "name": "@remobj/dev-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/remobj-dev.js",
   "module": "dist/remobj-dev.es.js",
   "types": "dist/remobj-dev.d.ts",

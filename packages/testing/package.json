@@ -1,6 +1,6 @@
 {
   "name": "@remobj/testing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Testing utilities and test suites for remobj - comprehensive endpoint testing framework",
   "main": "dist/remobj-testing.js",
   "module": "dist/remobj-testing.es.js",
