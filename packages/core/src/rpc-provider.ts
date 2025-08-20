@@ -19,29 +19,29 @@ const PROVIDER_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
 export function provide(data: any, endpoint: PostMessageEndpoint, config: ProvideConfig = {}): void {
     const { allowWrite = false, name = '' } = config
     const providerID: string = /*#__PURE__*/ crypto.randomUUID()
-    const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), name + ' -> ArgumentWrapper')    
+    const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), name + ' -> ArgumentWrapper')
     const registered = new Set<string>()
 
     let timeoutHandle: any;
     const setProviderTimeout = () => {
-        if(timeoutHandle) {clearTimeout(timeoutHandle)}
+        if (timeoutHandle) { clearTimeout(timeoutHandle) }
         return timeoutHandle = setTimeout(() => multiplexedEndpoint.removeEventListener('message', messageListener), PROVIDER_TIMEOUT_MS)
     }
 
     const messageListener = async (event: MessageEvent) => {
         setProviderTimeout()
         const messageData: RemoteCallRequest = event.data
-        
-        
+
+
         if ((__DEV__ || __PROD_DEVTOOLS__)) {
             const traceID = getTraceID(messageData)
             devtools(traceID, "event", providerID, "PROVIDER", name, '', messageData)
         }
 
-        const sendResponse = async (data: any, err: any) => {
+        const sendResponse = async (data: any, err?: any) => {
             let result: any
             let resultType: 'error' | 'result' = err ? 'error' : 'result'
-            
+
             if (err) {
                 result = err
             } else {
@@ -52,7 +52,7 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
                     result = error
                 }
             }
-            
+
             const returnData: RemoteCallResponse = {
                 type: 'response',
                 requestID: messageData.requestID,
@@ -83,7 +83,7 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
         // Navigate to target property
         let target = data
         let navigationLength = propertyChain.length;
-        
+
         // Validate set operation
         if (messageData.operationType === 'set') {
             if (propertyChain.length === 0) {
@@ -103,25 +103,24 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
         const lastProperty = propertyChain[propertyChain.length - 1]
         try {
             const op = messageData.operationType;
-            if(op === 'gc-register') {
+            if (op === 'gc-register') {
                 return registered.add(messageData.args[0])
-            }if(op === 'gc-collect') {
+            } if (op === 'gc-collect') {
                 registered.delete(messageData.args[0])
-                return registered.size === 0 && multiplexedEndpoint.removeEventListener('message', messageListener) 
-            }if(op === 'ping') {
+                return registered.size === 0 && multiplexedEndpoint.removeEventListener('message', messageListener)
+            } if (op === 'ping') {
                 // Ping received, connection is alive
                 return sendResponse(true)
-            } else if (op === 'await') {
+            } if (op === 'await') {
                 return sendResponse(target)
-            } else if (op === 'call') {
+            } if (op === 'call') {
                 if (isFunction(target)) {
                     return sendResponse(target(...messageData.args))
-                } else {
-                    return sendError(new Error(__DEV__ ? `REMOTE IS NOT A FUNCTION - You tried to call a function this is not a function.` : `E007`))
                 }
-            } else if (op === 'construct') {
+                return sendError(new Error(__DEV__ ? `REMOTE IS NOT A FUNCTION - You tried to call a function this is not a function.` : `E007`))
+            } if (op === 'construct') {
                 return sendResponse(new target(...messageData.args))
-            } else if (op === 'set') {
+            } if (op === 'set') {
                 if (allowWrite) {
                     if (FORBIDDEN_PROPERTIES.includes(lastProperty as ForbiddenProperty)) {
                         return sendError(new Error(__DEV__ ? `ACCESS DENIED - Access to property '${lastProperty}' is forbidden for security reasons` : `E008`))
@@ -130,9 +129,9 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
                     if (Object.getOwnPropertyDescriptor(target, lastProperty)?.writable) {
                         target[lastProperty] = messageData.args[0]
                         return sendResponse(true)
-                    } else {
-                        return sendError(new Error(__DEV__ ? 'ACCESS DENIED - WRITE TO READONLY NOT ALLOWED' : `E009`))
                     }
+                    return sendError(new Error(__DEV__ ? 'ACCESS DENIED - WRITE TO READONLY NOT ALLOWED' : `E009`))
+
                 }
                 return sendError(new Error(__DEV__ ? 'ACCESS DENIED - WRITE NOT ALLOWED' : `E010`))
             }
