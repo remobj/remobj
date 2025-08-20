@@ -1,0 +1,42 @@
+{
+  "name": "@remobj/devtools",
+  "version": "0.0.0",
+  "description": "DevTools server for RemObj debugging",
+  "sideEffects": false,
+  "type": "module",
+  "main": "./dist/devtools.bundler.js",
+  "module": "./dist/devtools.bundler.js",
+  "types": "./dist/devtools.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/devtools.d.ts",
+      "default": "./dist/devtools.bundler.js"
+    },
+    "./core-integration": {
+      "types": "./dist/core-integration.d.ts",
+      "default": "./dist/core-integration.bundler.js"
+    }
+  },
+  "files": [
+    "dist",
+    "client"
+  ],
+  "buildOptions": {
+    "formats": ["esm-bundler"],
+    "external": ["ws", "http", "path", "url", "fs", "process", "fs/promises", "node:fs", "node:path", "node:url", "node:http"],
+    "globalName": "RemObjDevTools"
+  },
+  "dependencies": {
+    "@remobj/core": "workspace:*",
+    "@remobj/shared": "workspace:*",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.10"
+  },
+  "scripts": {
+    "start": "tsx ./src/server.ts",
+    "dev": "node ../../scripts/build.js devtools --dev",
+    "build": "node ../../scripts/build.js devtools"
+  }
+}

@@ -1,0 +1,10 @@
+# This file contains commits that should be ignored by git blame
+# Configure with: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Initial setup and scaffolding commits can be added here
+# Format commits that don't change logic (prettier, eslint, etc.)
+# Large refactoring commits that don't change functionality
+
+# Example format:
+# abc123def456789 - prettier formatting
+# def456abc123789 - eslint auto-fix

@@ -1,0 +1,36 @@
+{
+  "name": "@remobj/core",
+  "version": "0.1.0",
+  "description": "Core package that re-exports all RemObj functionality",
+  "main": "dist/core.umd.js",
+  "module": "dist/core.esm.js",
+  "browser": "dist/core.umd.js",
+  "types": "dist/core.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/core.esm.js",
+      "require": "./dist/core.umd.js",
+      "browser": "./dist/core.umd.js",
+      "bundler": "./dist/core.bundler.js",
+      "types": "./dist/core.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@remobj/shared": "workspace:*",
+    "@remobj/add": "workspace:*",
+    "@remobj/mul": "workspace:*"
+  },
+  "buildOptions": {
+    "name": "RemObjCore",
+    "formats": ["esm-production", "esm-bundler", "umd"],
+    "globalName": "RemObj",
+    "external": []
+  },
+  "keywords": ["remobj", "core", "math", "utilities"],
+  "license": "MIT"
+}

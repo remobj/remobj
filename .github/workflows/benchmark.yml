@@ -1,0 +1,82 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 8
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'pnpm'
+    
+    - name: Install dependencies
+      run: pnpm install
+    
+    - name: Build packages
+      run: npm run build
+    
+    - name: Run benchmarks
+      run: npm run bench
+    
+    - name: Compare with baseline
+      if: github.event_name == 'pull_request'
+      run: |
+        # Checkout baseline from main branch
+        git checkout origin/main -- benchmarks/baseline.json || echo "No baseline found"
+        npm run bench:compare
+    
+    - name: Upload results
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results
+        path: benchmarks/results/*.json
+    
+    - name: Comment PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Find latest results
+          const resultsDir = 'benchmarks/results';
+          const files = fs.readdirSync(resultsDir);
+          const latest = files.sort().pop();
+          
+          if (!latest) return;
+          
+          // Read comparison output (would need to save this)
+          const output = '## Benchmark Results\n\nSee artifacts for detailed results.';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          });
+    
+    - name: Update baseline
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        npm run bench:baseline
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add benchmarks/baseline.json
+        git commit -m "chore: update benchmark baseline [skip ci]" || echo "No changes"
+        git push || echo "No changes to push"

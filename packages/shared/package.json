@@ -1,0 +1,30 @@
+{
+  "name": "@remobj/shared",
+  "version": "0.1.0",
+  "description": "Shared utilities for RemObj library",
+  "main": "dist/shared.umd.js",
+  "module": "dist/shared.esm.js",
+  "browser": "dist/shared.umd.js",
+  "types": "dist/shared.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/shared.esm.js",
+      "require": "./dist/shared.umd.js",
+      "bundler": "./dist/shared.bundler.js",
+      "types": "./dist/shared.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false, 
+  "buildOptions": {
+    "name": "RemObjShared",
+    "formats": ["esm-production", "esm-bundler", "umd"],
+    "globalName": "RemObjShared",
+    "external": []
+  },
+  "keywords": ["utility", "shared", "remobj"],
+  "license": "MIT"
+}

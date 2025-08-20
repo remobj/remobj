@@ -1,0 +1,39 @@
+{
+  "$schema": "https://oxc.rs/schema/oxlintrc.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "pedantic": "warn",
+    "style": "warn",
+    "nursery": "off",
+    "restriction": "warn"
+  },
+  "rules": {
+    "no-console": "warn",
+    "no-debugger": "error",
+    "no-unused-vars": "error",
+    "eqeqeq": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-magic-numbers": "off",
+    "no-ternary": "off"
+  },
+  "globals": {
+    "__DEV__": "readonly",
+    "__TEST__": "readonly", 
+    "__VERSION__": "readonly",
+    "__BROWSER__": "readonly"
+  },
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/coverage/**",
+    "**/*.d.ts",
+    "**/docs/.vitepress/dist/**",
+    "**/docs/.vitepress/cache/**"
+  ]
+}

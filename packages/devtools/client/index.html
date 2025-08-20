@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RemObj DevTools</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .header {
+      background: #2d2d2d;
+      padding: 1rem;
+      border-bottom: 1px solid #3e3e3e;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #6c757d;
+    }
+    
+    .status-dot.connected {
+      background: #28a745;
+    }
+    
+    .controls {
+      margin-left: auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    
+    button:hover {
+      background: #1177bb;
+    }
+    
+    button:active {
+      background: #0d5a8f;
+    }
+    
+    .container {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .filters {
+      background: #252526;
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid #3e3e3e;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .filter-group label {
+      font-size: 0.875rem;
+      color: #cccccc;
+    }
+    
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+    }
+    
+    input[type="text"] {
+      background: #3c3c3c;
+      border: 1px solid #3e3e3e;
+      color: #cccccc;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+    
+    .logs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+    
+    /* Request Group Styles */
+    .request-group {
+      margin-bottom: 1rem;
+      background: #252526;
+      border-radius: 6px;
+      border: 1px solid #3e3e3e;
+      overflow: hidden;
+    }
+    
+    .request-group.pending {
+      border-color: #0e639c;
+    }
+    
+    .request-group.completed {
+      border-color: #28a745;
+    }
+    
+    .request-group.error {
+      border-color: #dc3545;
+    }
+    
+    .request-header {
+      padding: 0.75rem 1rem;
+      background: #2d2d2d;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .request-header:hover {
+      background: #333333;
+    }
+    
+    .expand-icon {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.2s;
+    }
+    
+    .request-group.expanded .expand-icon {
+      transform: rotate(90deg);
+    }
+    
+    .request-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .request-method {
+      font-weight: 600;
+      color: #4ec9b0;
+    }
+    
+    .request-path {
+      color: #dcdcaa;
+      font-size: 0.875rem;
+    }
+    
+    .request-ids {
+      display: flex;
+      gap: 1rem;
+      margin-left: auto;
+      font-size: 0.75rem;
+    }
+    
+    .consumer-id, .provider-id, .realm-id, .trace-id {
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      background: #3c3c3c;
+      font-size: 0.7rem;
+    }
+    
+    .consumer-id {
+      color: #9cdcfe;
+      border: 1px solid #9cdcfe33;
+    }
+    
+    .provider-id {
+      color: #c586c0;
+      border: 1px solid #c586c033;
+    }
+    
+    .realm-id {
+      color: #dcdcaa;
+      border: 1px solid #dcdcaa33;
+    }
+    
+    .trace-id {
+      color: #ce9178;
+      border: 1px solid #ce917833;
+    }
+    
+    .request-status {
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .status-pending {
+      background: #0e639c;
+      color: white;
+    }
+    
+    .status-completed {
+      background: #28a745;
+      color: white;
+    }
+    
+    .status-error {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .request-duration {
+      color: #858585;
+      font-size: 0.75rem;
+    }
+    
+    .request-details {
+      display: none;
+      border-top: 1px solid #3e3e3e;
+    }
+    
+    .request-group.expanded .request-details {
+      display: block;
+    }
+    
+    .event-entry {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #3e3e3e;
+      position: relative;
+    }
+    
+    .event-entry:last-child {
+      border-bottom: none;
+    }
+    
+    .event-entry::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+    }
+    
+    .event-entry.out::before {
+      background: #0e639c;
+    }
+    
+    .event-entry.in::before {
+      background: #28a745;
+    }
+    
+    .event-entry.error::before {
+      background: #dc3545;
+    }
+    
+    .event-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .event-time {
+      color: #858585;
+      font-size: 0.75rem;
+    }
+    
+    .event-direction {
+      font-size: 0.75rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    
+    .direction-out {
+      background: #0e639c;
+      color: white;
+    }
+    
+    .direction-in {
+      background: #28a745;
+      color: white;
+    }
+    
+    .event-type {
+      color: #cccccc;
+      font-size: 0.75rem;
+    }
+    
+    .event-data {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #1e1e1e;
+      border-radius: 4px;
+      font-size: 0.813rem;
+      color: #ce9178;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    /* Standalone log entry (for non-request messages) */
+    .log-entry {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background: #2d2d2d;
+      border-radius: 4px;
+      border-left: 3px solid #3e3e3e;
+    }
+    
+    .log-entry.multiplex {
+      border-left-color: #ffc107;
+    }
+    
+    .log-entry.connection {
+      border-left-color: #6f42c1;
+    }
+    
+    .log-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .log-time {
+      color: #858585;
+      font-size: 0.75rem;
+    }
+    
+    .log-type {
+      font-weight: 600;
+      font-size: 0.75rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: 3px;
+      background: #3e3e3e;
+    }
+    
+    .log-data {
+      margin-top: 0.25rem;
+      color: #ce9178;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>RemObj DevTools</h1>
+    <div class="status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Disconnected</span>
+      <span id="statsText" style="margin-left: 1rem; color: #858585; font-size: 0.875rem;"></span>
+    </div>
+    <div class="controls">
+      <button onclick="clearLogs()">Clear</button>
+      <button onclick="exportLogs()">Export</button>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="filters">
+      <div class="filter-group">
+        <label>
+          <input type="checkbox" id="filterRequests" checked> Requests
+        </label>
+      </div>
+      <div class="filter-group">
+        <label>
+          <input type="checkbox" id="filterMultiplex" checked> Multiplex
+        </label>
+      </div>
+      <div class="filter-group">
+        <label>
+          <input type="checkbox" id="filterErrors" checked> Errors
+        </label>
+      </div>
+      <div class="filter-group">
+        <label>
+          <input type="checkbox" id="showData" checked> Show Data
+        </label>
+      </div>
+      <div class="filter-group">
+        <input type="text" id="searchInput" placeholder="Search...">
+      </div>
+    </div>
+    
+    <div class="logs" id="logs"></div>
+  </div>
+  
+  <script>
+    const logs = []
+    const traceGroups = new Map() // traceID -> group data
+    const realmIds = new Set() // Track unique realmIds
+    let totalMessages = 0 // Track total message count
+    let ws = null
+    const logsContainer = document.getElementById('logs')
+    const statusDot = document.getElementById('statusDot')
+    const statusText = document.getElementById('statusText')
+    
+    function connect() {
+      ws = new WebSocket('ws://localhost:3334')
+      
+      ws.onopen = () => {
+        statusDot.classList.add('connected')
+        statusText.textContent = 'Connected'
+        addLog({
+          type: 'connection',
+          data: { status: 'Connected to DevTools server' },
+          timestamp: Date.now()
+        })
+      }
+      
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data)
+          addLog(message)
+        } catch (error) {
+          console.error('Failed to parse message:', error)
+        }
+      }
+      
+      ws.onclose = () => {
+        statusDot.classList.remove('connected')
+        statusText.textContent = 'Disconnected'
+        addLog({
+          type: 'connection',
+          data: { status: 'Disconnected from DevTools server' },
+          timestamp: Date.now()
+        })
+        
+        // Reconnect after 2 seconds
+        setTimeout(connect, 2000)
+      }
+      
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error)
+      }
+    }
+    
+    function addLog(message) {
+      logs.push(message)
+      totalMessages++
+      
+      // Track realmIds
+      if (message.realmId) {
+        realmIds.add(message.realmId)
+      }
+      
+      // Update stats display
+      updateStats()
+      
+      // Check if this message has a traceID
+      if (message.traceID) {
+        handleTraceMessage(message)
+      } else {
+        renderStandaloneLog(message)
+      }
+      
+      // Auto-scroll to bottom
+      logsContainer.scrollTop = logsContainer.scrollHeight
+    }
+    
+    function handleTraceMessage(message) {
+      const traceID = message.traceID
+      const objectID = message.objectID
+      const side = message.side
+      const realmId = message.realmId
+      
+      // Extract base UUID from traceID (before the colon)
+      const baseTraceID = traceID.split(':')[0]
+      
+      // Group by base UUID, not full traceID
+      if (!traceGroups.has(baseTraceID)) {
+        // Create new trace group
+        const group = {
+          traceID,
+          realmId: realmId || null,
+          consumerObjectID: null,
+          providerObjectID: null,
+          startTime: message.timeStamp || message.timestamp || Date.now(),
+          startDate: message.date || new Date().toISOString(),
+          endTime: null,
+          status: 'pending',
+          type: message.type || 'unknown',
+          subName: message.subName || '',
+          operationType: message.data?.operationType || '',
+          propertyPath: message.data?.propertyPath || '',
+          events: [],
+          element: null
+        }
+        traceGroups.set(baseTraceID, group)
+        group.element = createTraceGroupElement(group)
+        insertTraceGroupSorted(group.element, baseTraceID)
+      }
+      
+      const group = traceGroups.get(baseTraceID)
+      
+      // Update group info based on side
+      if (side === 'consumer' && !group.consumerObjectID) {
+        group.consumerObjectID = objectID
+      } else if (side === 'provider' && !group.providerObjectID) {
+        group.providerObjectID = objectID
+      }
+      
+      // Update realmId if not set
+      if (realmId && !group.realmId) {
+        group.realmId = realmId
+      }
+      
+      // Add event to group
+      group.events.push(message)
+      
+      // Update status based on message type
+      if (message.type === 'response' || message.type === 'return') {
+        group.endTime = message.timeStamp || message.timestamp || Date.now()
+        group.endDate = message.date || new Date().toISOString()
+        if (message.data && (message.data.error || message.data.resultType === 'error')) {
+          group.status = 'error'
+        } else {
+          group.status = 'completed'
+        }
+      }
+      
+      // Update type, subName, operationType and propertyPath if more specific
+      if (message.type && group.type === 'unknown') {
+        group.type = message.type
+      }
+      if (message.subName && !group.subName) {
+        group.subName = message.subName
+      }
+      if (message.data?.operationType && !group.operationType) {
+        group.operationType = message.data.operationType
+      }
+      if (message.data?.propertyPath && !group.propertyPath) {
+        group.propertyPath = message.data.propertyPath
+      }
+      
+      // Update the group element
+      updateTraceGroupElement(group)
+    }
+    
+    function createTraceGroupElement(group) {
+      const element = document.createElement('div')
+      element.className = 'request-group ' + group.status
+      element.dataset.traceId = group.traceID.split(':')[0]
+      
+      const header = document.createElement('div')
+      header.className = 'request-header'
+      header.onclick = () => toggleRequestGroup(element)
+      
+      header.innerHTML = `
+        <svg class="expand-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M10.5 5.5l-4.5 4.5M6 5.5l4.5 4.5"></path>
+        </svg>
+        <div class="request-info">
+          <span class="request-method">${group.operationType || group.type}</span>
+          <span class="request-path">${group.propertyPath || group.subName || ''}</span>
+          <span class="request-duration"></span>
+          <span class="request-duration" style="color: #858585; margin-left: 0.5rem;">${group.events.length} msg</span>
+        </div>
+        <div class="request-ids">
+          <span class="trace-id" title="${group.traceID}">Trace: ${group.traceID.slice(0, 8)}</span>
+          ${group.consumerObjectID ? `<span class="consumer-id" title="${group.consumerObjectID}">C: ${group.consumerObjectID.slice(0, 6)}</span>` : ''}
+          ${group.providerObjectID ? `<span class="provider-id" title="${group.providerObjectID}">P: ${group.providerObjectID.slice(0, 6)}</span>` : ''}
+          ${group.realmId ? `<span class="realm-id" title="${group.realmId}">R: ${group.realmId.slice(0, 6)}</span>` : ''}
+        </div>
+        <span class="request-status status-${group.status}">${group.status.toUpperCase()}</span>
+      `
+      
+      const details = document.createElement('div')
+      details.className = 'request-details'
+      
+      element.appendChild(header)
+      element.appendChild(details)
+      
+      return element
+    }
+    
+    function updateTraceGroupElement(group) {
+      const element = group.element
+      if (!element) return
+      
+      // Update class
+      element.className = 'request-group ' + group.status + (element.classList.contains('expanded') ? ' expanded' : '')
+      
+      // Update header
+      const header = element.querySelector('.request-header')
+      
+      // Calculate max timestamp difference per realm
+      const realmTimestamps = new Map() // realmId -> {min, max}
+      
+      group.events.forEach(event => {
+        if (event.timeStamp && event.realmId) {
+          if (!realmTimestamps.has(event.realmId)) {
+            realmTimestamps.set(event.realmId, { min: event.timeStamp, max: event.timeStamp })
+          } else {
+            const realm = realmTimestamps.get(event.realmId)
+            realm.min = Math.min(realm.min, event.timeStamp)
+            realm.max = Math.max(realm.max, event.timeStamp)
+          }
+        }
+      })
+      
+      // Find the maximum difference across all realms
+      let maxDifference = 0
+      for (const [realmId, timestamps] of realmTimestamps) {
+        const diff = timestamps.max - timestamps.min
+        maxDifference = Math.max(maxDifference, diff)
+      }
+      
+      const duration = maxDifference > 0 
+        ? `${Math.round(maxDifference)}ms` 
+        : (group.endTime && group.startTime ? `${Math.round(group.endTime - group.startTime)}ms` : '')
+      
+      // Store expanded state before updating
+      const wasExpanded = element.classList.contains('expanded')
+      
+      header.innerHTML = `
+        <svg class="expand-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M6 4l4 4-4 4"></path>
+        </svg>
+        <div class="request-info">
+          <span class="request-method">${group.operationType || group.type}</span>
+          <span class="request-path">${group.propertyPath || group.subName || ''}</span>
+          <span class="request-duration">${duration}</span>
+          <span class="request-duration" style="color: #858585; margin-left: 0.5rem;">${group.events.length} msg</span>
+        </div>
+        <div class="request-ids">
+          <span class="trace-id" title="${group.traceID}">Trace: ${group.traceID.slice(0, 8)}</span>
+          ${group.consumerObjectID ? `<span class="consumer-id" title="${group.consumerObjectID}">C: ${group.consumerObjectID.slice(0, 6)}</span>` : ''}
+          ${group.providerObjectID ? `<span class="provider-id" title="${group.providerObjectID}">P: ${group.providerObjectID.slice(0, 6)}</span>` : ''}
+          ${group.realmId ? `<span class="realm-id" title="${group.realmId}">R: ${group.realmId.slice(0, 6)}</span>` : ''}
+        </div>
+        <span class="request-status status-${group.status}">${group.status.toUpperCase()}</span>
+      `
+      
+      // Re-attach click handler
+      header.onclick = () => toggleRequestGroup(element)
+      
+      // Update details
+      const details = element.querySelector('.request-details')
+      details.innerHTML = ''
+      
+      group.events.forEach(event => {
+        const eventElement = createEventElement(event)
+        details.appendChild(eventElement)
+      })
+    }
+    
+    function createEventElement(message) {
+      const element = document.createElement('div')
+      const direction = message.side || 'unknown'
+      const isError = message.data?.error || message.data?.resultType === 'error'
+      
+      element.className = `event-entry ${direction} ${isError ? 'error' : ''}`
+      
+      const time = message.date ? new Date(message.date).toLocaleTimeString() : new Date(message.timestamp || Date.now()).toLocaleTimeString()
+      
+      // Convert timestamp from ms to HH:MM:SS.mmm format
+      let timeStampFormatted = ''
+      if (message.timeStamp) {
+        const totalMs = Math.round(message.timeStamp)
+        const hours = Math.floor(totalMs / 3600000)
+        const minutes = Math.floor((totalMs % 3600000) / 60000)
+        const seconds = Math.floor((totalMs % 60000) / 1000)
+        const milliseconds = totalMs % 1000
+        timeStampFormatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`
+      }
+      const realmIdShort = message.realmId ? message.realmId.slice(0, 6) : ''
+      
+      element.innerHTML = `
+        <div class="event-header">
+          <span class="event-time">${time}</span>
+          ${realmIdShort ? `<span class="realm-id" title="${message.realmId}" style="font-size: 0.7rem;">R:${realmIdShort}</span>` : ''}
+          ${timeStampFormatted ? `<span class="event-time" style="color: #9cdcfe;">${timeStampFormatted}</span>` : ''}
+          <span class="event-direction direction-${direction}">${direction.toUpperCase()}</span>
+          <span class="event-type">${message.type || ''}</span>
+          ${message.subName ? `<span class="event-type">${message.subName}</span>` : ''}
+        </div>
+      `
+      
+      if (message.data) {
+        const dataElement = document.createElement('div')
+        dataElement.className = 'event-data'
+        
+        let content = message.data
+        if (typeof content === 'object') {
+          content = JSON.stringify(content, null, 2)
+        }
+        
+        dataElement.textContent = content
+        element.appendChild(dataElement)
+        
+        // Check if data should be shown
+        const showData = document.getElementById('showData')
+        if (showData && !showData.checked) {
+          dataElement.style.display = 'none'
+        }
+      }
+      
+      return element
+    }
+    
+    function toggleRequestGroup(element) {
+      element.classList.toggle('expanded')
+    }
+    
+    function insertTraceGroupSorted(element, baseTraceID) {
+      // Extract counter from first traceID to determine sort order
+      const getMinCounter = (traceId) => {
+        const group = traceGroups.get(traceId)
+        if (!group || !group.events.length) return Infinity
+        
+        let minCounter = Infinity
+        group.events.forEach(event => {
+          if (event.traceID) {
+            const parts = event.traceID.split(':')
+            if (parts.length > 1) {
+              const counter = parseInt(parts[1], 10)
+              if (!isNaN(counter)) {
+                minCounter = Math.min(minCounter, counter)
+              }
+            }
+          }
+        })
+        return minCounter
+      }
+      
+      const currentCounter = getMinCounter(baseTraceID)
+      const existingGroups = logsContainer.querySelectorAll('.request-group')
+      
+      // Find correct position based on counter
+      let inserted = false
+      for (const existing of existingGroups) {
+        const existingTraceId = existing.dataset.traceId
+        const existingCounter = getMinCounter(existingTraceId)
+        
+        if (currentCounter < existingCounter) {
+          logsContainer.insertBefore(element, existing)
+          inserted = true
+          break
+        }
+      }
+      
+      if (!inserted) {
+        logsContainer.appendChild(element)
+      }
+    }
+    
+    function renderStandaloneLog(message) {
+      const entry = document.createElement('div')
+      entry.className = 'log-entry'
+      
+      // Add type-specific class
+      if (message.type === 'multiplex') entry.classList.add('multiplex')
+      else if (message.type === 'connection') entry.classList.add('connection')
+      
+      // Header
+      const header = document.createElement('div')
+      header.className = 'log-header'
+      
+      const time = message.date ? new Date(message.date).toLocaleTimeString() : new Date(message.timestamp || Date.now()).toLocaleTimeString()
+      header.innerHTML = `
+        <span class="log-time">${time}</span>
+        <span class="log-type">${message.type}</span>
+      `
+      
+      entry.appendChild(header)
+      
+      // Data
+      if (message.data) {
+        const data = document.createElement('div')
+        data.className = 'log-data'
+        
+        let content = message.data
+        if (typeof content === 'object') {
+          content = JSON.stringify(content, null, 2)
+        }
+        
+        data.textContent = content
+        entry.appendChild(data)
+      }
+      
+      logsContainer.appendChild(entry)
+    }
+    
+    function clearLogs() {
+      logs.length = 0
+      traceGroups.clear()
+      realmIds.clear()
+      totalMessages = 0
+      logsContainer.innerHTML = ''
+      updateStats()
+    }
+    
+    function updateStats() {
+      const statsText = document.getElementById('statsText')
+      if (statsText) {
+        statsText.textContent = `Messages: ${totalMessages} | Realms: ${realmIds.size} | Traces: ${traceGroups.size}`
+      }
+    }
+    
+    function exportLogs() {
+      const data = JSON.stringify(logs, null, 2)
+      const blob = new Blob([data], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `remobj-devtools-${Date.now()}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    }
+    
+    // Filter functionality
+    const filterRequests = document.getElementById('filterRequests')
+    const filterMultiplex = document.getElementById('filterMultiplex')
+    const filterErrors = document.getElementById('filterErrors')
+    const showData = document.getElementById('showData')
+    const searchInput = document.getElementById('searchInput')
+    
+    function applyFilters() {
+      const showRequests = filterRequests.checked
+      const showMultiplex = filterMultiplex.checked
+      const showErrors = filterErrors.checked
+      const searchTerm = searchInput.value.toLowerCase()
+      
+      // Filter trace groups
+      const requestElements = logsContainer.querySelectorAll('.request-group')
+      requestElements.forEach(element => {
+        const baseTraceId = element.dataset.traceId
+        const group = traceGroups.get(baseTraceId)
+        if (!group) return
+        
+        let show = true
+        
+        if (!showRequests) show = false
+        if (!showErrors && group.status === 'error') show = false
+        
+        // Search filter
+        if (searchTerm && show) {
+          const content = JSON.stringify(group).toLowerCase()
+          if (!content.includes(searchTerm)) show = false
+        }
+        
+        element.style.display = show ? 'block' : 'none'
+      })
+      
+      // Filter standalone logs
+      const logEntries = logsContainer.querySelectorAll('.log-entry')
+      logEntries.forEach((entry, index) => {
+        const isMultiplex = entry.classList.contains('multiplex')
+        
+        let show = true
+        
+        if (!showMultiplex && isMultiplex) show = false
+        
+        // Search filter
+        if (searchTerm && show) {
+          const content = entry.textContent.toLowerCase()
+          if (!content.includes(searchTerm)) show = false
+        }
+        
+        entry.style.display = show ? 'block' : 'none'
+      })
+    }
+    
+    filterRequests.addEventListener('change', applyFilters)
+    filterMultiplex.addEventListener('change', applyFilters)
+    filterErrors.addEventListener('change', applyFilters)
+    searchInput.addEventListener('input', applyFilters)
+    
+    // Toggle data visibility
+    showData.addEventListener('change', () => {
+      const dataElements = document.querySelectorAll('.event-data')
+      dataElements.forEach(element => {
+        element.style.display = showData.checked ? 'block' : 'none'
+      })
+    })
+    
+    // Connect on load
+    connect()
+  </script>
+</body>
+</html>
