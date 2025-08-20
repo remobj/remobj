@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { performance } from 'perf_hooks'
+import { performance } from 'node:perf_hooks'
 
 // Simple benchmark runner that works with CommonJS and ES modules
 class SimpleBenchmark {
-  async run(name, fn, options = { iterations: 100000, warmup: 100 }) {
+  async run(name, fn, options = { iterations: 100_000, warmup: 100 }) {
     // Warmup
     for (let i = 0; i < options.warmup; i++) {
       await fn()
@@ -59,7 +59,7 @@ async function runBenchmarks() {
     shared.isObject(testObj)
     shared.isObject('string')
     shared.isObject(123)
-    shared.isObject(null)
+    shared.isObject()
   })
   
   console.log('=== RPC Benchmarks ===')
@@ -75,12 +75,12 @@ async function runBenchmarks() {
           listeners2.forEach(fn => fn({ data }))
         },
         addEventListener: (event, fn) => {
-          if (event === 'message') listeners1.push(fn)
+          if (event === 'message') {listeners1.push(fn)}
         },
         removeEventListener: (event, fn) => {
           if (event === 'message') {
             const idx = listeners1.indexOf(fn)
-            if (idx >= 0) listeners1.splice(idx, 1)
+            if (idx !== -1) {listeners1.splice(idx, 1)}
           }
         }
       },
@@ -89,12 +89,12 @@ async function runBenchmarks() {
           listeners1.forEach(fn => fn({ data }))
         },
         addEventListener: (event, fn) => {
-          if (event === 'message') listeners2.push(fn)
+          if (event === 'message') {listeners2.push(fn)}
         },
         removeEventListener: (event, fn) => {
           if (event === 'message') {
             const idx = listeners2.indexOf(fn)
-            if (idx >= 0) listeners2.splice(idx, 1)
+            if (idx !== -1) {listeners2.splice(idx, 1)}
           }
         }
       }
@@ -110,7 +110,7 @@ async function runBenchmarks() {
     const { port1, port2 } = createMockChannel()
     core.provide(api, port1)
     const remote = core.consume(port2)
-  }, { iterations: 100000 })
+  }, { iterations: 100_000 })
   
   // Setup once for call benchmarks
   const { port1, port2 } = createMockChannel()
@@ -119,7 +119,7 @@ async function runBenchmarks() {
   
   await bench.run('RPC call - simple', async () => {
     await remote.add(1, 2)
-  }, { iterations: 100000 })
+  }, { iterations: 100_000 })
 }
 
 runBenchmarks().catch(console.error)

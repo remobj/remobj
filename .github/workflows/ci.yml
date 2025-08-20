@@ -63,5 +63,5 @@ jobs:
       - name: Install dependencies  
         run: pnpm i
         
-      - name: Type check
+      - name: Lint files
         run: pnpm run lint

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { MessageChannel } from 'worker_threads'
-import { performance } from 'perf_hooks'
+import { MessageChannel } from 'node:worker_threads'
+import { performance } from 'node:perf_hooks'
 
 // Minimal MessageChannel benchmark without any library overhead
 
@@ -123,7 +123,7 @@ async function main() {
       pendingRequests.set(id, resolve)
       reusedPort1.postMessage({ id, a: 5, b: 3 })
     })
-  }, { iterations: 10000 })
+  }, { iterations: 10_000 })
   
   // Test 4: JSON serialization overhead
   console.log('\n## 4. JSON Serialization Overhead')
@@ -160,7 +160,7 @@ async function main() {
     
     return new Promise((resolve) => {
       port2.on('message', () => {
-        port2.postMessage(null)
+        port2.postMessage()
       })
       
       port1.on('message', () => {
@@ -169,7 +169,7 @@ async function main() {
         resolve()
       })
       
-      port1.postMessage(null)
+      port1.postMessage()
     })
   }, { iterations: 1000 })
   

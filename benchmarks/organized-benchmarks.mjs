@@ -17,7 +17,7 @@ class BenchmarkRunner {
   }
 
   async run(name, fn, options = {}) {
-    const { iterations = 10000, warmup = 100 } = options
+    const { iterations = 10_000, warmup = 100 } = options
     
     // Warmup
     for (let i = 0; i < warmup; i++) {
@@ -97,7 +97,7 @@ async function runSharedBenchmarks(runner) {
     array: [1, 2, 3],
     date: new Date(),
     map: new Map(),
-    null: null,
+    null: undefined,
     undefined: undefined
   }
   

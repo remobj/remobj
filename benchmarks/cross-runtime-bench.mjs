@@ -9,8 +9,8 @@ const isDeno = typeof Deno !== 'undefined'
 let performance, MessageChannel
 
 if (isNode) {
-  const perfHooks = await import('perf_hooks')
-  const workerThreads = await import('worker_threads')
+  const perfHooks = await import('node:perf_hooks')
+  const workerThreads = await import('node:worker_threads')
   performance = perfHooks.performance
   MessageChannel = workerThreads.MessageChannel
 } else if (isDeno) {
@@ -26,11 +26,11 @@ const shared = await import('../packages/shared/dist/shared.esm.js')
 class RuntimeBenchmark {
   constructor() {
     this.results = []
-    this.runtime = isNode ? `Node.js ${process.version}` : isDeno ? `Deno ${Deno.version.deno}` : 'Unknown'
+    this.runtime = isNode ? `Node.js ${process.version}` : (isDeno ? `Deno ${Deno.version.deno}` : 'Unknown')
   }
 
   async run(name, fn, options = {}) {
-    const { iterations = 10000, warmup = 100 } = options
+    const { iterations = 10_000, warmup = 100 } = options
     
     // Warmup
     for (let i = 0; i < warmup; i++) {
@@ -103,8 +103,8 @@ async function runBenchmarks() {
   const bench = new RuntimeBenchmark()
   
   console.log(`Running benchmarks on ${bench.runtime}`)
-  console.log(`Platform: ${isNode ? process.platform : isDeno ? Deno.build.os : 'unknown'}`)
-  console.log(`Architecture: ${isNode ? process.arch : isDeno ? Deno.build.arch : 'unknown'}`)
+  console.log(`Platform: ${isNode ? process.platform : (isDeno ? Deno.build.os : 'unknown')}`)
+  console.log(`Architecture: ${isNode ? process.arch : (isDeno ? Deno.build.arch : 'unknown')}`)
   console.log(`Time: ${new Date().toISOString()}`)
   
   // 1. Type Guards
@@ -119,7 +119,7 @@ async function runBenchmarks() {
   
   await bench.run('isObject', () => {
     shared.isObject(testObj)
-    shared.isObject(null)
+    shared.isObject()
   })
   
   await bench.run('Type guards batch', () => {

@@ -12,7 +12,7 @@ function createIterator<T>(iterableIterator: IterableIterator<T>): MapIterator<T
 }
 
 function isPrimitive(value: unknown): value is (string | number | boolean | symbol | undefined | bigint | null) {
-  return isString(value) || isNumber(value) || typeof value == 'boolean' || typeof value === 'symbol' || typeof value == 'undefined' || typeof value == 'bigint' || value === null
+  return isString(value) || isNumber(value) || typeof value === 'boolean' || typeof value === 'symbol' || typeof value === 'undefined' || typeof value === 'bigint' || value === null
 }
 
 /**
@@ -33,7 +33,7 @@ export class WeakBiMap<K, V> implements Map<K, V> {
   readonly #cleanupInterval = 100
 
   private cleanup() {
-    const toDelete: Array<StorageType<K>> = []
+    const toDelete: StorageType<K>[] = []
     
     this.#data.forEach((value, key) => {
       let shouldDelete = false
@@ -98,10 +98,10 @@ export class WeakBiMap<K, V> implements Map<K, V> {
 
   delete(key: K): boolean {
     const storageKey = isPrimitive(key) ? key : this.#keyToRef.get(key as K & object)
-    if(!storageKey) return false;
+    if(!storageKey) {return false;}
     if(storageKey instanceof WeakRef) {
       const dereferencedKey = storageKey.deref()
-      if(dereferencedKey) this.#keyToRef.delete(dereferencedKey)
+      if(dereferencedKey) {this.#keyToRef.delete(dereferencedKey)}
     }
     return this.#data.delete(storageKey as StorageType<K>)
   }
@@ -114,9 +114,9 @@ export class WeakBiMap<K, V> implements Map<K, V> {
 
   get(key: K): V | undefined {
     const storageKey = isPrimitive(key) ? key : this.#keyToRef.get(key as K & object)
-    if(!storageKey) return;
+    if(!storageKey) {return;}
     const value = this.#data.get(storageKey as StorageType<K>);
-    if(value instanceof WeakRef) return value.deref() as V | undefined
+    if(value instanceof WeakRef) {return value.deref() as V | undefined}
     return value as V;
   }
 
@@ -159,7 +159,7 @@ export class WeakBiMap<K, V> implements Map<K, V> {
       
       if (key instanceof WeakRef) {
         const dereferencedKey = key.deref()
-        if (!dereferencedKey) continue
+        if (!dereferencedKey) {continue}
         actualKey = dereferencedKey as K
       } else {
         actualKey = key as K
@@ -167,7 +167,7 @@ export class WeakBiMap<K, V> implements Map<K, V> {
       
       if (value instanceof WeakRef) {
         const dereferencedValue = value.deref()
-        if (!dereferencedValue) continue
+        if (!dereferencedValue) {continue}
         actualValue = dereferencedValue as V
       } else {
         actualValue = value as V
@@ -187,7 +187,7 @@ export class WeakBiMap<K, V> implements Map<K, V> {
     for (const [key] of this.#data) {
       if (key instanceof WeakRef) {
         const derefKey = key.deref()
-        if (!derefKey) continue
+        if (!derefKey) {continue}
         yield derefKey as K
       } else {
         yield key as K
@@ -205,7 +205,7 @@ export class WeakBiMap<K, V> implements Map<K, V> {
     for (const [, value] of this.#data) {
       if (value instanceof WeakRef) {
         const derefValue = value.deref()
-        if (!derefValue) continue
+        if (!derefValue) {continue}
         yield derefValue as V
       } else {
         yield value as V

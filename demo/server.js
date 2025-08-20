@@ -1,8 +1,8 @@
-import { createServer } from 'http';
-import { readFileSync } from 'fs';
-import { join, extname } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { createServer } from 'node:http';
+import { readFileSync } from 'node:fs';
+import { extname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,7 +38,7 @@ const server = createServer((req, res) => {
         
         res.writeHead(200, { 'Content-Type': contentType });
         res.end(content);
-    } catch (err) {
+    } catch {
         console.error(`404: ${filePath}`);
         res.writeHead(404);
         res.end('Not found');

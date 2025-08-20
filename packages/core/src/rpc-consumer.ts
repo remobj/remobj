@@ -1,14 +1,14 @@
-import { isSymbol, WeakBiMap, onGarbageCollected } from "@remobj/shared"
+import { WeakBiMap, isSymbol, onGarbageCollected } from "@remobj/shared"
 import { realmId } from "./constants"
 import { createMultiplexedEndpoint } from "./multiplex"
-import { PostMessageEndpoint } from "./types"
+import type { PostMessageEndpoint } from "./types"
 import { devtools, getTraceID } from "./devtools"
 import { createArgumentWrappingEndpoint } from "./rpc-wrapper"
-import {
+import type {
+  ConsumeConfig,
   Remote,
   RemoteCallRequest,
-  RemoteCallResponse,
-  ConsumeConfig
+  RemoteCallResponse
 } from "./rpc-types"
 
 // Constants for connection management
@@ -33,25 +33,25 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
       let isSettled = false
       
       const cleanup = (): undefined => {
-        if (isSettled) return
+        if (isSettled) {return}
         isSettled = true
         
         const timeoutHandle = timeoutHandles.get(requestID)
-        if (timeoutHandle) clearTimeout(timeoutHandle)
+        if (timeoutHandle) {clearTimeout(timeoutHandle)}
         pendingPromises.delete(requestID)
         timeoutHandles.delete(requestID)
       }
 
       pendingPromises.set(requestID, {
         resolve: (data) => {
-          if (isSettled) return
-          if ((__DEV__ || __PROD_DEVTOOLS__)) devtools(traceID, 'event', traceID, 'PROMISE', requestID, 'resolve', data)
+          if (isSettled) {return}
+          if ((__DEV__ || __PROD_DEVTOOLS__)) {devtools(traceID, 'event', traceID, 'PROMISE', requestID, 'resolve', data)}
           cleanup()
           resolve(data)
         },
         reject: (error) => {
-          if (isSettled) return
-          if ((__DEV__ || __PROD_DEVTOOLS__)) devtools(traceID, 'event', traceID, 'PROMISE', requestID, 'reject', error)
+          if (isSettled) {return}
+          if ((__DEV__ || __PROD_DEVTOOLS__)) {devtools(traceID, 'event', traceID, 'PROMISE', requestID, 'reject', error)}
           cleanup()
           reject(error)
         }
@@ -86,7 +86,7 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
 
       if (message.resultType === 'error') {
         return pendingPromise?.reject(message.result)
-      } else if (message.resultType === 'result') {
+      }if (message.resultType === 'result') {
         return pendingPromise?.resolve(message.result)
       }
     }
@@ -127,22 +127,22 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
       return cachedProxy
     }
 
-    const remoteProxy = /*#__PURE__*/ new Proxy(class { }, {
+    const remoteProxy = /*#__PURE__*/ new Proxy(class {}, {
       get: (target, property, receiver) => {
         if (property === 'then') {
           if (!propertyPath) {
-            return undefined;
+            return;
           }
           // Return a thenable that performs the await operation
           return remoteCall('await', propertyPath, []).then
-        } else {
+        }
           if (isSymbol(property)) {
             // Return undefined for symbols to prevent conversion errors
-            return undefined
+            return
           }
 
           return createProxy(propertyPath + '/' + property)
-        }
+        
       },
 
       construct: (target, argumentsList, newTarget) => {
@@ -154,7 +154,7 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
       },
 
       set: (target, property, newValue, receiver) => {
-        if (isSymbol(property)) return false
+        if (isSymbol(property)) {return false}
 
         remoteCall('set', propertyPath + '/' + property, [newValue])
         return true

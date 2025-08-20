@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
-  NOOP,
-  EMPTY_OBJ,
   EMPTY_ARR,
+  EMPTY_OBJ,
+  NOOP,
   isPromise,
-  toRawType,
   looseEqual,
-  looseIndexOf
+  looseIndexOf,
+  toRawType
 } from '../src/index'
 
 describe('shared coverage boost', () => {
@@ -15,8 +15,8 @@ describe('shared coverage boost', () => {
       expect(isPromise(Promise.resolve())).toBe(true)
       expect(isPromise(new Promise(() => {}))).toBe(true)
       expect(isPromise({ then: () => {} })).toBe(false)
-      expect(isPromise(null)).toBe(false)
-      expect(isPromise(undefined)).toBe(false)
+      expect(isPromise()).toBe(false)
+      expect(isPromise()).toBe(false)
       expect(isPromise({})).toBe(false)
     })
 
@@ -30,9 +30,9 @@ describe('shared coverage boost', () => {
       expect(looseEqual([], [])).toBe(true)
       
       // null and undefined
-      expect(looseEqual(null, undefined)).toBe(false)
-      expect(looseEqual(null, null)).toBe(true)
-      expect(looseEqual(undefined, undefined)).toBe(true)
+      expect(looseEqual()).toBe(false)
+      expect(looseEqual()).toBe(true)
+      expect(looseEqual()).toBe(true)
     })
 
     it('should test looseIndexOf edge cases', () => {

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { readdir } from 'fs/promises'
-import { join, relative } from 'path'
-import { pathToFileURL } from 'url'
-import { performance } from 'perf_hooks'
+import { readdir } from 'node:fs/promises'
+import { join, relative } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { performance } from 'node:perf_hooks'
 
 interface BenchmarkResult {
   name: string
@@ -75,7 +75,7 @@ class BenchmarkRunner {
     console.log(`Running ${suite.name || suitePath}...`)
     
     for (const [name, benchmark] of Object.entries(suite)) {
-      if (name === 'name' || name === 'default') continue
+      if (name === 'name' || name === 'default') {continue}
       if (typeof benchmark === 'function') {
         const result = await this.runBenchmark(name, benchmark)
         results.push(result)
@@ -98,10 +98,10 @@ class BenchmarkRunner {
   }
   
   async saveResults(outputPath: string) {
-    const { writeFile } = await import('fs/promises')
+    const { writeFile } = await import('node:fs/promises')
     await writeFile(
       outputPath,
-      JSON.stringify(this.results, null, 2)
+      JSON.stringify(this.results, undefined, 2)
     )
   }
 }
@@ -115,7 +115,7 @@ async function main() {
   const benchFiles: string[] = []
   
   async function findBenchmarks(path: string) {
-    const { stat } = await import('fs/promises')
+    const { stat } = await import('node:fs/promises')
     const stats = await stat(path)
     
     if (stats.isFile() && path.endsWith('.bench.ts')) {
@@ -147,7 +147,7 @@ async function main() {
   }
   
   // Save results
-  const timestamp = new Date().toISOString().replace(/:/g, '-')
+  const timestamp = new Date().toISOString().replaceAll(":", '-')
   await runner.saveResults(
     join(process.cwd(), 'benchmarks', 'results', `${timestamp}.json`)
   )

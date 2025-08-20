@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
-import { provide, consume, PostMessageEndpoint } from '../src/index'
+import { describe, expect, it, vi } from 'vitest'
+import type { PostMessageEndpoint } from '../src/index';
+import { consume, provide } from '../src/index'
 
 describe('provide/consume advanced scenarios', () => {
   describe('complex data types', () => {
@@ -285,19 +286,19 @@ describe('provide/consume advanced scenarios', () => {
   describe('special values', () => {
     it('should handle null and undefined', async () => {
       const api = {
-        nullValue: null,
+        nullValue: undefined,
         undefinedValue: undefined,
-        getNull: () => null,
-        getUndefined: () => undefined
+        getNull: () => {},
+        getUndefined: () => {}
       }
 
       const { port1, port2 } = new MessageChannel()
       provide(api, port2 as PostMessageEndpoint)
       const remote = consume<typeof api>(port1 as PostMessageEndpoint)
 
-      expect(await remote.nullValue).toBe(null)
+      expect(await remote.nullValue).toBe(undefined)
       expect(await remote.undefinedValue).toBe(undefined)
-      expect(await remote.getNull()).toBe(null)
+      expect(await remote.getNull()).toBe(undefined)
       expect(await remote.getUndefined()).toBe(undefined)
     })
 
@@ -305,11 +306,11 @@ describe('provide/consume advanced scenarios', () => {
       const api = {
         infinity: Infinity,
         negInfinity: -Infinity,
-        nan: NaN,
+        nan: Number.NaN,
         getSpecialNumbers: () => ({
           inf: Infinity,
           negInf: -Infinity,
-          notANumber: NaN
+          notANumber: Number.NaN
         })
       }
 

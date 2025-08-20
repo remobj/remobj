@@ -1,14 +1,16 @@
-import { describe, it, expect } from 'vitest'
-import { 
-  version, 
-  realmId,
-  wrapPostMessageEndpoint, 
-  createJsonEndpoint, 
-  createMultiplexedEndpoint,
-  consume,
+import { describe, expect, it } from 'vitest'
+import type {
   PostMessageEndpoint,
-  provide,
   Remote
+} from '../src/index';
+import { 
+  consume, 
+  createJsonEndpoint,
+  createMultiplexedEndpoint, 
+  provide, 
+  realmId,
+  version,
+  wrapPostMessageEndpoint
 } from '../src/index'
 
 describe('@remobj/core', () => {

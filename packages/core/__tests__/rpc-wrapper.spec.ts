@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { createArgumentWrappingEndpoint } from '../src/rpc-wrapper'
 import { PostMessageEndpoint } from '../src/types'
 

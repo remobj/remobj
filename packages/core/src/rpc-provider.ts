@@ -1,14 +1,16 @@
 import { isArray, isFunction, isObject, isString } from "@remobj/shared"
 import { createMultiplexedEndpoint } from "./multiplex"
-import { PostMessageEndpoint } from "./types"
+import type { PostMessageEndpoint } from "./types"
 import { devtools, getTraceID } from "./devtools"
 import { createArgumentWrappingEndpoint } from "./rpc-wrapper"
-import {
-    FORBIDDEN_PROPERTIES,
+import type {
     ForbiddenProperty,
+    ProvideConfig,
     RemoteCallRequest,
-    RemoteCallResponse,
-    ProvideConfig
+    RemoteCallResponse
+} from "./rpc-types";
+import {
+    FORBIDDEN_PROPERTIES
 } from "./rpc-types"
 
 // Constants for connection management
@@ -22,7 +24,7 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
 
     let timeoutHandle: any;
     const setProviderTimeout = () => {
-        if(timeoutHandle) clearTimeout(timeoutHandle)
+        if(timeoutHandle) {clearTimeout(timeoutHandle)}
         return timeoutHandle = setTimeout(() => multiplexedEndpoint.removeEventListener('message', messageListener), PROVIDER_TIMEOUT_MS)
     }
 
@@ -36,7 +38,7 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
             devtools(traceID, "event", providerID, "PROVIDER", name, '', messageData)
         }
 
-        const sendResponse = async (data: any, err: any = null) => {
+        const sendResponse = async (data: any, err: any) => {
             let result: any
             let resultType: 'error' | 'result' = err ? 'error' : 'result'
             
@@ -45,9 +47,9 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
             } else {
                 try {
                     result = await data
-                } catch (e) {
+                } catch (error) {
                     resultType = 'error'
-                    result = e
+                    result = error
                 }
             }
             
@@ -68,7 +70,7 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
             multiplexedEndpoint.postMessage(returnData)
         }
 
-        const sendError = (err: any) => sendResponse(null, err)
+        const sendError = (err: any) => sendResponse(undefined, err)
 
         // Validate input
         if (!isString(messageData.propertyPath) || !isString(messageData.operationType) || !isArray(messageData.args)) {
@@ -103,10 +105,10 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
             const op = messageData.operationType;
             if(op === 'gc-register') {
                 return registered.add(messageData.args[0])
-            } else if(op === 'gc-collect') {
+            }if(op === 'gc-collect') {
                 registered.delete(messageData.args[0])
-                return !registered.size && multiplexedEndpoint.removeEventListener('message', messageListener) 
-            } else if(op === 'ping') {
+                return registered.size === 0 && multiplexedEndpoint.removeEventListener('message', messageListener) 
+            }if(op === 'ping') {
                 // Ping received, connection is alive
                 return sendResponse(true)
             } else if (op === 'await') {

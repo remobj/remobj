@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { readFile, readdir } from 'fs/promises'
-import { join } from 'path'
+import { readFile, readdir } from 'node:fs/promises'
+import { join } from 'node:path'
 
 interface BenchmarkResult {
   name: string
@@ -22,7 +22,7 @@ interface BenchmarkSuite {
 }
 
 async function loadResults(file: string): Promise<BenchmarkSuite[]> {
-  const content = await readFile(file, 'utf-8')
+  const content = await readFile(file, 'utf8')
   return JSON.parse(content)
 }
 
@@ -44,15 +44,15 @@ async function findBaseline(): Promise<string | null> {
     await readFile(baselinePath)
     return baselinePath
   } catch {
-    return null
+    return 
   }
 }
 
 function formatChange(current: number, baseline: number): string {
   const change = ((current - baseline) / baseline) * 100
   const sign = change >= 0 ? '+' : ''
-  const color = change >= 0 ? '\x1b[32m' : '\x1b[31m' // green/red
-  return `${color}${sign}${change.toFixed(1)}%\x1b[0m`
+  const color = change >= 0 ? '\u001B[32m' : '\u001B[31m' // green/red
+  return `${color}${sign}${change.toFixed(1)}%\u001B[0m`
 }
 
 async function compare() {
@@ -119,9 +119,9 @@ async function compare() {
       
       if (baselineBench) {
         const change = (bench.ops - baselineBench.ops) / baselineBench.ops
-        if (change > 0.05) improved++
-        else if (change < -0.05) regressed++
-        else unchanged++
+        if (change > 0.05) {improved++}
+        else if (change < -0.05) {regressed++}
+        else {unchanged++}
       }
     }
   }
@@ -154,8 +154,8 @@ async function updateBaseline() {
   const latest = await loadResults(latestFile)
   
   const baselinePath = join(process.cwd(), 'benchmarks', 'baseline.json')
-  await import('fs/promises').then(fs => 
-    fs.writeFile(baselinePath, JSON.stringify(latest, null, 2))
+  await import('node:fs/promises').then(fs => 
+    fs.writeFile(baselinePath, JSON.stringify(latest, undefined, 2))
   )
   
   console.log('Baseline updated from:', latestFile)

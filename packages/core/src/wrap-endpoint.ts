@@ -1,6 +1,6 @@
 import { WeakBiMap, onGarbageCollected } from "@remobj/shared"
 import { devtools, getTraceID } from "./devtools.js"
-import type { PostMessageEndpointBase, Listener } from "./types.js"
+import type { Listener, PostMessageEndpointBase } from "./types.js"
 
 /**
  * Creates a wrapped PostMessageEndpoint that transforms data using provided functions

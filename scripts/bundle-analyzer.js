@@ -1,5 +1,5 @@
 import { readFileSync, statSync } from 'node:fs'
-import { gzipSync, brotliCompressSync } from 'node:zlib'
+import { brotliCompressSync, gzipSync } from 'node:zlib'
 import { join } from 'node:path'
 
 /**
@@ -8,13 +8,13 @@ import { join } from 'node:path'
  * @returns {string} Formatted string (e.g., "1.2 KB")
  */
 function formatBytes(bytes) {
-  if (bytes === 0) return '0 B'
+  if (bytes === 0) {return '0 B'}
   
   const k = 1024
   const sizes = ['B', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
+  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
 }
 
 /**
@@ -23,7 +23,7 @@ function formatBytes(bytes) {
  * @returns {string} Formatted string (e.g., "1.2 KB (1,234 bytes)")
  */
 function formatBytesWithExact(bytes) {
-  if (bytes === 0) return '0 B (0 bytes)'
+  if (bytes === 0) {return '0 B (0 bytes)'}
   
   const humanReadable = formatBytes(bytes)
   const exactBytes = bytes.toLocaleString()
@@ -140,7 +140,7 @@ export function analyzeBundles(outputFiles) {
     const analysis = analyzeFile(filePath)
     
     // Extract package name and file info
-    const parts = filePath.replace(/\\/g, '/').split('/')
+    const parts = filePath.replaceAll("\\\\", '/').split('/')
     const packagesIndex = parts.findIndex(part => part === 'packages')
     const packageName = packagesIndex !== -1 && packagesIndex + 1 < parts.length 
       ? parts[packagesIndex + 1] 
@@ -185,7 +185,7 @@ export function analyzeBundles(outputFiles) {
   // Display by build format
   const formatOrder = ['ESM Production', 'ESM Bundler', 'UMD', 'unknown']
   formatOrder.forEach(formatName => {
-    if (!formatGroups[formatName]) return
+    if (!formatGroups[formatName]) {return}
     
     const formatData = formatGroups[formatName]
     console.log(`\n📦 ${formatName}`)

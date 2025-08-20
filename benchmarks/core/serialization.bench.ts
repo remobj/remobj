@@ -1,12 +1,12 @@
 // Need internal imports for these functions
 import { createArgumentWrappingEndpoint } from '../../packages/core/dist/core.esm.js'
 import { createMultiplexedEndpoint } from '../../packages/core/dist/core.esm.js'
-import { MessageChannel } from 'worker_threads'
+import { MessageChannel } from 'node:worker_threads'
 
 export const name = 'Serialization Benchmarks'
 
 // Test data
-const primitiveArgs = [1, 'test', true, null, undefined]
+const primitiveArgs = [1, 'test', true, undefined, undefined]
 const objectArgs = [
   { id: 1, name: 'test' },
   { data: [1, 2, 3] },
@@ -18,7 +18,7 @@ const mixedArgs = [
   { complex: true },
   [1, 2, 3],
   new Date(),
-  null
+  undefined
 ]
 
 function createWrappedEndpoint() {

@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
-import { setDevtoolsEP, devtools } from '../src/devtools'
-import { PostMessageEndpoint } from '../src/types'
+import { describe, expect, it, vi } from 'vitest'
+import { devtools, setDevtoolsEP } from '../src/devtools'
+import type { PostMessageEndpoint } from '../src/types'
 
 describe('devtools', () => {
   it('should set devtools endpoint', () => {
@@ -62,6 +62,6 @@ describe('devtools', () => {
     setDevtoolsEP(undefined as any)
     
     // Should not throw
-    expect(() => devtools('in', 'obj789', 'method', 'test', null)).not.toThrow()
+    expect(() => devtools('in', 'obj789', 'method', 'test')).not.toThrow()
   })
 })

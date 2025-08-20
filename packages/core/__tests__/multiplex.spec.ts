@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
-import { createMultiplexedEndpoint, PostMessageEndpoint } from '../src/index'
+import { describe, expect, it, vi } from 'vitest'
+import type { PostMessageEndpoint } from '../src/index';
+import { createMultiplexedEndpoint } from '../src/index'
 import { removeStackInfo } from './test-utils'
 
 describe('createMultiplexedEndpoint', () => {

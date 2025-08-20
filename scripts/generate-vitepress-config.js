@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs'
-import { join, dirname } from 'node:path'
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -21,7 +21,7 @@ function findMarkdownFiles(dir, baseDir = dir) {
     if (stat.isDirectory()) {
       files.push(...findMarkdownFiles(fullPath, baseDir))
     } else if (item.endsWith('.md') && item !== 'README.md') {
-      const relativePath = fullPath.replace(baseDir, '').replace(/\\/g, '/')
+      const relativePath = fullPath.replace(baseDir, '').replaceAll("\\\\", '/')
       files.push({
         name: item.replace('.md', ''),
         path: relativePath,
@@ -48,7 +48,7 @@ function generateApiSidebar() {
   // Process each package
   for (const pkg of packages) {
     const pkgDir = join(apiDir, pkg)
-    if (!existsSync(pkgDir)) continue
+    if (!existsSync(pkgDir)) {continue}
     
     const items = [{ text: 'Overview', link: `/api/${pkg}/src/` }]
     
@@ -58,8 +58,8 @@ function generateApiSidebar() {
     // Group by type (functions, variables, etc.)
     const grouped = {}
     for (const file of files) {
-      if (!file.path.includes('/src/')) continue
-      if (file.name === 'index') continue
+      if (!file.path.includes('/src/')) {continue}
+      if (file.name === 'index') {continue}
       
       if (!grouped[file.type]) {
         grouped[file.type] = []
@@ -101,9 +101,9 @@ function updateVitePressConfig() {
   const apiSidebar = generateApiSidebar()
   
   // Convert to TypeScript code
-  const sidebarCode = JSON.stringify(apiSidebar, null, 8)
-    .replace(/"([^"]+)":/g, '$1:') // Remove quotes from keys
-    .replace(/"/g, "'") // Use single quotes
+  const sidebarCode = JSON.stringify(apiSidebar, undefined, 8)
+    .replaceAll(/"([^"]+)":/g, '$1:') // Remove quotes from keys
+    .replaceAll("\"", "'") // Use single quotes
   
   // Replace the /api/ sidebar section
   // First, find the start of the '/api/' section
@@ -121,17 +121,17 @@ function updateVitePressConfig() {
   let endIndex = startIndex
   
   for (let i = startIndex; i < config.length && bracketCount > 0; i++) {
-    if (config[i] === '[') bracketCount++
+    if (config[i] === '[') {bracketCount++}
     else if (config[i] === ']') {
       bracketCount--
-      if (bracketCount === 0) endIndex = i
+      if (bracketCount === 0) {endIndex = i}
     }
   }
   
   // Replace the entire /api/ section
-  config = config.substring(0, apiStartMatch.index) + 
+  config = config.slice(0, apiStartMatch.index) + 
            `'/api/': ${sidebarCode}` +
-           config.substring(endIndex + 1)
+           config.slice(endIndex + 1)
   
   // Write updated config
   writeFileSync(configPath, config)

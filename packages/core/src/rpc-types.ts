@@ -85,4 +85,4 @@ export interface ConsumeConfig {
 /**
  * Represents wrapped function arguments that may need special handling
  */
-export type WrappedArgument =  { type: string; value: any }
+export interface WrappedArgument { type: string; value: any }

@@ -1,6 +1,6 @@
 import type { DevToolsMessage } from "./types"
 
-let ws: WebSocket | null = null
+let ws: WebSocket | null
 let messageQueue: DevToolsMessage[] = []
 let isConnected = false
 
@@ -36,7 +36,7 @@ export function createDevToolsIntegration(): DevToolsIntegration {
       
       ws.onclose = () => {
         isConnected = false
-        ws = null
+        ws = undefined
         console.log("Disconnected from RemObj DevTools")
         
         // Attempt to reconnect after 5 seconds
@@ -54,7 +54,7 @@ export function createDevToolsIntegration(): DevToolsIntegration {
   const disconnect = () => {
     if (ws) {
       ws.close()
-      ws = null
+      ws = undefined
       isConnected = false
     }
   }
@@ -86,7 +86,7 @@ export function createDevToolsIntegration(): DevToolsIntegration {
 }
 
 // Global devtools instance
-let devtools: DevToolsIntegration | null = null
+let devtools: DevToolsIntegration | null
 
 export function getDevTools(): DevToolsIntegration {
   if (!devtools) {

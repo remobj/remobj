@@ -1,9 +1,9 @@
 import { 
+  isArray,
   isClonable,
+  isFunction,
   isObject,
   isPlainObject,
-  isArray,
-  isFunction,
   isSymbol
 } from '@remobj/shared'
 
@@ -62,7 +62,7 @@ export function mixedTypeChecking() {
     'string',
     123,
     true,
-    null,
+    undefined,
     undefined,
     { obj: true },
     [1, 2, 3],

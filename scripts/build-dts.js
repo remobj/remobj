@@ -43,8 +43,8 @@ export function createDtsConfig(packageName) {
     ],
     onLog(level, log, handler) {
       // Suppress certain warnings from dts plugin
-      if (log.code === 'EMPTY_BUNDLE') return
-      if (log.code === 'CIRCULAR_DEPENDENCY') return
+      if (log.code === 'EMPTY_BUNDLE') {return}
+      if (log.code === 'CIRCULAR_DEPENDENCY') {return}
       if (log.code === 'UNRESOLVED_IMPORT') {
         console.warn(`⚠️  DTS: Unresolved import in ${packageName}: ${log.message}`)
         return
@@ -65,15 +65,15 @@ export async function buildDts(packageName) {
   
   // Special handling for core package - use pre-generated DTS
   if (packageName === 'core') {
-    const fs = await import('fs')
+    const fs = await import('node:fs')
     const coreDtsPath = `packages/${packageName}/dist/${packageName}.d.ts`
     
     if (fs.existsSync(coreDtsPath)) {
       console.log(`✅ Using pre-generated DTS for ${packageName} → ${coreDtsPath}`)
       return
-    } else {
-      throw new Error(`Pre-generated DTS file not found: ${coreDtsPath}`)
     }
+      throw new Error(`Pre-generated DTS file not found: ${coreDtsPath}`)
+    
   }
   
   const config = createDtsConfig(packageName)
@@ -82,7 +82,7 @@ export async function buildDts(packageName) {
   const timeoutPromise = new Promise((_, reject) => {
     setTimeout(() => {
       reject(new Error(`DTS_TIMEOUT`))
-    }, 10000) // 10 second timeout
+    }, 10_000) // 10 second timeout
   })
   
   try {

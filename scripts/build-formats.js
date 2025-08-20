@@ -93,20 +93,23 @@ export function resolveExternals(format, pkg, buildOptions = {}) {
   const userExternal = buildOptions.external || [];
 
   switch (format) {
-    case "umd":
+    case "umd": {
       // UMD builds bundle everything for standalone usage
       return userExternal;
+    }
 
     case "esm-production":
-    case "esm-bundler":
+    case "esm-bundler": {
       // ESM builds keep dependencies external for bundler compatibility
       return [
         ...Object.keys(pkg.dependencies || {}),
         ...Object.keys(pkg.peerDependencies || {}),
         ...userExternal,
       ];
+    }
 
-    default:
+    default: {
       return userExternal;
+    }
   }
 }

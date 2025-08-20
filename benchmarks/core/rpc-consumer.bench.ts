@@ -1,6 +1,6 @@
 import { consume } from '../../packages/core/dist/core.esm.js'
 import { provide } from '../../packages/core/dist/core.esm.js'
-import { MessageChannel } from 'worker_threads'
+import { MessageChannel } from 'node:worker_threads'
 
 
 export const name = 'RPC Consumer Benchmarks'

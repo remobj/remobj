@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { WeakBiMap } from '../packages/shared/dist/shared.esm.js'
-import { performance } from 'perf_hooks'
+import { performance } from 'node:perf_hooks'
 
 class WeakBiMapBenchmark {
-  async run(name, fn, options = { iterations: 10000, warmup: 100 }) {
+  async run(name, fn, options = { iterations: 10_000, warmup: 100 }) {
     console.log(`\n${name}:`)
     
     // Warmup
@@ -113,7 +113,7 @@ async function main() {
   await bench.run('WeakBiMap - bidirectional lookup', () => {
     const obj = objects[Math.floor(Math.random() * 1000)]
     const value = biMap.get(obj)
-    if (value) biMap.get(value) // Reverse lookup
+    if (value) {biMap.get(value)} // Reverse lookup
   })
   
   // Test 3: Cleanup operations

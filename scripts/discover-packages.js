@@ -11,8 +11,8 @@ export function discoverPackages() {
   return fs
     .readdirSync('packages')
     .filter(dir => {
-      if (!fs.statSync(`packages/${dir}`).isDirectory()) return false
-      if (!fs.existsSync(`packages/${dir}/package.json`)) return false
+      if (!fs.statSync(`packages/${dir}`).isDirectory()) {return false}
+      if (!fs.existsSync(`packages/${dir}/package.json`)) {return false}
       
       const pkg = require(`../packages/${dir}/package.json`)
       // Include packages that have buildOptions or are not private
@@ -34,10 +34,10 @@ export function fuzzyMatch(partialTargets, includeAll = false) {
     for (const pkg of packages) {
       if (pkg.includes(partial)) {
         matched.push(pkg)
-        if (!includeAll) break
+        if (!includeAll) {break}
       }
     }
   })
   
-  return matched.length ? matched : packages
+  return matched.length > 0 ? matched : packages
 }

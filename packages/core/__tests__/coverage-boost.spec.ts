@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
-import { provide, consume } from '../src/index'
+import { describe, expect, it, vi } from 'vitest'
+import { consume, provide } from '../src/index'
 import { wrapPostMessageEndpoint } from '../src/wrap-endpoint'
 import { createArgumentWrappingEndpoint } from '../src/rpc-wrapper'
 import type { PostMessageEndpoint } from '../src/types'
@@ -134,8 +134,8 @@ describe('coverage boost tests', () => {
       const wrapped = wrapPostMessageEndpoint(mockEndpoint, sendHandler, receiveHandler)
       
       // Test with different data types
-      wrapped.postMessage(null)
-      wrapped.postMessage(undefined)
+      wrapped.postMessage()
+      wrapped.postMessage()
       wrapped.postMessage({ complex: { nested: true } })
       wrapped.postMessage([1, 2, 3])
       

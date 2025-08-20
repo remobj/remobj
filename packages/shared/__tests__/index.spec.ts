@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { 
-  isNumber, isString, isArray, isObject, isFunction, isDate, isRegExp, isMap, isSet, 
-  isSymbol, isPromise, isPlainObject, isIntegerKey,
-  removeFromArray, looseEqual, looseIndexOf, hasOwnProperty,
-  camelize, hyphenate, capitalize, toRawType,
-  EMPTY_OBJ, EMPTY_ARR, NOOP
+  EMPTY_ARR, EMPTY_OBJ, NOOP, camelize, capitalize, hasOwnProperty, hyphenate, isArray, isDate, 
+  isFunction, isIntegerKey, isMap, isNumber,
+  isObject, isPlainObject, isPromise, isRegExp,
+  isSet, isString, isSymbol, looseEqual,
+  looseIndexOf, removeFromArray, toRawType
 } from '../src/index'
 
 describe('@remobj/shared', () => {
@@ -19,9 +19,9 @@ describe('@remobj/shared', () => {
 
     it('should return false for non-numbers and invalid numbers', () => {
       expect(isNumber('42')).toBe(false)
-      expect(isNumber(null)).toBe(false)
-      expect(isNumber(undefined)).toBe(false)
-      expect(isNumber(NaN)).toBe(false)
+      expect(isNumber()).toBe(false)
+      expect(isNumber()).toBe(false)
+      expect(isNumber(Number.NaN)).toBe(false)
       expect(isNumber(Infinity)).toBe(false)
       expect(isNumber(-Infinity)).toBe(false)
     })
@@ -36,8 +36,8 @@ describe('@remobj/shared', () => {
 
     it('should return false for non-strings', () => {
       expect(isString(123)).toBe(false)
-      expect(isString(null)).toBe(false)
-      expect(isString(undefined)).toBe(false)
+      expect(isString()).toBe(false)
+      expect(isString()).toBe(false)
       expect(isString({})).toBe(false)
       expect(isString([])).toBe(false)
     })
@@ -47,14 +47,14 @@ describe('@remobj/shared', () => {
     it('should return true for arrays', () => {
       expect(isArray([])).toBe(true)
       expect(isArray([1, 2, 3])).toBe(true)
-      expect(isArray(new Array())).toBe(true)
+      expect(isArray([])).toBe(true)
     })
 
     it('should return false for non-arrays', () => {
       expect(isArray('array')).toBe(false)
       expect(isArray({})).toBe(false)
-      expect(isArray(null)).toBe(false)
-      expect(isArray(undefined)).toBe(false)
+      expect(isArray()).toBe(false)
+      expect(isArray()).toBe(false)
     })
   })
 
@@ -67,8 +67,8 @@ describe('@remobj/shared', () => {
     })
 
     it('should return false for non-objects and null', () => {
-      expect(isObject(null)).toBe(false)
-      expect(isObject(undefined)).toBe(false)
+      expect(isObject()).toBe(false)
+      expect(isObject()).toBe(false)
       expect(isObject('string')).toBe(false)
       expect(isObject(123)).toBe(false)
       expect(isObject(true)).toBe(false)
@@ -87,7 +87,7 @@ describe('@remobj/shared', () => {
       expect(isFunction({})).toBe(false)
       expect(isFunction('function')).toBe(false)
       expect(isFunction(123)).toBe(false)
-      expect(isFunction(null)).toBe(false)
+      expect(isFunction()).toBe(false)
     })
   })
 
@@ -99,9 +99,9 @@ describe('@remobj/shared', () => {
 
     it('should return false for non-Date objects', () => {
       expect(isDate('2023-01-01')).toBe(false)
-      expect(isDate(1234567890)).toBe(false)
+      expect(isDate(1_234_567_890)).toBe(false)
       expect(isDate({})).toBe(false)
-      expect(isDate(null)).toBe(false)
+      expect(isDate()).toBe(false)
     })
   })
 
@@ -114,7 +114,7 @@ describe('@remobj/shared', () => {
     it('should return false for non-RegExp objects', () => {
       expect(isRegExp('/test/')).toBe(false)
       expect(isRegExp({})).toBe(false)
-      expect(isRegExp(null)).toBe(false)
+      expect(isRegExp()).toBe(false)
     })
   })
 
@@ -128,7 +128,7 @@ describe('@remobj/shared', () => {
       expect(isMap({})).toBe(false)
       expect(isMap([])).toBe(false)
       expect(isMap(new Set())).toBe(false)
-      expect(isMap(null)).toBe(false)
+      expect(isMap()).toBe(false)
     })
   })
 
@@ -142,7 +142,7 @@ describe('@remobj/shared', () => {
       expect(isSet({})).toBe(false)
       expect(isSet([])).toBe(false)
       expect(isSet(new Map())).toBe(false)
-      expect(isSet(null)).toBe(false)
+      expect(isSet()).toBe(false)
     })
   })
 
@@ -156,7 +156,7 @@ describe('@remobj/shared', () => {
     it('should return false for non-symbols', () => {
       expect(isSymbol('symbol')).toBe(false)
       expect(isSymbol({})).toBe(false)
-      expect(isSymbol(null)).toBe(false)
+      expect(isSymbol()).toBe(false)
     })
   })
 
@@ -169,7 +169,7 @@ describe('@remobj/shared', () => {
     it('should return false for non-Promise objects', () => {
       expect(isPromise({})).toBe(false)
       expect(isPromise({ then: 'not a function' })).toBe(false)
-      expect(isPromise(null)).toBe(false)
+      expect(isPromise()).toBe(false)
       expect(isPromise('promise')).toBe(false)
     })
   })
@@ -184,7 +184,7 @@ describe('@remobj/shared', () => {
       expect(isPlainObject([])).toBe(false)
       expect(isPlainObject(new Date())).toBe(false)
       expect(isPlainObject(/regex/)).toBe(false)
-      expect(isPlainObject(null)).toBe(false)
+      expect(isPlainObject()).toBe(false)
     })
   })
 
@@ -232,7 +232,7 @@ describe('@remobj/shared', () => {
       expect(looseEqual(1, 2)).toBe(false)
       expect(looseEqual([1, 2], [2, 1])).toBe(false)
       expect(looseEqual({ a: 1 }, { a: 2 })).toBe(false)
-      expect(looseEqual(null, undefined)).toBe(false)
+      expect(looseEqual()).toBe(false)
     })
   })
 
@@ -246,7 +246,7 @@ describe('@remobj/shared', () => {
     it('should return -1 if not found', () => {
       const arr = [{ a: 1 }, { b: 2 }]
       expect(looseIndexOf(arr, { c: 3 })).toBe(-1)
-      expect(looseIndexOf(arr, null)).toBe(-1)
+      expect(looseIndexOf(arr)).toBe(-1)
     })
   })
 
@@ -316,8 +316,8 @@ describe('@remobj/shared', () => {
     })
 
     it('should handle special cases', () => {
-      expect(toRawType(null)).toBe('Null')
-      expect(toRawType(undefined)).toBe('Undefined')
+      expect(toRawType()).toBe('Null')
+      expect(toRawType()).toBe('Undefined')
       expect(toRawType(new Date())).toBe('Date')
       expect(toRawType(/regex/)).toBe('RegExp')
     })

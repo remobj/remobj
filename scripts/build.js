@@ -3,7 +3,7 @@ import { rolldown } from 'rolldown'
 import { createRequire } from 'node:module'
 import { discoverPackages, fuzzyMatch } from './discover-packages.js'
 import { createWorkspaceAliases } from './workspace-aliases.js'
-import { createOutputConfig, resolveExternals, getDefineFlags, BUILD_FORMATS } from './build-formats.js'
+import { BUILD_FORMATS, createOutputConfig, getDefineFlags, resolveExternals } from './build-formats.js'
 import { buildDts } from './build-dts.js'
 import { analyzeBundles } from './bundle-analyzer.js'
 
@@ -76,7 +76,7 @@ async function createConfigsForPackage(packageName, isDev = false) {
  * @returns {Promise<string[]>} Array of built output files
  */
 async function buildAllPackages(targets = [], isDev = false) {
-  const packagesToBuild = targets.length 
+  const packagesToBuild = targets.length > 0 
     ? fuzzyMatch(targets, true)
     : discoverPackages()
   
@@ -120,7 +120,7 @@ async function buildAllPackages(targets = [], isDev = false) {
         console.warn(`⚠️  Skipping DTS build for ${packageName} due to error`)
         console.warn(`   Error: ${error.message}`)
         console.warn(`   JavaScript builds completed successfully.`)
-        dtsResults.push(null)
+        dtsResults.push(undefined)
       }
     }
   }

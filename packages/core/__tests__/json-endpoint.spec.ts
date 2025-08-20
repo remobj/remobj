@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
-import { createJsonEndpoint, PostMessageEndpoint } from '../src/index'
+import { describe, expect, it, vi } from 'vitest'
+import type { PostMessageEndpoint } from '../src/index';
+import { createJsonEndpoint } from '../src/index'
 import { removeStackInfo } from './test-utils'
 
 describe('createJsonEndpoint', () => {
@@ -65,7 +66,7 @@ describe('createJsonEndpoint', () => {
       string: 'test',
       number: 123,
       boolean: true,
-      null: null,
+      null: undefined,
       array: [1, 'two', { three: 3 }],
       nested: {
         deep: {
@@ -157,7 +158,7 @@ describe('createJsonEndpoint', () => {
     const specialData = {
       date: new Date('2024-01-01').toISOString(), // Dates need to be serialized
       undefined: undefined, // Will be omitted
-      nan: NaN, // Will become null
+      nan: Number.NaN, // Will become null
       infinity: Infinity, // Will become null
       negInfinity: -Infinity // Will become null
     }

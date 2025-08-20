@@ -1,4 +1,4 @@
-import { provide, consume, setDevtoolsEP, createJsonEndpoint } from '../packages/core/dist/core.bundler.js';
+import { consume, createJsonEndpoint, provide, setDevtoolsEP } from '../packages/core/dist/core.bundler.js';
 
 setDevtoolsEP(new WebSocket('ws://localhost:3333'))
 
@@ -10,20 +10,20 @@ let localCalculator;
 
 // Logging helpers
 function logA(message, type = 'local') {
-    const logDiv = document.getElementById('logA');
+    const logDiv = document.querySelector('#logA');
     const entry = document.createElement('div');
     entry.className = `log-entry log-${type}`;
     entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-    logDiv.appendChild(entry);
+    logDiv.append(entry);
     logDiv.scrollTop = logDiv.scrollHeight;
 }
 
 function logB(message, type = 'remote') {
-    const logDiv = document.getElementById('logB');
+    const logDiv = document.querySelector('#logB');
     const entry = document.createElement('div');
     entry.className = `log-entry log-${type}`;
     entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-    logDiv.appendChild(entry);
+    logDiv.append(entry);
     logDiv.scrollTop = logDiv.scrollHeight;
 }
 
@@ -35,7 +35,7 @@ function updateStatus(contextId, connected) {
 }
 
 // Setup MessageChannel connection
-window.setupConnection = function() {
+window.setupConnection = function setupConnection() {
     logA('Setting up MessageChannel...', 'local');
     
     // Create MessageChannel
@@ -57,7 +57,7 @@ window.setupConnection = function() {
 };
 
 // Create a local object in Context B
-window.createLocalObject = function() {
+window.createLocalObject = function createLocalObject() {
     if (!channelB) {
         logB('Please setup connection first!', 'error');
         return;
@@ -68,8 +68,8 @@ window.createLocalObject = function() {
     // Create a calculator object with methods and properties using closure
     let result = 0;
     let history = [];
-    let onClearHandler = null;
-    let onCalculationHandler = null;
+    let onClearHandler;
+    let onCalculationHandler;
     
     localCalculator = {
         get result() { return result; },
@@ -146,7 +146,7 @@ window.createLocalObject = function() {
 };
 
 // Create remote object proxy in Context A
-window.createRemoteObject = async function() {
+window.createRemoteObject = async function createRemoteObject() {
     if (!channelA) {
         logA('Please setup connection first!', 'error');
         return;
@@ -163,7 +163,7 @@ window.createRemoteObject = async function() {
 };
 
 // Call remote methods
-window.callRemoteMethod = async function() {
+window.callRemoteMethod = async function callRemoteMethod() {
     if (!remoteCalculator) {
         logA('Please create remote object first!', 'error');
         return;
@@ -194,7 +194,7 @@ window.callRemoteMethod = async function() {
 };
 
 // Get remote properties
-window.getRemoteProperty = async function() {
+window.getRemoteProperty = async function getRemoteProperty() {
     if (!remoteCalculator) {
         logA('Please create remote object first!', 'error');
         return;
@@ -215,7 +215,7 @@ window.getRemoteProperty = async function() {
 };
 
 // Subscribe to remote events
-window.subscribeToEvents = function() {
+window.subscribeToEvents = function subscribeToEvents() {
     if (!remoteCalculator) {
         logA('Please create remote object first!', 'error');
         return;
@@ -232,7 +232,7 @@ window.subscribeToEvents = function() {
 };
 
 // Trigger event from Context A
-window.triggerRemoteEvent = async function() {
+window.triggerRemoteEvent = async function triggerRemoteEvent() {
     if (!remoteCalculator) {
         logA('Please create remote object first!', 'error');
         return;
@@ -248,7 +248,7 @@ window.triggerRemoteEvent = async function() {
 };
 
 // Update local property (Context B)
-window.updateLocalProperty = function() {
+window.updateLocalProperty = function updateLocalProperty() {
     if (!localCalculator) {
         logB('Please create local object first!', 'error');
         return;
@@ -260,7 +260,7 @@ window.updateLocalProperty = function() {
 };
 
 // Emit local event (Context B)
-window.emitLocalEvent = function() {
+window.emitLocalEvent = function emitLocalEvent() {
     if (!localCalculator) {
         logB('Please create local object first!', 'error');
         return;

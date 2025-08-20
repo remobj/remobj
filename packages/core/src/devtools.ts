@@ -3,7 +3,7 @@ import { realmId } from "./constants";
 
 let devEP: WebSocket
 export function setDevtoolsEP(ep: WebSocket): void {
-    if(__DEV__ || __PROD_DEVTOOLS__) devEP = ep
+    if(__DEV__ || __PROD_DEVTOOLS__) {devEP = ep}
 }
 
 export function devtools(traceID: string, side: 'in' | 'out' | 'postMessage' | 'event', objectID: string, type: string, name: string, subName: string, data: any): void {
@@ -13,7 +13,7 @@ export function devtools(traceID: string, side: 'in' | 'out' | 'postMessage' | '
     type,
     name,
     data
-  }, null, 2))
+  }, undefined, 2))
   devEP?.send(JSON.stringify({
     traceID,
     side,
@@ -43,7 +43,7 @@ export const getTraceID = (...data: unknown[]): string => {
     }
 
     const [main, count] = traceID.split(':')
-    traceID = `${main}:${parseInt(count, 10) + 1}`
+    traceID = `${main}:${Number.parseInt(count, 10) + 1}`
 
     for (let i = 0; i < data.length; i++) {
       const el = data[i];

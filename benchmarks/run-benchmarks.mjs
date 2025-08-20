@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { performance } from 'perf_hooks'
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
+import { performance } from 'node:perf_hooks'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -12,7 +12,7 @@ const shared = await import('../packages/shared/dist/shared.esm.js')
 // Simple benchmark runner
 class BenchmarkRunner {
   async run(name, fn, options = {}) {
-    const { iterations = 10000, warmup = 100 } = options
+    const { iterations = 10_000, warmup = 100 } = options
     
     console.log(`\n${name}:`)
     
@@ -86,7 +86,7 @@ async function main() {
     const key = `value-${Math.floor(Math.random() * 100)}`
     // Find object by value (reverse lookup)
     for (const [k, v] of weakBiMap) {
-      if (v === key) break
+      if (v === key) {break}
     }
   })
   
@@ -131,7 +131,7 @@ async function main() {
     const { port1, port2 } = new MessageChannel()
     core.provide(api, port1)
     const remote = core.consume(port2)
-  }, { iterations: 10000 })
+  }, { iterations: 10_000 })
   
   // Setup once for method calls
   const { port1, port2 } = new MessageChannel()
@@ -141,18 +141,18 @@ async function main() {
   await runner.run('RPC - simple method call', async () => {
     try {
       await remote.add(5, 3)
-    } catch (e) {
+    } catch {
       // Timeout expected in mock
     }
-  }, { iterations: 10000, warmup: 10 })
+  }, { iterations: 10_000, warmup: 10 })
   
   await runner.run('RPC - nested method access', async () => {
     try {
       await remote.nested.method(10)
-    } catch (e) {
+    } catch {
       // Timeout expected in mock
     }
-  }, { iterations: 10000, warmup: 10 })
+  }, { iterations: 10_000, warmup: 10 })
   
   // Serialization benchmarks
   console.log('\n## Serialization Benchmarks')
@@ -162,7 +162,7 @@ async function main() {
   await runner.run('Multiplex endpoint creation', () => {
     const { port1 } = new MessageChannel()
     createMultiplexedEndpoint(port1)
-  }, { iterations: 10000 })
+  }, { iterations: 10_000 })
   
   await runner.run('Date plugin serialization', () => {
     const dates = Array(10).fill(0).map(() => new Date())

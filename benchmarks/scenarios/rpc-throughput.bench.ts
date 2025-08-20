@@ -1,5 +1,5 @@
 import { consume, provide } from '@remobj/core'
-import { MessageChannel } from 'worker_threads'
+import { MessageChannel } from 'node:worker_threads'
 
 export const name = 'RPC Throughput Scenarios'
 
@@ -41,7 +41,7 @@ function setup() {
 
 // Benchmark: High frequency simple calls
 export async function highFrequencySimple() {
-  if (!remote) setup()
+  if (!remote) {setup()}
   
   const promises = []
   for (let i = 0; i < 100; i++) {
@@ -52,7 +52,7 @@ export async function highFrequencySimple() {
 
 // Benchmark: Mixed operation types
 export async function mixedOperations() {
-  if (!remote) setup()
+  if (!remote) {setup()}
   
   await Promise.all([
     remote.users.get(1),
@@ -65,7 +65,7 @@ export async function mixedOperations() {
 
 // Benchmark: Large data transfer
 export async function largeDataTransfer() {
-  if (!remote) setup()
+  if (!remote) {setup()}
   
   // Get 1000 users
   await remote.users.list(1000)
@@ -73,7 +73,7 @@ export async function largeDataTransfer() {
 
 // Benchmark: Nested async operations
 export async function nestedAsyncOps() {
-  if (!remote) setup()
+  if (!remote) {setup()}
   
   const user = await remote.users.get(1)
   const updated = await remote.users.update(user.id, { active: true })
@@ -86,7 +86,7 @@ export async function nestedAsyncOps() {
 
 // Benchmark: Burst traffic pattern
 export async function burstTraffic() {
-  if (!remote) setup()
+  if (!remote) {setup()}
   
   // Simulate 3 bursts of 20 requests each
   for (let burst = 0; burst < 3; burst++) {

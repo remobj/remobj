@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
-import { wrapPostMessageEndpoint, PostMessageEndpoint } from '../src/index'
+import { describe, expect, it, vi } from 'vitest'
+import type { PostMessageEndpoint } from '../src/index';
+import { wrapPostMessageEndpoint } from '../src/index'
 import { removeStackInfo } from './test-utils'
 
 describe('wrapPostMessageEndpoint', () => {
