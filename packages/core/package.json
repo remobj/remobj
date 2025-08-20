@@ -21,9 +21,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@remobj/shared": "workspace:*",
-    "@remobj/add": "workspace:*",
-    "@remobj/mul": "workspace:*"
+    "@remobj/shared": "workspace:*"
   },
   "buildOptions": {
     "name": "RemObjCore",

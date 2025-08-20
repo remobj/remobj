@@ -54,20 +54,8 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.1.0)(@vitest/ui@3.2.4)(tsx@4.20.4)(yaml@2.8.0)
 
-  packages/add:
-    dependencies:
-      '@remobj/shared':
-        specifier: workspace:*
-        version: link:../shared
-
   packages/core:
     dependencies:
-      '@remobj/add':
-        specifier: workspace:*
-        version: link:../add
-      '@remobj/mul':
-        specifier: workspace:*
-        version: link:../mul
       '@remobj/shared':
         specifier: workspace:*
         version: link:../shared
@@ -87,12 +75,6 @@ importers:
       '@types/ws':
         specifier: ^8.5.10
         version: 8.18.1
-
-  packages/mul:
-    dependencies:
-      '@remobj/shared':
-        specifier: workspace:*
-        version: link:../shared
 
   packages/shared: {}
 
