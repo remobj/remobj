@@ -57,4 +57,4 @@ jobs:
         run: pnpm i
         
       - name: Type check
-        run: pnpm run typecheck:build
+        run: pnpm run lint
