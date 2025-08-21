@@ -13,7 +13,7 @@ export const BUILD_FORMATS = {
     },
   },
   "dts": {
-    file: (name) => `${name}.dts.d.ts`,
+    file: (name) => `${name}.d.ts`,
     format: "es",
     defines: {
       __DEV__: "false",

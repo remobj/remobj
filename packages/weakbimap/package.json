@@ -27,5 +27,14 @@
     "external": []
   },
   "keywords": ["weakmap", "bimap", "bidirectional", "map", "weak", "gc", "memory", "collection"],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remobj/remobj.git",
+    "directory": "packages/weakbimap"
+  },
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "homepage": "https://github.com/remobj/remobj/tree/main/packages/weakbimap#readme"
 }

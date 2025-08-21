@@ -30,14 +30,18 @@ async function createConfigsForPackage(packageName, isDev = false) {
   
   // Default to all three formats if not specified
   const defaultFormats = ['esm-production', 'esm-bundler', 'umd'] 
-  const formats = values.formats ? values.formats.split(',') : (buildOptions.formats || defaultFormats)
+  const formats =  values.formats ? values.formats.split(',') : (buildOptions.formats || defaultFormats)
 
-  formats.push('dts')
+  // Add dts only once if there's at least one format
+  const uniqueFormats = [...new Set(formats)]
+  // if (uniqueFormats.length > 0 && !uniqueFormats.includes('dts')) {
+    uniqueFormats.push('dts')
+  // }
   
   const configs = []
   
   // JavaScript builds
-  formats.forEach(format => {
+  uniqueFormats.forEach(format => {
     const outputConfig = createOutputConfig(packageName, format, buildOptions)
     const defineFlags = getDefineFlags(format, pkg.version, isDev)
     
@@ -48,7 +52,7 @@ async function createConfigsForPackage(packageName, isDev = false) {
         dir: `packages/${packageName}/dist`,
         format: outputConfig.format,
         name: outputConfig.name,
-        entryFileNames: outputConfig.file,
+        entryFileNames: format !== 'dts' ? outputConfig.file : undefined,
         globals: outputConfig.globals,
         minify: format != 'dts'
       },
@@ -92,7 +96,10 @@ async function buildAllPackages(targets = [], isDev = false) {
   
   console.log(`Building ${packagesToBuild.length} packages${isDev ? ' (development)' : ''}...`)
   
-  // Build all packages in parallel (JS only)
+  // Track time from first rolldown start
+  const rolldownStartTime = performance.now()
+  
+  // Build all packages in parallel
   const buildPromises = packagesToBuild.map(async (packageName) => {
     const configs = await createConfigsForPackage(packageName, isDev)
     
@@ -101,8 +108,28 @@ async function buildAllPackages(targets = [], isDev = false) {
       try {
         const bundle = await rolldown(config)
         await bundle.write(config.output)
-        const outputFile = config.output.file || `${config.output.dir}/${config.output.entryFileNames || packageName + '.' + config.output.format}`
-        console.log(`✅ Built ${packageName}:${config.output.format} → ${outputFile}`)
+        
+        // Check if this is a d.ts build
+        const isDts = !config.output.entryFileNames
+        
+        // For d.ts files, rename from index.d.ts to packagename.d.ts
+        let outputFile = config.output.file || `${config.output.dir}/${config.output.entryFileNames || packageName + '.' + config.output.format}`
+        if (isDts) {
+          const fs = await import('fs')
+          const oldPath = `packages/${packageName}/dist/index.d.ts`
+          const newPath = `packages/${packageName}/dist/${packageName}.d.ts`
+          
+          try {
+            await fs.promises.rename(oldPath, newPath)
+            outputFile = newPath
+          } catch (e) {
+            // File might already have correct name
+            outputFile = newPath
+          }
+        }
+        
+        const formatType = isDts ? 'dts' : config.output.format
+        console.log(`✅ Built ${packageName}:${formatType} → ${outputFile}`)
         return outputFile
       } catch (error) {
         console.error(`❌ Failed to build ${packageName}:${config.output.format}:`, error.message)
@@ -113,45 +140,29 @@ async function buildAllPackages(targets = [], isDev = false) {
     return Promise.all(formatBuilds)
   })
   
-  const jsResults = await Promise.all(buildPromises)
+  const results = await Promise.all(buildPromises)
+  const allResults = results.flat()
   
-  // // Build DTS files sequentially to avoid race conditions
-  // const dtsResults = []
-  // for (const packageName of packagesToBuild) {
-  //   const pkg = require(`../packages/${packageName}/package.json`)
-  //   const defaultFormats = ['esm-production', 'esm-bundler', 'umd']
-  //   const formats = values.formats ? values.formats.split(',') : (pkg.buildOptions?.formats || defaultFormats)
-    
-  //   if (formats.some(f => f.startsWith('esm'))) {
-  //     try {
-  //       await buildDts(packageName)
-  //       dtsResults.push(`packages/${packageName}/dist/${packageName}.d.ts`)
-  //     } catch (error) {
-  //       console.warn(`⚠️  Skipping DTS build for ${packageName} due to error`)
-  //       console.warn(`   Error: ${error.message}`)
-  //       console.warn(`   JavaScript builds completed successfully.`)
-  //       dtsResults.push(undefined)
-  //     }
-  //   }
-  // }
+  const rolldownEndTime = performance.now()
+  const rolldownTime = rolldownEndTime - rolldownStartTime
   
-  const results = [...jsResults.flat()]
-  const allOutputs = results.flat()
-  const totalBuilds = allOutputs.length
+  const totalBuilds = allResults.length
   
   console.log(`🎉 Successfully built ${totalBuilds} outputs`)
+  console.log(`⚡ Rolldown time: ${rolldownTime.toFixed(2)}ms`)
   
-  // Analyze bundle sizes for JavaScript files only (exclude .d.ts files)
-  const jsOutputs = allOutputs.filter(file => file && typeof file === 'string' && file.endsWith('.js'))
-  if (jsOutputs.length > 0) {
-    analyzeBundles(jsOutputs)
+  // Analyze bundle sizes for all files (including .d.ts)
+  if (allResults.length > 0) {
+    analyzeBundles(allResults)
   }
   
-  return allOutputs
+  return allResults
 }
 
 
 async function main() {
+  const startTime = performance.now()
+  
   try {
     const isDev = values.dev || false
     const results = await buildAllPackages(positionals, isDev)
@@ -161,6 +172,9 @@ async function main() {
       // Note: Watch mode would require additional implementation
       // For now, just build once
     }
+    
+    const totalTime = performance.now() - startTime
+    console.log(`\n⏱️  Total time: ${totalTime.toFixed(2)}ms`)
     
     // Force exit after successful build
     process.exit(0)

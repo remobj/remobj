@@ -38,5 +38,15 @@
     "start": "tsx ./src/server.ts",
     "dev": "node ../../scripts/build.js devtools --dev",
     "build": "node ../../scripts/build.js devtools"
-  }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remobj/remobj.git",
+    "directory": "packages/devtools"
+  },
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "homepage": "https://github.com/remobj/remobj/tree/main/packages/devtools#readme"
 }

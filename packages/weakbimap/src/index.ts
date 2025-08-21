@@ -255,6 +255,3 @@ export class WeakBiMap<K, V> implements Map<K, V> {
     this.clear()
   }
 }
-
-// Export as default for convenience
-export default WeakBiMap

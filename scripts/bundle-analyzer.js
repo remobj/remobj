@@ -149,7 +149,9 @@ export function analyzeBundles(outputFiles) {
     
     // Determine build format from filename
     let buildFormat = 'unknown'
-    if (fileName.includes('.esm.js')) {
+    if (fileName.includes('.d.ts')) {
+      buildFormat = 'TypeScript Declarations'
+    } else if (fileName.includes('.esm.js')) {
       buildFormat = 'ESM Production'
     } else if (fileName.includes('.bundler.js')) {
       buildFormat = 'ESM Bundler'
@@ -183,7 +185,7 @@ export function analyzeBundles(outputFiles) {
   })
   
   // Display by build format
-  const formatOrder = ['ESM Production', 'ESM Bundler', 'UMD', 'unknown']
+  const formatOrder = ['ESM Production', 'ESM Bundler', 'UMD', 'TypeScript Declarations', 'unknown']
   formatOrder.forEach(formatName => {
     if (!formatGroups[formatName]) {return}
     

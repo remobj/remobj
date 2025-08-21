@@ -1,5 +1,10 @@
 # RemObj Library
 
+[![CI Status](https://github.com/remobj/remobj/workflows/CI/badge.svg)](https://github.com/remobj/remobj/actions)
+[![Coverage Status](https://coveralls.io/repos/github/remobj/remobj/badge.svg?branch=main)](https://coveralls.io/github/remobj/remobj?branch=main)
+[![npm version](https://img.shields.io/npm/v/@remobj/core.svg)](https://www.npmjs.com/package/@remobj/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A modern monorepo library scaffolding based on Vue.js patterns, designed to support complex library architecture.
 
 ## 📦 Packages

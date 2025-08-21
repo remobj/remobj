@@ -25,4 +25,4 @@ npm test
 - **@remobj/add** - Addition functionality
 - **@remobj/mul** - Multiplication functionality
 
-[Get Started](/guide/) | [API Reference](/api/)
+[Get Started](/guide/) | [API Reference](/api/README)
