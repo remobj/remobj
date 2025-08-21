@@ -48,7 +48,6 @@ This project implements several security measures:
 - **Trivy Scanner**: Vulnerability detection in dependencies and code
 - **npm audit**: Dependency vulnerability checking in CI/CD
 - **Dependabot**: Automated dependency updates with security patches
-- **Snyk Integration**: Optional commercial security scanning (requires token)
 - **OSSF Scorecard**: Security best practices evaluation
 
 ### Code Security Features
@@ -57,9 +56,28 @@ This project implements several security measures:
 - Timeout mechanisms to prevent resource exhaustion
 - Memory management with WeakBiMap cleanup strategies
 
+## Important Note on Remote Procedure Calls
+
+**RemObj is designed to enable controlled remote procedure calls (RPC) between JavaScript contexts.** This is the library's core functionality and is not a vulnerability when used as intended. The library provides secure mechanisms for:
+
+- Exposing specific objects/functions across boundaries (workers, iframes, etc.)
+- Controlled method invocation through proxies
+- Type-safe communication channels
+- Sandbox-respecting message passing
+
+### What IS a Security Issue:
+- **Uncontrolled RCE**: Ability to execute arbitrary code outside the defined RPC interface
+- **Bypass of sandbox boundaries**: Breaking browser security contexts
+- **Unauthorized access**: Accessing objects/methods not explicitly exposed via `provide()`
+
+### What IS NOT a Security Issue:
+- **Intended RPC functionality**: Calling exposed methods through the proxy system
+- **Explicit API exposure**: Functions/objects intentionally shared via `provide()`
+- **Cross-context communication**: Designed message passing between workers/iframes
+
 ## What We Consider a Vulnerability
 
-- Remote code execution (RCE)
+- **Uncontrolled** remote code execution (beyond intended RPC)
 - Prototype pollution attacks
 - Cross-site scripting (XSS) in client code
 - Information disclosure of sensitive data
@@ -67,6 +85,7 @@ This project implements several security measures:
 - Memory exhaustion vulnerabilities
 - Insecure deserialization
 - Path traversal attacks
+- Sandbox escapes or security boundary violations
 
 ## What We Don't Consider a Vulnerability
 
@@ -90,13 +109,15 @@ Based on our security analysis, these areas require attention:
 
 When using RemObj library:
 
-1. **Input Validation**: Always validate and sanitize untrusted input
-2. **Origin Checks**: Implement origin validation for PostMessage endpoints
-3. **Resource Limits**: Set appropriate timeouts and memory limits
-4. **Keep Updated**: Regularly update to latest secure versions
-5. **Type Safety**: Use TypeScript for compile-time security checks
-6. **Monitoring**: Monitor memory usage and performance in production
-7. **Least Privilege**: Grant minimum necessary permissions
+### General Security Practices
+
+1. **Resource Limits**: Set appropriate timeouts and memory limits
+2. **Keep Updated**: Regularly update to latest secure versions
+3. **Type Safety**: Use TypeScript for compile-time security checks
+4. **Monitoring**: Monitor memory usage and performance in production
+5. **Audit Exposed APIs**: Regularly review what functions/objects are exposed
+6. **Sandbox Boundaries**: Never attempt to bypass browser security contexts
+7. **Error Handling**: Don't expose sensitive information in error messages
 
 ## Acknowledgments
 
