@@ -80,9 +80,10 @@ jobs:
           sarif_file: 'trivy-results.sarif'
           
   snyk:
-    name: Snyk Security Scan
+    name: Snyk Security Scan (Optional)
     runs-on: ubuntu-latest
-    continue-on-error: true # Don't fail the build if Snyk is not configured
+    if: ${{ secrets.SNYK_TOKEN != '' }}
+    continue-on-error: true
     
     steps:
       - name: Checkout repository
@@ -99,11 +100,10 @@ jobs:
           cache: 'pnpm'
           
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
         
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
-        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
