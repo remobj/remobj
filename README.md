@@ -1,7 +1,8 @@
 # RemObj Library
 
 [![CI Status](https://github.com/remobj/remobj/workflows/CI/badge.svg)](https://github.com/remobj/remobj/actions)
-[![Coverage Status](https://coveralls.io/repos/github/remobj/remobj/badge.svg?branch=main)](https://coveralls.io/github/remobj/remobj?branch=main)
+[![Coverage](https://github.com/remobj/remobj/workflows/Code%20Coverage/badge.svg)](https://github.com/remobj/remobj/actions/workflows/coverage.yml)
+[![codecov](https://codecov.io/gh/remobj/remobj/branch/main/graph/badge.svg)](https://codecov.io/gh/remobj/remobj)
 [![npm version](https://img.shields.io/npm/v/@remobj/core.svg)](https://www.npmjs.com/package/@remobj/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
