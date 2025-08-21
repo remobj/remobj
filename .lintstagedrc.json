@@ -1,0 +1,14 @@
+{
+  "*.{js,mjs,cjs,ts,tsx}": [
+    "oxlint --fix"
+  ],
+  "*.{json,md,yml,yaml}": [
+    "oxlint --fix"
+  ],
+  "packages/*/src/**/*.ts": [
+    "bash -c 'tsc --noEmit --skipLibCheck'"
+  ],
+  "**/*.spec.ts": [
+    "vitest related --run"
+  ]
+}
