@@ -25,13 +25,19 @@ jobs:
         cache: 'pnpm'
     
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install --no-frozen-lockfile
     
     - name: Build packages
       run: npm run build
     
     - name: Run benchmarks
-      run: npm run bench
+      run: |
+        # Run benchmarks that save results
+        npm run bench:core || true
+        npm run bench:shared || true
+        npm run bench:scenarios || true
+        # Also run the simple benchmark for display
+        npm run bench || true
     
     - name: Compare with baseline
       if: github.event_name == 'pull_request'

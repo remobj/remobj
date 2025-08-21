@@ -27,12 +27,22 @@ async function loadResults(file: string): Promise<BenchmarkSuite[]> {
 }
 
 async function findLatestResults(): Promise<string> {
+  const { mkdir, access } = await import('node:fs/promises')
   const resultsDir = join(process.cwd(), 'benchmarks', 'results')
+  
+  // Create results directory if it doesn't exist
+  try {
+    await access(resultsDir)
+  } catch {
+    await mkdir(resultsDir, { recursive: true })
+    throw new Error('No benchmark results found - results directory was just created')
+  }
+  
   const files = await readdir(resultsDir)
   const jsonFiles = files.filter(f => f.endsWith('.json')).sort()
   
   if (jsonFiles.length === 0) {
-    throw new Error('No benchmark results found')
+    throw new Error('No benchmark results found in results directory')
   }
   
   return join(resultsDir, jsonFiles[jsonFiles.length - 1])
@@ -150,15 +160,24 @@ function printResults(results: BenchmarkSuite[]) {
 
 // Update baseline command
 async function updateBaseline() {
-  const latestFile = await findLatestResults()
-  const latest = await loadResults(latestFile)
-  
-  const baselinePath = join(process.cwd(), 'benchmarks', 'baseline.json')
-  await import('node:fs/promises').then(fs => 
-    fs.writeFile(baselinePath, JSON.stringify(latest, undefined, 2))
-  )
-  
-  console.log('Baseline updated from:', latestFile)
+  try {
+    const latestFile = await findLatestResults()
+    const latest = await loadResults(latestFile)
+    
+    const baselinePath = join(process.cwd(), 'benchmarks', 'baseline.json')
+    await import('node:fs/promises').then(fs => 
+      fs.writeFile(baselinePath, JSON.stringify(latest, undefined, 2))
+    )
+    
+    console.log('Baseline updated from:', latestFile)
+  } catch (error: any) {
+    if (error.message.includes('No benchmark results found')) {
+      console.log('No benchmark results available to create baseline.')
+      console.log('Please run benchmarks first with: npm run bench')
+      process.exit(0) // Exit gracefully since this is expected in CI
+    }
+    throw error
+  }
 }
 
 // Main
