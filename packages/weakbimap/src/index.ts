@@ -1,5 +1,3 @@
-import { isNumber, isString } from "./type-guards.js"
-
 type StorageType<T> = T extends object ? WeakRef<T> : T
 
 function createIterator<T>(iterableIterator: IterableIterator<T>): MapIterator<T> {
@@ -12,11 +10,24 @@ function createIterator<T>(iterableIterator: IterableIterator<T>): MapIterator<T
 }
 
 function isPrimitive(value: unknown): value is (string | number | boolean | symbol | undefined | bigint | null) {
-  return isString(value) || isNumber(value) || typeof value === 'boolean' || typeof value === 'symbol' || typeof value === 'undefined' || typeof value === 'bigint' || value === null
+  return typeof value === 'string' || 
+         typeof value === 'number' || 
+         typeof value === 'boolean' || 
+         typeof value === 'symbol' || 
+         typeof value === 'undefined' || 
+         typeof value === 'bigint' || 
+         value === null
 }
 
 /**
  * WeakBiMap is a bidirectional weak map that supports both primitive and object keys/values.
+ * 
+ * Features:
+ * - Supports both objects and primitives as keys and values
+ * - Automatic garbage collection for unreferenced objects
+ * - Bidirectional mapping (can look up by key or value)
+ * - Implements full Map interface
+ * - Memory efficient with automatic cleanup
  * 
  * Important notes about iteration:
  * - Elements may be garbage collected during iteration
@@ -25,6 +36,16 @@ function isPrimitive(value: unknown): value is (string | number | boolean | symb
  * 
  * @template K - The type of keys
  * @template V - The type of values
+ * 
+ * @example
+ * ```typescript
+ * const map = new WeakBiMap<object, string>()
+ * const obj = { id: 1 }
+ * map.set(obj, 'value')
+ * console.log(map.get(obj)) // 'value'
+ * 
+ * // Objects are automatically garbage collected when no longer referenced
+ * ```
  */
 export class WeakBiMap<K, V> implements Map<K, V> {
   #keyToRef = new WeakMap<K & object, WeakRef<K & object>>()
@@ -98,7 +119,7 @@ export class WeakBiMap<K, V> implements Map<K, V> {
 
   delete(key: K): boolean {
     const storageKey = isPrimitive(key) ? key : this.#keyToRef.get(key as K & object)
-    if(!storageKey) {return false;}
+    if(storageKey === undefined && !isPrimitive(key)) {return false;}
     if(storageKey instanceof WeakRef) {
       const dereferencedKey = storageKey.deref()
       if(dereferencedKey) {this.#keyToRef.delete(dereferencedKey)}
@@ -114,14 +135,16 @@ export class WeakBiMap<K, V> implements Map<K, V> {
 
   get(key: K): V | undefined {
     const storageKey = isPrimitive(key) ? key : this.#keyToRef.get(key as K & object)
-    if(!storageKey) {return;}
+    if(storageKey === undefined && !isPrimitive(key)) {return;}
     const value = this.#data.get(storageKey as StorageType<K>);
     if(value instanceof WeakRef) {return value.deref() as V | undefined}
     return value as V;
   }
 
   has(key: K): boolean {
-    return !!this.get(key)
+    const storageKey = isPrimitive(key) ? key : this.#keyToRef.get(key as K & object)
+    if(storageKey === undefined && !isPrimitive(key)) {return false;}
+    return this.#data.has(storageKey as StorageType<K>)
   }
 
   set(key: K, value: V): this {
@@ -232,3 +255,6 @@ export class WeakBiMap<K, V> implements Map<K, V> {
     this.clear()
   }
 }
+
+// Export as default for convenience
+export default WeakBiMap

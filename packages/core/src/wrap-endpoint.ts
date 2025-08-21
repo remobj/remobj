@@ -1,4 +1,5 @@
-import { WeakBiMap, onGarbageCollected } from "@remobj/shared"
+import { onGarbageCollected } from "@remobj/shared"
+import { WeakBiMap } from "@remobj/weakbimap"
 import { devtools, getTraceID } from "./devtools.js"
 import type { Listener, PostMessageEndpointBase } from "./types.js"
 

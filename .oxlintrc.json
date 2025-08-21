@@ -16,7 +16,11 @@
     "no-var": "error",
     "prefer-const": "error",
     "no-magic-numbers": "off",
-    "no-ternary": "off"
+    "no-ternary": "off",
+    "require-post-message-target-origin": "off",
+    "no-thenable": "off",
+    "no-explicit-any": "off",
+    "no-optional-chaining": "off"
   },
   "globals": {
     "__DEV__": "readonly",
@@ -34,6 +38,8 @@
     "**/coverage/**",
     "**/*.d.ts",
     "**/docs/.vitepress/dist/**",
-    "**/docs/.vitepress/cache/**"
+    "**/docs/.vitepress/cache/**",
+    "**/__tests__/**",
+    "benchmarks/**"
   ]
 }

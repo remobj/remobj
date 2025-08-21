@@ -127,8 +127,6 @@ export { camelize, hyphenate, capitalize } from './string-utils'
 // Re-export comparison functions from separate module
 export { looseEqual, looseIndexOf } from './comparison'
 
-// Re-export WeakBiMap and WeakBiSet from separate modules
-export { WeakBiMap } from './weak-bi-map'
 
 // Re-export garbage collection utilities
 export { onGarbageCollected, unregisterGarbageCollection } from './gc'

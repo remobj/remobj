@@ -1,4 +1,5 @@
-import { WeakBiMap, isArray, isClonable, isObject, isString, onGarbageCollected } from "@remobj/shared"
+import { isArray, isClonable, isObject, isString, onGarbageCollected } from "@remobj/shared"
+import { WeakBiMap } from "@remobj/weakbimap"
 import type { Channel } from "./multiplex"
 import { wrapPostMessageEndpoint } from "./wrap-endpoint"
 import type { Plugins, RemoteCallRequest, RemoteCallResponse, WrappedArgument } from "./rpc-types"

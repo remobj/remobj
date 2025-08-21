@@ -18,7 +18,7 @@
   "files": [
     "dist"
   ],
-  "sideEffects": false, 
+  "sideEffects": false,
   "buildOptions": {
     "name": "RemObjShared",
     "formats": ["esm-production", "esm-bundler", "umd"],

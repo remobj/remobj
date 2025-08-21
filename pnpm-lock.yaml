@@ -59,6 +59,9 @@ importers:
       '@remobj/shared':
         specifier: workspace:*
         version: link:../shared
+      '@remobj/weakbimap':
+        specifier: workspace:*
+        version: link:../weakbimap
 
   packages/devtools:
     dependencies:
@@ -77,6 +80,8 @@ importers:
         version: 8.18.1
 
   packages/shared: {}
+
+  packages/weakbimap: {}
 
 packages:
 

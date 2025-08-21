@@ -1,4 +1,5 @@
-import { WeakBiMap, isSymbol, onGarbageCollected } from "@remobj/shared"
+import { isSymbol, onGarbageCollected } from "@remobj/shared"
+import { WeakBiMap } from "@remobj/weakbimap"
 import { realmId } from "./constants"
 import { createMultiplexedEndpoint } from "./multiplex"
 import type { PostMessageEndpoint } from "./types"

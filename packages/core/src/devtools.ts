@@ -52,7 +52,6 @@ export const getTraceID = (...data: unknown[]): string => {
       }
     }
     
-
     return traceID
   }
   return ''

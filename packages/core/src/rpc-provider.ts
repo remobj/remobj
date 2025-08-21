@@ -58,7 +58,8 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
                 requestID: messageData.requestID,
                 resultType,
                 result,
-                providerID
+                providerID,
+                consumerID: messageData.consumerID
             }
 
 

@@ -1,0 +1,64 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# TypeScript and JavaScript files
+[*.{ts,tsx,js,jsx,mjs,cjs}]
+indent_size = 2
+quote_type = single
+
+# Package.json - special handling
+[package.json]
+indent_size = 2
+
+# Makefile - requires tabs
+[Makefile]
+indent_style = tab
+
+# Batch files - Windows line endings
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# RC files
+[*.{bashrc,zshrc,npmrc,nvmrc}]
+indent_size = 2
+
+# Git files
+[.git*]
+indent_size = 2
+
+# Test files
+[*.spec.{ts,js}]
+indent_size = 2
+
+# Build output (shouldn't edit, but just in case)
+[dist/**]
+insert_final_newline = false
+trim_trailing_whitespace = false
+
+# Minified files
+[*.min.*]
+insert_final_newline = false
+trim_trailing_whitespace = false
