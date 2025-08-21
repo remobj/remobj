@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { PostMessageEndpoint } from '../src/index';
 import { createMultiplexedEndpoint } from '../src/index'
-import { removeStackInfo } from './test-utils'
+import { removeStackInfo, removeTraceID } from './test-utils'
 
 describe('createMultiplexedEndpoint', () => {
   it('should create a multiplexed endpoint', () => {
@@ -32,10 +32,14 @@ describe('createMultiplexedEndpoint', () => {
     
     mux.postMessage(testData)
     
-    expect(mockEndpoint.postMessage).toHaveBeenCalledWith({
-      channelId: '',
-      data: testData
-    })
+    expect(mockEndpoint.postMessage).toHaveBeenCalled()
+    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    expect(call.channelId).toBe('')
+    expect(call.data.message).toBe('test')
+    // traceID is added at the wrapper level
+    if (__DEV__ || __PROD_DEVTOOLS__) {
+      expect(call.data.traceID || call.traceID).toBeDefined()
+    }
   })
 
   it('should create sub-channels', () => {
@@ -97,9 +101,11 @@ describe('createMultiplexedEndpoint', () => {
     expect(listener1).toHaveBeenCalled()
     expect(listener2).toHaveBeenCalled()
     
-    // Check the data received
-    expect(listener1.mock.calls[0][0].data).toEqual({ msg: 'for channel 1' })
-    expect(listener2.mock.calls[0][0].data).toEqual({ msg: 'for channel 2' })
+    // Check the data received (may have traceID added)
+    const data1 = listener1.mock.calls[0][0].data
+    const data2 = listener2.mock.calls[0][0].data
+    expect(data1.msg).toBe('for channel 1')
+    expect(data2.msg).toBe('for channel 2')
     
     // Each listener should only receive its own messages
     expect(listener1).toHaveBeenCalledTimes(1)
@@ -125,8 +131,8 @@ describe('createMultiplexedEndpoint', () => {
     expect(call.channelId).toBeTruthy()
     expect(call.channelId).toContain('level2')
     
-    const cleanData = removeStackInfo(call.data)
-    expect(cleanData).toEqual({ nested: 'data' })
+    // Check the nested data (may have traceID)
+    expect(call.data.nested).toBe('data')
   })
 
   it('should remove listeners correctly', () => {
@@ -198,8 +204,8 @@ describe('createMultiplexedEndpoint', () => {
     await new Promise(resolve => setTimeout(resolve, 10))
     
     expect(listener).toHaveBeenCalled()
-    const cleanData = removeStackInfo(listener.mock.calls[0][0].data)
-    expect(cleanData).toEqual({ hello: 'world' })
+    const receivedData = listener.mock.calls[0][0].data
+    expect(receivedData.hello).toBe('world')
   })
 
   it('should handle multiple listeners on same channel', () => {

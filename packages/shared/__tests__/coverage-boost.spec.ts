@@ -30,9 +30,9 @@ describe('shared coverage boost', () => {
       expect(looseEqual([], [])).toBe(true)
       
       // null and undefined
-      expect(looseEqual()).toBe(false)
-      expect(looseEqual()).toBe(true)
-      expect(looseEqual()).toBe(true)
+      expect(looseEqual(null, undefined)).toBe(false)
+      expect(looseEqual(null, null)).toBe(true)
+      expect(looseEqual(undefined, undefined)).toBe(true)
     })
 
     it('should test looseIndexOf edge cases', () => {

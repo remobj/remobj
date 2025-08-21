@@ -232,7 +232,7 @@ describe('@remobj/shared', () => {
       expect(looseEqual(1, 2)).toBe(false)
       expect(looseEqual([1, 2], [2, 1])).toBe(false)
       expect(looseEqual({ a: 1 }, { a: 2 })).toBe(false)
-      expect(looseEqual()).toBe(false)
+      expect(looseEqual(null, undefined)).toBe(false)
     })
   })
 
@@ -316,8 +316,8 @@ describe('@remobj/shared', () => {
     })
 
     it('should handle special cases', () => {
-      expect(toRawType()).toBe('Null')
-      expect(toRawType()).toBe('Undefined')
+      expect(toRawType(null)).toBe('Null')
+      expect(toRawType(undefined)).toBe('Undefined')
       expect(toRawType(new Date())).toBe('Date')
       expect(toRawType(/regex/)).toBe('RegExp')
     })

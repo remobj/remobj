@@ -1,58 +1,69 @@
 import { describe, expect, it, vi } from 'vitest'
 import { devtools, setDevtoolsEP } from '../src/devtools'
-import type { PostMessageEndpoint } from '../src/types'
 
 describe('devtools', () => {
   it('should set devtools endpoint', () => {
-    const mockEndpoint: PostMessageEndpoint = {
-      postMessage: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
-    }
+    const mockWebSocket = {
+      send: vi.fn(),
+      close: vi.fn()
+    } as any as WebSocket
 
-    expect(() => setDevtoolsEP(mockEndpoint)).not.toThrow()
+    expect(() => setDevtoolsEP(mockWebSocket)).not.toThrow()
   })
 
   it('should call devtools with correct parameters', () => {
-    const mockEndpoint: PostMessageEndpoint = {
-      postMessage: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
-    }
+    const mockWebSocket = {
+      send: vi.fn(),
+      close: vi.fn()
+    } as any as WebSocket
 
-    setDevtoolsEP(mockEndpoint)
+    setDevtoolsEP(mockWebSocket)
     
-    devtools('in', 'obj123', 'method', 'getData', { value: 42 })
+    const traceID = 'test-trace-123:1'
+    devtools(traceID, 'in', 'obj123', 'method', 'getData', 'subName', { value: 42 })
     
     if (__DEV__ || __PROD_DEVTOOLS__) {
-      expect(mockEndpoint.postMessage).toHaveBeenCalledWith({
+      expect(mockWebSocket.send).toHaveBeenCalled()
+      const callArgs = mockWebSocket.send.mock.calls[0][0]
+      const parsed = JSON.parse(callArgs)
+      
+      expect(parsed).toMatchObject({
+        traceID,
         side: 'in',
         objectID: 'obj123',
         type: 'method',
-        name: 'getData',
+        subName: 'subName',
         data: { value: 42 }
       })
+      expect(parsed.realmId).toBeDefined()
+      expect(parsed.timeStamp).toBeDefined()
+      expect(parsed.date).toBeDefined()
     }
   })
 
   it('should handle out side devtools call', () => {
-    const mockEndpoint: PostMessageEndpoint = {
-      postMessage: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
-    }
+    const mockWebSocket = {
+      send: vi.fn(),
+      close: vi.fn()
+    } as any as WebSocket
 
-    setDevtoolsEP(mockEndpoint)
+    setDevtoolsEP(mockWebSocket)
     
-    devtools('out', 'obj456', 'property', 'name', 'test')
+    const traceID = 'test-trace-456:2'
+    devtools(traceID, 'out', 'obj456', 'property', 'name', 'test', 'testData')
     
     if (__DEV__ || __PROD_DEVTOOLS__) {
-      expect(mockEndpoint.postMessage).toHaveBeenCalledWith({
+      expect(mockWebSocket.send).toHaveBeenCalled()
+      const callArgs = mockWebSocket.send.mock.calls[0][0]
+      const parsed = JSON.parse(callArgs)
+      
+      expect(parsed).toMatchObject({
+        traceID,
         side: 'out',
         objectID: 'obj456',
         type: 'property',
-        name: 'name',
-        data: 'test'
+        subName: 'test',
+        data: 'testData'
       })
     }
   })
@@ -61,7 +72,8 @@ describe('devtools', () => {
     // Reset endpoint
     setDevtoolsEP(undefined as any)
     
-    // Should not throw
-    expect(() => devtools('in', 'obj789', 'method', 'test')).not.toThrow()
+    // Should not throw even without endpoint
+    const traceID = 'test-trace-789:3'
+    expect(() => devtools(traceID, 'in', 'obj789', 'method', 'test', 'subtest', null)).not.toThrow()
   })
 })

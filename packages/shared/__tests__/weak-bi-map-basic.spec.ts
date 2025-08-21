@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { WeakBiMap } from '../src/weak-bi-map'
+import { WeakBiMap } from '@remobj/weakbimap'
 
 describe('WeakBiMap basic functionality', () => {
   it('should handle basic map operations', () => {

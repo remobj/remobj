@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { PostMessageEndpoint } from '../src/index';
 import { createJsonEndpoint } from '../src/index'
-import { removeStackInfo } from './test-utils'
+import { removeStackInfo, removeTraceID } from './test-utils'
 
 describe('createJsonEndpoint', () => {
   it('should JSON stringify outgoing messages', () => {
@@ -16,9 +16,13 @@ describe('createJsonEndpoint', () => {
     
     jsonEndpoint.postMessage(testData)
     
-    expect(mockEndpoint.postMessage).toHaveBeenCalledWith(
-      JSON.stringify(testData)
-    )
+    expect(mockEndpoint.postMessage).toHaveBeenCalled()
+    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const parsed = JSON.parse(call)
+    
+    // Remove traceID and compare
+    const cleanParsed = removeTraceID(parsed)
+    expect(cleanParsed).toEqual({ foo: 'bar', num: 42, nested: { a: 1 } })
   })
 
   it('should JSON parse incoming messages', () => {
@@ -79,9 +83,25 @@ describe('createJsonEndpoint', () => {
     
     jsonEndpoint.postMessage(complexData)
     
-    expect(mockEndpoint.postMessage).toHaveBeenCalledWith(
-      JSON.stringify(complexData)
-    )
+    expect(mockEndpoint.postMessage).toHaveBeenCalled()
+    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const parsed = JSON.parse(call)
+    
+    // Remove traceID and compare
+    const cleanParsed = removeTraceID(parsed)
+    expect(cleanParsed).toEqual({
+      string: 'test',
+      number: 123,
+      boolean: true,
+      array: [1, 'two', { three: 3 }],
+      nested: {
+        deep: {
+          deeper: {
+            value: 'found'
+          }
+        }
+      }
+    })
   })
 
   it('should handle invalid JSON gracefully', () => {
@@ -165,7 +185,16 @@ describe('createJsonEndpoint', () => {
     
     jsonEndpoint.postMessage(specialData)
     
-    const expectedJson = JSON.stringify(specialData)
-    expect(mockEndpoint.postMessage).toHaveBeenCalledWith(expectedJson)
+    expect(mockEndpoint.postMessage).toHaveBeenCalled()
+    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const parsed = JSON.parse(call)
+    
+    // Remove traceID and compare
+    const cleanParsed = removeTraceID(parsed)
+    expect(cleanParsed.date).toBe(new Date('2024-01-01').toISOString())
+    expect(cleanParsed.undefined).toBeUndefined()
+    expect(cleanParsed.nan).toBeNull()
+    expect(cleanParsed.infinity).toBeNull()
+    expect(cleanParsed.negInfinity).toBeNull()
   })
 })

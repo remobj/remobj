@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { PostMessageEndpoint } from '../src/index';
 import { wrapPostMessageEndpoint } from '../src/index'
-import { removeStackInfo } from './test-utils'
+import { removeStackInfo, removeTraceID } from './test-utils'
 
 describe('wrapPostMessageEndpoint', () => {
   it('should wrap a basic endpoint', () => {
@@ -33,7 +33,11 @@ describe('wrapPostMessageEndpoint', () => {
     wrapped.postMessage(testData)
     
     expect(outTransform).toHaveBeenCalledWith(testData)
-    expect(mockEndpoint.postMessage).toHaveBeenCalledWith({ transformed: testData })
+    expect(mockEndpoint.postMessage).toHaveBeenCalled()
+    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    // Remove traceID before comparison
+    const cleanCall = removeTraceID(call)
+    expect(cleanCall).toEqual({ transformed: { message: 'test' } })
   })
 
   it('should transform incoming messages', () => {
@@ -56,10 +60,14 @@ describe('wrapPostMessageEndpoint', () => {
     const event = new MessageEvent('message', { data: { original: 'data' } })
     registeredListener(event)
     
-    expect(inTransform).toHaveBeenCalledWith({ original: 'data' })
+    // Transform was called with data that includes traceID
+    const transformCallArg = inTransform.mock.calls[0][0]
+    const cleanTransformArg = removeTraceID(transformCallArg)
+    expect(cleanTransformArg).toEqual({ original: 'data' })
     expect(listener).toHaveBeenCalled()
     const receivedEvent = listener.mock.calls[0][0]
-    const cleanData = removeStackInfo(receivedEvent.data)
+    // Remove traceID before comparison
+    const cleanData = removeTraceID(receivedEvent.data)
     expect(cleanData).toEqual({ transformed: { original: 'data' } })
   })
 
@@ -78,8 +86,9 @@ describe('wrapPostMessageEndpoint', () => {
     wrapped.postMessage({ test: 'out' })
     expect(mockEndpoint.postMessage).toHaveBeenCalled()
     const sentData = mockEndpoint.postMessage.mock.calls[0][0]
-    const cleanData = removeStackInfo(sentData)
-    expect(cleanData).toEqual({ out: { test: 'out' } })
+    // Remove traceID before comparison
+    const cleanOutData = removeTraceID(sentData)
+    expect(cleanOutData).toEqual({ out: { test: 'out' } })
     
     // Test incoming
     const listener = vi.fn()
@@ -89,8 +98,9 @@ describe('wrapPostMessageEndpoint', () => {
     registeredListener(new MessageEvent('message', { data: { test: 'in' } }))
     expect(listener).toHaveBeenCalled()
     const incomingEvent = listener.mock.calls[0][0]
-    const cleanIncomingData = removeStackInfo(incomingEvent.data)
-    expect(cleanIncomingData).toEqual({ in: { test: 'in' } })
+    // Remove traceID before comparison
+    const cleanInData = removeTraceID(incomingEvent.data)
+    expect(cleanInData).toEqual({ in: { test: 'in' } })
   })
 
   it('should remove event listeners correctly', () => {
