@@ -21,7 +21,7 @@ describe('object Reemit', () => {
     const remote = consume<typeof api>(port2 as any)
 
     const instance = await (new remote.a())
-    expect(await instance.c).toBe(55)
+    expect(await (instance as any).c).toBe(55)
     console.log('=================')
     expect(await remote.b(instance)).toBe(55)
     

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { PostMessageEndpoint } from '../src/index';
 import { wrapPostMessageEndpoint } from '../src/index'
-import { removeStackInfo, removeTraceID } from './test-utils'
+import { removeTraceID } from './test-utils'
 
 describe('wrapPostMessageEndpoint', () => {
   it('should wrap a basic endpoint', () => {
@@ -34,7 +34,7 @@ describe('wrapPostMessageEndpoint', () => {
     
     expect(outTransform).toHaveBeenCalledWith(testData)
     expect(mockEndpoint.postMessage).toHaveBeenCalled()
-    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const call = (mockEndpoint.postMessage as any).mock.calls[0][0]
     // Remove traceID before comparison
     const cleanCall = removeTraceID(call)
     expect(cleanCall).toEqual({ transformed: { message: 'test' } })
@@ -54,7 +54,7 @@ describe('wrapPostMessageEndpoint', () => {
     wrapped.addEventListener('message', listener)
     
     // Get the actual listener that was registered
-    const registeredListener = mockEndpoint.addEventListener.mock.calls[0][1]
+    const registeredListener = (mockEndpoint.addEventListener as any).mock.calls[0][1]
     
     // Simulate incoming message
     const event = new MessageEvent('message', { data: { original: 'data' } })
@@ -83,9 +83,9 @@ describe('wrapPostMessageEndpoint', () => {
     const wrapped = wrapPostMessageEndpoint(mockEndpoint, outTransform, inTransform)
     
     // Test outgoing
-    wrapped.postMessage({ test: 'out' })
+    wrapped.postMessage({ test: 'out' } as any)
     expect(mockEndpoint.postMessage).toHaveBeenCalled()
-    const sentData = mockEndpoint.postMessage.mock.calls[0][0]
+    const sentData = (mockEndpoint.postMessage as any).mock.calls[0][0]
     // Remove traceID before comparison
     const cleanOutData = removeTraceID(sentData)
     expect(cleanOutData).toEqual({ out: { test: 'out' } })
@@ -93,7 +93,7 @@ describe('wrapPostMessageEndpoint', () => {
     // Test incoming
     const listener = vi.fn()
     wrapped.addEventListener('message', listener)
-    const registeredListener = mockEndpoint.addEventListener.mock.calls[0][1]
+    const registeredListener = (mockEndpoint.addEventListener as any).mock.calls[0][1]
     
     registeredListener(new MessageEvent('message', { data: { test: 'in' } }))
     expect(listener).toHaveBeenCalled()
@@ -117,7 +117,7 @@ describe('wrapPostMessageEndpoint', () => {
     wrapped.removeEventListener('message', listener)
     
     // Get the main listener
-    const mainListener = mockEndpoint.addEventListener.mock.calls[0][1]
+    const mainListener = (mockEndpoint.addEventListener as any).mock.calls[0][1]
     
     // Send a message after removal
     mainListener(new MessageEvent('message', {
@@ -133,7 +133,7 @@ describe('wrapPostMessageEndpoint', () => {
     const { port1, port2 } = new MessageChannel()
     
     // Should not throw
-    expect(() => wrapPostMessageEndpoint(port1)).not.toThrow()
-    expect(() => wrapPostMessageEndpoint(port2)).not.toThrow()
+    expect(() => wrapPostMessageEndpoint(port1 as any)).not.toThrow()
+    expect(() => wrapPostMessageEndpoint(port2 as any)).not.toThrow()
   })
 })

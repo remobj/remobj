@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { PostMessageEndpoint } from '../src/index';
 import { createJsonEndpoint } from '../src/index'
-import { removeStackInfo, removeTraceID } from './test-utils'
+import { removeTraceID } from './test-utils'
 
 describe('createJsonEndpoint', () => {
   it('should JSON stringify outgoing messages', () => {
@@ -17,7 +17,7 @@ describe('createJsonEndpoint', () => {
     jsonEndpoint.postMessage(testData)
     
     expect(mockEndpoint.postMessage).toHaveBeenCalled()
-    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const call = (mockEndpoint.postMessage as any).mock.calls[0][0]
     const parsed = JSON.parse(call)
     
     // Remove traceID and compare
@@ -38,7 +38,7 @@ describe('createJsonEndpoint', () => {
     jsonEndpoint.addEventListener('message', listener)
     
     // Get the registered listener
-    const registeredListener = mockEndpoint.addEventListener.mock.calls[0][1]
+    const registeredListener = (mockEndpoint.addEventListener as any).mock.calls[0][1]
     
     // Simulate incoming JSON message
     const testData = { test: 'data', arr: [1, 2, 3] }
@@ -84,7 +84,7 @@ describe('createJsonEndpoint', () => {
     jsonEndpoint.postMessage(complexData)
     
     expect(mockEndpoint.postMessage).toHaveBeenCalled()
-    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const call = (mockEndpoint.postMessage as any).mock.calls[0][0]
     const parsed = JSON.parse(call)
     
     // Remove traceID and compare
@@ -115,7 +115,7 @@ describe('createJsonEndpoint', () => {
     const listener = vi.fn()
     
     jsonEndpoint.addEventListener('message', listener)
-    const registeredListener = mockEndpoint.addEventListener.mock.calls[0][1]
+    const registeredListener = (mockEndpoint.addEventListener as any).mock.calls[0][1]
     
     // Send invalid JSON
     const event = new MessageEvent('message', { 
@@ -128,8 +128,8 @@ describe('createJsonEndpoint', () => {
 
   it('should work with MessageChannel', async () => {
     const { port1, port2 } = new MessageChannel()
-    const jsonEndpoint1 = createJsonEndpoint(port1)
-    const jsonEndpoint2 = createJsonEndpoint(port2)
+    const jsonEndpoint1 = createJsonEndpoint(port1 as any)
+    const jsonEndpoint2 = createJsonEndpoint(port2 as any)
     
     const listener = vi.fn()
     jsonEndpoint2.addEventListener('message', listener)
@@ -186,7 +186,7 @@ describe('createJsonEndpoint', () => {
     jsonEndpoint.postMessage(specialData)
     
     expect(mockEndpoint.postMessage).toHaveBeenCalled()
-    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const call = (mockEndpoint.postMessage as any).mock.calls[0][0]
     const parsed = JSON.parse(call)
     
     // Remove traceID and compare

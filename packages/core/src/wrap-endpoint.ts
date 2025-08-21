@@ -50,7 +50,7 @@ export const wrapPostMessageEndpoint = <TThisRealm, TThatRealm>(
       devtools(traceID, "event", wrapperID, type, name, "deserialized", data)
     }
 
-    activeListeners.forEach((_, listener) => listener(transformedEvent))
+    activeListeners.forEach((_: true, listener: Listener<TThisRealm>) => listener(transformedEvent))
   }
 
   endpoint.addEventListener('message', incomingMessageHandler)

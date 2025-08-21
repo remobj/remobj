@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { PostMessageEndpoint } from '../src/index';
 import { createMultiplexedEndpoint } from '../src/index'
-import { removeStackInfo, removeTraceID } from './test-utils'
+// import { removeTraceID } from './test-utils'
 
 describe('createMultiplexedEndpoint', () => {
   it('should create a multiplexed endpoint', () => {
@@ -33,7 +33,7 @@ describe('createMultiplexedEndpoint', () => {
     mux.postMessage(testData)
     
     expect(mockEndpoint.postMessage).toHaveBeenCalled()
-    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const call = (mockEndpoint.postMessage as any).mock.calls[0][0]
     expect(call.channelId).toBe('')
     expect(call.data.message).toBe('test')
     // traceID is added at the wrapper level
@@ -59,7 +59,7 @@ describe('createMultiplexedEndpoint', () => {
     subChannel.postMessage(testData)
     
     expect(mockEndpoint.postMessage).toHaveBeenCalled()
-    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const call = (mockEndpoint.postMessage as any).mock.calls[0][0]
     expect(call.channelId).toContain('sub1')
     
     // Just check that the data contains our test data
@@ -86,7 +86,7 @@ describe('createMultiplexedEndpoint', () => {
     sub2.addEventListener('message', listener2)
     
     // Get the main listener
-    const mainListener = mockEndpoint.addEventListener.mock.calls[0][1]
+    const mainListener = (mockEndpoint.addEventListener as any).mock.calls[0][1]
     
     // Send message to channel1
     mainListener(new MessageEvent('message', {
@@ -127,7 +127,7 @@ describe('createMultiplexedEndpoint', () => {
     
     // Should send with the sub-channel's ID
     expect(mockEndpoint.postMessage).toHaveBeenCalled()
-    const call = mockEndpoint.postMessage.mock.calls[0][0]
+    const call = (mockEndpoint.postMessage as any).mock.calls[0][0]
     expect(call.channelId).toBeTruthy()
     expect(call.channelId).toContain('level2')
     
@@ -149,7 +149,7 @@ describe('createMultiplexedEndpoint', () => {
     mux.removeEventListener('message', listener)
     
     // Get the main listener
-    const mainListener = mockEndpoint.addEventListener.mock.calls[0][1]
+    const mainListener = (mockEndpoint.addEventListener as any).mock.calls[0][1]
     
     // Send a message
     mainListener(new MessageEvent('message', {
@@ -175,7 +175,7 @@ describe('createMultiplexedEndpoint', () => {
     sub.close()
     
     // Get the main listener
-    const mainListener = mockEndpoint.addEventListener.mock.calls[0][1]
+    const mainListener = (mockEndpoint.addEventListener as any).mock.calls[0][1]
     
     // Send message to closed channel
     mainListener(new MessageEvent('message', {
@@ -189,8 +189,8 @@ describe('createMultiplexedEndpoint', () => {
   it('should work with MessageChannel', async () => {
     const { port1, port2 } = new MessageChannel()
     
-    const mux1 = createMultiplexedEndpoint(port1)
-    const mux2 = createMultiplexedEndpoint(port2)
+    const mux1 = createMultiplexedEndpoint(port1 as any)
+    const mux2 = createMultiplexedEndpoint(port2 as any)
     
     const sub1 = mux1.createSubChannel('test')
     const sub2 = mux2.createSubChannel('test')
@@ -223,7 +223,7 @@ describe('createMultiplexedEndpoint', () => {
     mux.addEventListener('message', listener1)
     mux.addEventListener('message', listener2)
     
-    const mainListener = mockEndpoint.addEventListener.mock.calls[0][1]
+    const mainListener = (mockEndpoint.addEventListener as any).mock.calls[0][1]
     
     mainListener(new MessageEvent('message', {
       data: { channelId: '', data: { test: 'data' } }

@@ -36,7 +36,7 @@ export function createDevToolsIntegration(): DevToolsIntegration {
       
       ws.onclose = () => {
         isConnected = false
-        ws = undefined
+        ws = null
         console.log("Disconnected from RemObj DevTools")
         
         // Attempt to reconnect after 5 seconds
@@ -54,7 +54,7 @@ export function createDevToolsIntegration(): DevToolsIntegration {
   const disconnect = () => {
     if (ws) {
       ws.close()
-      ws = undefined
+      ws = null
       isConnected = false
     }
   }

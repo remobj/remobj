@@ -3,12 +3,9 @@ import {
   EMPTY_ARR,
   EMPTY_OBJ,
   NOOP,
-  def,
   looseEqual,
   looseIndexOf,
-  remove, 
-  toRawType,
-  toTypeString
+  toRawType
 } from '../src/index'
 
 describe('utils', () => {

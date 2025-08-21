@@ -6,7 +6,7 @@ describe('devtools', () => {
     const mockWebSocket = {
       send: vi.fn(),
       close: vi.fn()
-    } as any as WebSocket
+    } as unknown as WebSocket
 
     expect(() => setDevtoolsEP(mockWebSocket)).not.toThrow()
   })
@@ -15,7 +15,7 @@ describe('devtools', () => {
     const mockWebSocket = {
       send: vi.fn(),
       close: vi.fn()
-    } as any as WebSocket
+    } as unknown as WebSocket
 
     setDevtoolsEP(mockWebSocket)
     
@@ -24,7 +24,7 @@ describe('devtools', () => {
     
     if (__DEV__ || __PROD_DEVTOOLS__) {
       expect(mockWebSocket.send).toHaveBeenCalled()
-      const callArgs = mockWebSocket.send.mock.calls[0][0]
+      const callArgs = (mockWebSocket.send as any).mock.calls[0][0]
       const parsed = JSON.parse(callArgs)
       
       expect(parsed).toMatchObject({
@@ -45,7 +45,7 @@ describe('devtools', () => {
     const mockWebSocket = {
       send: vi.fn(),
       close: vi.fn()
-    } as any as WebSocket
+    } as unknown as WebSocket
 
     setDevtoolsEP(mockWebSocket)
     
@@ -54,7 +54,7 @@ describe('devtools', () => {
     
     if (__DEV__ || __PROD_DEVTOOLS__) {
       expect(mockWebSocket.send).toHaveBeenCalled()
-      const callArgs = mockWebSocket.send.mock.calls[0][0]
+      const callArgs = (mockWebSocket.send as any).mock.calls[0][0]
       const parsed = JSON.parse(callArgs)
       
       expect(parsed).toMatchObject({

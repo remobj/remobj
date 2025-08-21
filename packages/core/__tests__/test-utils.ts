@@ -25,7 +25,7 @@ export function removeStackInfo(data: any): any {
 /**
  * Compares data while ignoring stack information
  */
-export function expectDataEqual(actual: any, expected: any) {
+export function expectDataEqual(actual: any, expected: any): void {
   const cleanActual = removeStackInfo(actual)
   expect(cleanActual).toEqual(expected)
 }

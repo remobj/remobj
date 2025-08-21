@@ -42,7 +42,7 @@ describe('WeakBiMap basic functionality', () => {
     map.set('key2', obj2)
     
     const collected: [string, object][] = []
-    map.forEach((value, key) => {
+    map.forEach((value: any, key: any) => {
       collected.push([key, value])
     })
     

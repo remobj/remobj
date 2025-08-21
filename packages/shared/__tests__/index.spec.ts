@@ -19,8 +19,8 @@ describe('@remobj/shared', () => {
 
     it('should return false for non-numbers and invalid numbers', () => {
       expect(isNumber('42')).toBe(false)
-      expect(isNumber()).toBe(false)
-      expect(isNumber()).toBe(false)
+      expect(isNumber(null)).toBe(false)
+      expect(isNumber(undefined)).toBe(false)
       expect(isNumber(Number.NaN)).toBe(false)
       expect(isNumber(Infinity)).toBe(false)
       expect(isNumber(-Infinity)).toBe(false)
@@ -36,8 +36,8 @@ describe('@remobj/shared', () => {
 
     it('should return false for non-strings', () => {
       expect(isString(123)).toBe(false)
-      expect(isString()).toBe(false)
-      expect(isString()).toBe(false)
+      expect(isString(null)).toBe(false)
+      expect(isString(undefined)).toBe(false)
       expect(isString({})).toBe(false)
       expect(isString([])).toBe(false)
     })
@@ -53,8 +53,8 @@ describe('@remobj/shared', () => {
     it('should return false for non-arrays', () => {
       expect(isArray('array')).toBe(false)
       expect(isArray({})).toBe(false)
-      expect(isArray()).toBe(false)
-      expect(isArray()).toBe(false)
+      expect(isArray(null)).toBe(false)
+      expect(isArray(undefined)).toBe(false)
     })
   })
 
@@ -67,8 +67,8 @@ describe('@remobj/shared', () => {
     })
 
     it('should return false for non-objects and null', () => {
-      expect(isObject()).toBe(false)
-      expect(isObject()).toBe(false)
+      expect(isObject(null)).toBe(false)
+      expect(isObject(undefined)).toBe(false)
       expect(isObject('string')).toBe(false)
       expect(isObject(123)).toBe(false)
       expect(isObject(true)).toBe(false)
@@ -87,7 +87,7 @@ describe('@remobj/shared', () => {
       expect(isFunction({})).toBe(false)
       expect(isFunction('function')).toBe(false)
       expect(isFunction(123)).toBe(false)
-      expect(isFunction()).toBe(false)
+      expect(isFunction(null)).toBe(false)
     })
   })
 
@@ -101,7 +101,7 @@ describe('@remobj/shared', () => {
       expect(isDate('2023-01-01')).toBe(false)
       expect(isDate(1_234_567_890)).toBe(false)
       expect(isDate({})).toBe(false)
-      expect(isDate()).toBe(false)
+      expect(isDate(null)).toBe(false)
     })
   })
 
@@ -114,7 +114,7 @@ describe('@remobj/shared', () => {
     it('should return false for non-RegExp objects', () => {
       expect(isRegExp('/test/')).toBe(false)
       expect(isRegExp({})).toBe(false)
-      expect(isRegExp()).toBe(false)
+      expect(isRegExp(null)).toBe(false)
     })
   })
 
@@ -128,7 +128,7 @@ describe('@remobj/shared', () => {
       expect(isMap({})).toBe(false)
       expect(isMap([])).toBe(false)
       expect(isMap(new Set())).toBe(false)
-      expect(isMap()).toBe(false)
+      expect(isMap(null)).toBe(false)
     })
   })
 
@@ -142,7 +142,7 @@ describe('@remobj/shared', () => {
       expect(isSet({})).toBe(false)
       expect(isSet([])).toBe(false)
       expect(isSet(new Map())).toBe(false)
-      expect(isSet()).toBe(false)
+      expect(isSet(null)).toBe(false)
     })
   })
 
@@ -156,7 +156,7 @@ describe('@remobj/shared', () => {
     it('should return false for non-symbols', () => {
       expect(isSymbol('symbol')).toBe(false)
       expect(isSymbol({})).toBe(false)
-      expect(isSymbol()).toBe(false)
+      expect(isSymbol(null)).toBe(false)
     })
   })
 
@@ -169,7 +169,7 @@ describe('@remobj/shared', () => {
     it('should return false for non-Promise objects', () => {
       expect(isPromise({})).toBe(false)
       expect(isPromise({ then: 'not a function' })).toBe(false)
-      expect(isPromise()).toBe(false)
+      expect(isPromise(null)).toBe(false)
       expect(isPromise('promise')).toBe(false)
     })
   })
@@ -184,7 +184,7 @@ describe('@remobj/shared', () => {
       expect(isPlainObject([])).toBe(false)
       expect(isPlainObject(new Date())).toBe(false)
       expect(isPlainObject(/regex/)).toBe(false)
-      expect(isPlainObject()).toBe(false)
+      expect(isPlainObject(null)).toBe(false)
     })
   })
 
@@ -246,7 +246,7 @@ describe('@remobj/shared', () => {
     it('should return -1 if not found', () => {
       const arr = [{ a: 1 }, { b: 2 }]
       expect(looseIndexOf(arr, { c: 3 })).toBe(-1)
-      expect(looseIndexOf(arr)).toBe(-1)
+      expect(looseIndexOf(arr, { d: 4 })).toBe(-1)
     })
   })
 

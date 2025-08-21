@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createArgumentWrappingEndpoint } from '../src/rpc-wrapper'
-import { PostMessageEndpoint } from '../src/types'
+// import { PostMessageEndpoint } from '../src/types'
 
 describe('rpc-wrapper', () => {
   it('should create argument wrapping endpoint', () => {
@@ -8,7 +8,8 @@ describe('rpc-wrapper', () => {
       postMessage: (data: any) => {},
       addEventListener: (type: string, listener: any) => {},
       removeEventListener: (type: string, listener: any) => {},
-      createSubChannel: (id: string) => mockChannel,
+      id: 'mock-channel',
+      createSubChannel: (id: string) => mockChannel as any,
       close: () => {}
     }
 
@@ -22,7 +23,8 @@ describe('rpc-wrapper', () => {
       postMessage: (data: any) => {},
       addEventListener: (type: string, listener: any) => {},
       removeEventListener: (type: string, listener: any) => {},
-      createSubChannel: (id: string) => mockChannel,
+      id: 'mock-channel',
+      createSubChannel: (id: string) => mockChannel as any,
       close: () => {}
     }
 
@@ -42,7 +44,8 @@ describe('rpc-wrapper', () => {
       postMessage: (data: any) => { capturedData = data },
       addEventListener: (type: string, listener: any) => {},
       removeEventListener: (type: string, listener: any) => {},
-      createSubChannel: (id: string) => mockChannel,
+      id: 'mock-channel',
+      createSubChannel: (id: string) => mockChannel as any,
       close: () => {}
     }
 

@@ -15,8 +15,8 @@ describe('shared coverage boost', () => {
       expect(isPromise(Promise.resolve())).toBe(true)
       expect(isPromise(new Promise(() => {}))).toBe(true)
       expect(isPromise({ then: () => {} })).toBe(false)
-      expect(isPromise()).toBe(false)
-      expect(isPromise()).toBe(false)
+      expect(isPromise(null)).toBe(false)
+      expect(isPromise(undefined)).toBe(false)
       expect(isPromise({})).toBe(false)
     })
 

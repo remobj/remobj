@@ -134,8 +134,8 @@ describe('coverage boost tests', () => {
       const wrapped = wrapPostMessageEndpoint(mockEndpoint, sendHandler, receiveHandler)
       
       // Test with different data types
-      wrapped.postMessage()
-      wrapped.postMessage()
+      wrapped.postMessage(null)
+      wrapped.postMessage(undefined)
       wrapped.postMessage({ complex: { nested: true } })
       wrapped.postMessage([1, 2, 3])
       
@@ -146,6 +146,7 @@ describe('coverage boost tests', () => {
   describe('RPC wrapper plugin system', () => {
     it('should handle Date objects through wrapper', () => {
       const mockChannel = {
+        id: 'mock-channel',
         postMessage: vi.fn(),
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
@@ -156,7 +157,7 @@ describe('coverage boost tests', () => {
           close: vi.fn()
         }),
         close: vi.fn()
-      }
+      } as any
 
       const endpoint = createArgumentWrappingEndpoint(mockChannel)
       
@@ -173,6 +174,7 @@ describe('coverage boost tests', () => {
 
     it('should handle RegExp objects through wrapper', () => {
       const mockChannel = {
+        id: 'mock-channel',
         postMessage: vi.fn(),
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
@@ -183,7 +185,7 @@ describe('coverage boost tests', () => {
           close: vi.fn()
         }),
         close: vi.fn()
-      }
+      } as any
 
       const endpoint = createArgumentWrappingEndpoint(mockChannel)
       

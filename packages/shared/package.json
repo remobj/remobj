@@ -26,5 +26,8 @@
     "external": []
   },
   "keywords": ["utility", "shared", "remobj"],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@remobj/weakbimap": "workspace:*"
+  }
 }
