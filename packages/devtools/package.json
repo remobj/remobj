@@ -19,11 +19,26 @@
   },
   "files": [
     "dist",
-    "client"
+    "client",
+    "dist/*.map"
   ],
   "buildOptions": {
-    "formats": ["esm-bundler"],
-    "external": ["ws", "http", "path", "url", "fs", "process", "fs/promises", "node:fs", "node:path", "node:url", "node:http"],
+    "formats": [
+      "esm-bundler"
+    ],
+    "external": [
+      "ws",
+      "http",
+      "path",
+      "url",
+      "fs",
+      "process",
+      "fs/promises",
+      "node:fs",
+      "node:path",
+      "node:url",
+      "node:http"
+    ],
     "globalName": "RemObjDevTools"
   },
   "dependencies": {

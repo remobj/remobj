@@ -54,7 +54,8 @@ async function createConfigsForPackage(packageName, isDev = false) {
         name: outputConfig.name,
         entryFileNames: format !== 'dts' ? outputConfig.file : undefined,
         globals: outputConfig.globals,
-        minify: format != 'dts'
+        minify: format != 'dts',
+        sourcemap: format !== 'dts' ? true : false
       },
       treeshake: {
         preset: 'recommended',

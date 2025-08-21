@@ -12,21 +12,38 @@
       "import": "./dist/weakbimap.esm.js",
       "require": "./dist/weakbimap.umd.js",
       "browser": "./dist/weakbimap.umd.js",
-      "bundler": "./dist/weakbimap.bundler.js",
+      "bundler": {
+        "default": "./dist/weakbimap.bundler.js",
+        "source": "./dist/weakbimap.bundler.js.map"
+      },
       "types": "./dist/weakbimap.d.ts"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "dist/*.map"
   ],
   "sideEffects": false,
   "buildOptions": {
     "name": "WeakBiMap",
-    "formats": ["esm-production", "esm-bundler", "umd"],
+    "formats": [
+      "esm-production",
+      "esm-bundler",
+      "umd"
+    ],
     "globalName": "WeakBiMap",
     "external": []
   },
-  "keywords": ["weakmap", "bimap", "bidirectional", "map", "weak", "gc", "memory", "collection"],
+  "keywords": [
+    "weakmap",
+    "bimap",
+    "bidirectional",
+    "map",
+    "weak",
+    "gc",
+    "memory",
+    "collection"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
