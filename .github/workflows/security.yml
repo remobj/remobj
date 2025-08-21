@@ -79,36 +79,6 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
           
-  snyk:
-    name: Snyk Security Scan (Optional)
-    runs-on: ubuntu-latest
-    if: ${{ secrets.SNYK_TOKEN != '' }}
-    continue-on-error: true
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-    
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-          
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-        
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=medium
-          
   ossf-scorecard:
     name: OSSF Scorecard analysis
     runs-on: ubuntu-latest
