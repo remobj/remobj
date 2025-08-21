@@ -15,7 +15,8 @@
       "@remobj/shared": ["packages/shared/src"],
       "@remobj/add": ["packages/add/src"],
       "@remobj/mul": ["packages/mul/src"],
-      "@remobj/core": ["packages/core/src"]
+      "@remobj/core": ["packages/core/src"],
+      "@remobj/weakbimap": ["packages/weakbimap/src"]
     },
     "types": ["vitest/globals", "node"]
   },

@@ -3,14 +3,12 @@ import { createMultiplexedEndpoint } from "./multiplex"
 import type { PostMessageEndpoint } from "./types"
 import { devtools, getTraceID } from "./devtools"
 import { createArgumentWrappingEndpoint } from "./rpc-wrapper"
-import type {
-    ForbiddenProperty,
-    ProvideConfig,
-    RemoteCallRequest,
-    RemoteCallResponse
-} from "./rpc-types";
 import {
-    FORBIDDEN_PROPERTIES
+    FORBIDDEN_PROPERTIES,
+    type ForbiddenProperty,
+    type ProvideConfig,
+    type RemoteCallRequest,
+    type RemoteCallResponse
 } from "./rpc-types"
 
 // Constants for connection management
@@ -79,7 +77,7 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
         }
 
         // Parse property chain and check for forbidden properties
-        const propertyChain = messageData.propertyPath.split('/').filter(key => key)
+        const propertyChain = messageData.propertyPath.split('/').filter(Boolean)
 
         // Navigate to target property
         let target = data

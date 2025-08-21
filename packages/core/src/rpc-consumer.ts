@@ -129,7 +129,7 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
     }
 
     const remoteProxy = /*#__PURE__*/ new Proxy(class {}, {
-      get: (target, property, receiver) => {
+      get: (_target, property, _receiver) => {
         if (property === 'then') {
           if (!propertyPath) {
             return;
@@ -146,15 +146,15 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
         
       },
 
-      construct: (target, argumentsList, newTarget) => {
+      construct: (_target, argumentsList, _newTarget) => {
         return remoteCall('construct', propertyPath, argumentsList)
       },
 
-      apply: (target, thisArg, argumentsList) => {
+      apply: (_target, _thisArg, argumentsList) => {
         return remoteCall('call', propertyPath, argumentsList)
       },
 
-      set: (target, property, newValue, receiver) => {
+      set: (_target, property, newValue, _receiver) => {
         if (isSymbol(property)) {return false}
 
         remoteCall('set', propertyPath + '/' + property, [newValue])

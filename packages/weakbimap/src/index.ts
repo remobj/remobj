@@ -155,7 +155,7 @@ export class WeakBiMap<K, V> implements Map<K, V> {
         this.#data.set(key as StorageType<K>, new WeakRef(value as V & object) as StorageType<V>)
       }
     } else {
-      const storageValue: StorageType<V> = !isPrimitive(value) ? new WeakRef(value as V & object) as StorageType<V> : value as StorageType<V>
+      const storageValue: StorageType<V> = isPrimitive(value) ? value as StorageType<V> : new WeakRef(value as V & object) as StorageType<V>
 
       let keyReference = this.#keyToRef.get(key as K & object)
       if(!keyReference) {

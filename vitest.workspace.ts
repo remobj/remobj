@@ -19,7 +19,9 @@ export default defineWorkspace([
           '**/scripts/**',
           '**/*.d.ts',
           '**/vitest.config.ts',
-          '**/vitest.workspace.ts'
+          '**/vitest.workspace.ts',
+          'packages/devtools/**',
+          '**/types.ts'
         ],
         include: [
           'packages/*/src/**/*.ts'

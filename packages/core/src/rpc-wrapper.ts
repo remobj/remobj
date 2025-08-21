@@ -101,18 +101,16 @@ export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: str
 
   function handleData(data: RemoteCallRequest | RemoteCallResponse, isOutgoing: boolean) {
     
-    if ('type' in data && data.type === 'response') {
+    if ('type' in data && data.type === 'response' && data.resultType === 'result') {
       // Only process non-error results
-      if (data.resultType === 'result') {
-        // If we're wrapping (provider side), wrap the result
-        if (isOutgoing) {
-          data.result = wrapArgument(data.result)
-        }
+      // If we're wrapping (provider side), wrap the result
+      if (isOutgoing) {
+        data.result = wrapArgument(data.result)
+      }
 
-        // If we're unwrapping (consumer side), check if result is wrapped
-        else if (!isOutgoing && data.result && isObject(data.result) && 'type' in data.result && 'value' in data.result) {
-          data.result = unwrapArgument(data.result as any as WrappedArgument)
-        }
+      // If we're unwrapping (consumer side), check if result is wrapped
+      else if (!isOutgoing && data.result && isObject(data.result) && 'type' in data.result && 'value' in data.result) {
+        data.result = unwrapArgument(data.result as any as WrappedArgument)
       }
     }
 

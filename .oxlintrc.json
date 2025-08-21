@@ -20,7 +20,35 @@
     "require-post-message-target-origin": "off",
     "no-thenable": "off",
     "no-explicit-any": "off",
-    "no-optional-chaining": "off"
+    "no-optional-chaining": "off",
+    "no-async-await": "off",
+    "func-style": "off",
+    "sort-imports": "off",
+    "sort-keys": "off",
+    "id-length": "off",
+    "typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "no-extraneous-class": "off",
+    "unicorn/no-array-for-each": "off",
+    "init-declarations": "off",
+    "max-lines-per-function": "off",
+    "arrow-body-style": "off",
+    "max-params": "off",
+    "max-lines": "off",
+    "no-undefined": "off",
+    "no-inferrable-types": "off",
+    "no-unnecessary-type-constraint": "off",
+    "typescript-eslint/no-unnecessary-type-constraint": "off",
+    "no-plusplus": "off",
+    "no-continue": "off",
+    "no-empty-function": "off",
+    "typescript-eslint/prefer-for-of": "off",
+    "@typescript-eslint/prefer-for-of": "off",
+    "unicorn/no-typeof-undefined": "off",
+    "no-return-assign": "off",
+    "require-await": "off"
   },
   "globals": {
     "__DEV__": "readonly",
@@ -40,6 +68,10 @@
     "**/docs/.vitepress/dist/**",
     "**/docs/.vitepress/cache/**",
     "**/__tests__/**",
-    "benchmarks/**"
+    "benchmarks/**",
+    "scripts/**",
+    "test-minimal/**",
+    "demo/**",
+    "packages/devtools/**"
   ]
 }

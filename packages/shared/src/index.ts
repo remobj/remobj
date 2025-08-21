@@ -11,9 +11,7 @@
  * const defaultOptions = { ...{}, userOptions }
  * ```
  */
-export const EMPTY_OBJ: Record<string, unknown> = __DEV__
-  ? Object.freeze({})
-  : {}
+export const EMPTY_OBJ: Record<string, unknown> = __DEV__ ? Object.freeze({}) : {}
 
 /**
  * An empty array that is frozen in development mode for immutability.
