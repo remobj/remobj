@@ -1,0 +1,29 @@
+# Source files (only dist is published)
+src/
+__tests__/
+
+# TypeScript config
+tsconfig.json
+
+# Build artifacts
+*.tsbuildinfo
+
+# Development files
+*.log
+.DS_Store
+node_modules/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+temp/
+tmp/

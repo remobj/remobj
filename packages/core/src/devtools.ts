@@ -7,13 +7,13 @@ export function setDevtoolsEP(ep: WebSocket): void {
 }
 
 export function devtools(traceID: string, side: 'in' | 'out' | 'postMessage' | 'event', objectID: string, type: string, name: string, subName: string, data: any): void {
-  console.log(JSON.stringify({
-    side,
-    objectID,
-    type,
-    name,
-    data
-  }, undefined, 2))
+  // console.log(JSON.stringify({
+  //   side,
+  //   objectID,
+  //   type,
+  //   name,
+  //   data
+  // }, undefined, 2))
   devEP?.send(JSON.stringify({
     traceID,
     side,

@@ -111,7 +111,7 @@ export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: str
 
         // If we're unwrapping (consumer side), check if result is wrapped
         else if (!isOutgoing && data.result && isObject(data.result) && 'type' in data.result && 'value' in data.result) {
-          data.result = unwrapArgument(data.result as WrappedArgument)
+          data.result = unwrapArgument(data.result as any as WrappedArgument)
         }
       }
     }
@@ -124,7 +124,7 @@ export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: str
         }
           // When receiving, unwrap only if it's a wrapped argument
           if (isObject(v) && 'type' in v && 'value' in v) {
-            return unwrapArgument(v as WrappedArgument)
+            return unwrapArgument(v as any as WrappedArgument)
           }
           return v;
         
