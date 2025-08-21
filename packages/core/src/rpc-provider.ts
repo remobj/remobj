@@ -17,7 +17,7 @@ const PROVIDER_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
 export function provide(data: any, endpoint: PostMessageEndpoint, config: ProvideConfig = {}): void {
     const { allowWrite = false, name = '' } = config
     const providerID: string = /*#__PURE__*/ crypto.randomUUID()
-    const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), name + ' -> ArgumentWrapper')
+    const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), `${name} -> ArgumentWrapper`)
     const registered = new Set<string>()
 
     let timeoutHandle: any;
@@ -118,6 +118,7 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
                 }
                 return sendError(new Error(__DEV__ ? `REMOTE IS NOT A FUNCTION - You tried to call a function this is not a function.` : `E007`))
             } if (op === 'construct') {
+                // eslint-disable-next-line new-cap
                 return sendResponse(new target(...messageData.args))
             } if (op === 'set') {
                 if (allowWrite) {
@@ -126,7 +127,8 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
                     }
 
                     if (Object.getOwnPropertyDescriptor(target, lastProperty)?.writable) {
-                        target[lastProperty] = messageData.args[0]
+                        const [value] = messageData.args
+                        target[lastProperty] = value
                         return sendResponse(true)
                     }
                     return sendError(new Error(__DEV__ ? 'ACCESS DENIED - WRITE TO READONLY NOT ALLOWED' : `E009`))

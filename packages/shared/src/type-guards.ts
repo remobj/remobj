@@ -50,6 +50,7 @@ export const toRawType = (value: unknown): string => /*#__PURE__*/ toTypeString(
  * }
  * ```
  */
+// eslint-disable-next-line prefer-destructuring
 export const isArray: typeof Array.isArray = Array.isArray
 
 /**
@@ -308,7 +309,7 @@ export const isIntegerKey = (key: unknown): boolean =>
   /*#__PURE__*/ isString(key) &&
   key !== 'NaN' &&
   key[0] !== '-' &&
-  '' + /*#__PURE__*/ Number.parseInt(key, 10) === key
+  `${/*#__PURE__*/ Number.parseInt(key, 10)}` === key
 
 
 
@@ -371,7 +372,7 @@ export const isClonable = (data: unknown): boolean => {
     if (cached !== undefined) {return cached}
     
     // Fast checks for known clonable types
-    const constructor = (data as any).constructor
+    const { constructor } = data as any
     if (constructor === Object || constructor === Array || constructor === null) {
       // For plain objects and arrays, we still need to check contents
       const result = hasOnlyPlainObjects(data)

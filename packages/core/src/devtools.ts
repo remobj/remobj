@@ -39,7 +39,7 @@ export const getTraceID = (...data: unknown[]): string => {
     }
 
     if (!traceID) {
-      traceID = crypto.randomUUID() + ':0'
+      traceID = `${crypto.randomUUID()}:0`
     }
 
     const [main, count] = traceID.split(':')

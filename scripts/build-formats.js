@@ -12,6 +12,16 @@ export const BUILD_FORMATS = {
       __PROD_DEVTOOLS__: "false",
     },
   },
+  "dts": {
+    file: (name) => `${name}.dts.d.ts`,
+    format: "es",
+    defines: {
+      __DEV__: "false",
+      __TEST__: "false",
+      __BROWSER__: "false",
+      __PROD_DEVTOOLS__: "false",
+    },
+  },
   "esm-bundler": {
     file: (name) => `${name}.bundler.js`,
     format: "es",

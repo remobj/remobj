@@ -26,7 +26,7 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
   const pendingPromises = new Map<string, { resolve: (data: any) => void, reject: (data: any) => void }>()
   const proxyCache = new WeakBiMap<string, any>()
   const consumerID: string = /*#__PURE__*/ crypto.randomUUID()
-  const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), name + ' -> ArgumentWrapper')
+  const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), `${name} -> ArgumentWrapper`)
   const timeoutHandles = new Map<string, any>()
 
   const createPromise = (requestID: string, traceID: string) => {
@@ -142,7 +142,7 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
             return
           }
 
-          return createProxy(propertyPath + '/' + property)
+          return createProxy(`${propertyPath}/${property}`)
         
       },
 
@@ -157,7 +157,7 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
       set: (_target, property, newValue, _receiver) => {
         if (isSymbol(property)) {return false}
 
-        remoteCall('set', propertyPath + '/' + property, [newValue])
+        remoteCall('set', `${propertyPath}/${property}`, [newValue])
         return true
       }
     })

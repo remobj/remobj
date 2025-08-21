@@ -1,4 +1,4 @@
-export type Listener<T> = (this: unknown, ev: MessageEvent) => any
+export type Listener<_T> = (this: unknown, ev: MessageEvent) => any
 
 export interface PostMessageEndpointBase<T = unknown> {
   /**

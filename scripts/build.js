@@ -4,8 +4,8 @@ import { createRequire } from 'node:module'
 import { discoverPackages, fuzzyMatch } from './discover-packages.js'
 import { createWorkspaceAliases } from './workspace-aliases.js'
 import { BUILD_FORMATS, createOutputConfig, getDefineFlags, resolveExternals } from './build-formats.js'
-import { buildDts } from './build-dts.js'
 import { analyzeBundles } from './bundle-analyzer.js'
+import { dts } from 'rolldown-plugin-dts'
 
 const require = createRequire(import.meta.url)
 
@@ -29,8 +29,10 @@ async function createConfigsForPackage(packageName, isDev = false) {
   const buildOptions = pkg.buildOptions || {}
   
   // Default to all three formats if not specified
-  const defaultFormats = ['esm-production', 'esm-bundler', 'umd']
+  const defaultFormats = ['esm-production', 'esm-bundler', 'umd'] 
   const formats = values.formats ? values.formats.split(',') : (buildOptions.formats || defaultFormats)
+
+  formats.push('dts')
   
   const configs = []
   
@@ -48,7 +50,7 @@ async function createConfigsForPackage(packageName, isDev = false) {
         name: outputConfig.name,
         entryFileNames: outputConfig.file,
         globals: outputConfig.globals,
-        minify: true//format != 'esm-bundler'
+        minify: format != 'dts'
       },
       treeshake: {
         preset: 'recommended',
@@ -62,7 +64,15 @@ async function createConfigsForPackage(packageName, isDev = false) {
       experimental: {
         enableComposingJsPlugins: true
       },
-      define: defineFlags
+      define: defineFlags,
+      plugins: format === 'dts' ? [
+        dts({
+          emitDtsOnly: true,
+          oxc: true /*{
+            stripInternal: true
+          }*/
+        })
+      ] : []
     })
   })
   
@@ -105,27 +115,27 @@ async function buildAllPackages(targets = [], isDev = false) {
   
   const jsResults = await Promise.all(buildPromises)
   
-  // Build DTS files sequentially to avoid race conditions
-  const dtsResults = []
-  for (const packageName of packagesToBuild) {
-    const pkg = require(`../packages/${packageName}/package.json`)
-    const defaultFormats = ['esm-production', 'esm-bundler', 'umd']
-    const formats = values.formats ? values.formats.split(',') : (pkg.buildOptions?.formats || defaultFormats)
+  // // Build DTS files sequentially to avoid race conditions
+  // const dtsResults = []
+  // for (const packageName of packagesToBuild) {
+  //   const pkg = require(`../packages/${packageName}/package.json`)
+  //   const defaultFormats = ['esm-production', 'esm-bundler', 'umd']
+  //   const formats = values.formats ? values.formats.split(',') : (pkg.buildOptions?.formats || defaultFormats)
     
-    if (formats.some(f => f.startsWith('esm'))) {
-      try {
-        await buildDts(packageName)
-        dtsResults.push(`packages/${packageName}/dist/${packageName}.d.ts`)
-      } catch (error) {
-        console.warn(`⚠️  Skipping DTS build for ${packageName} due to error`)
-        console.warn(`   Error: ${error.message}`)
-        console.warn(`   JavaScript builds completed successfully.`)
-        dtsResults.push(undefined)
-      }
-    }
-  }
+  //   if (formats.some(f => f.startsWith('esm'))) {
+  //     try {
+  //       await buildDts(packageName)
+  //       dtsResults.push(`packages/${packageName}/dist/${packageName}.d.ts`)
+  //     } catch (error) {
+  //       console.warn(`⚠️  Skipping DTS build for ${packageName} due to error`)
+  //       console.warn(`   Error: ${error.message}`)
+  //       console.warn(`   JavaScript builds completed successfully.`)
+  //       dtsResults.push(undefined)
+  //     }
+  //   }
+  // }
   
-  const results = [...jsResults.flat(), ...dtsResults.filter(Boolean)]
+  const results = [...jsResults.flat()]
   const allOutputs = results.flat()
   const totalBuilds = allOutputs.length
   

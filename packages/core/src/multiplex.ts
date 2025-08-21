@@ -61,7 +61,7 @@ export const createMultiplexedEndpoint = (
     
     if (__DEV__ || __PROD_DEVTOOLS__) {
       const traceID = getTraceID(data, event.data)
-      devtools(traceID, 'event', multiplexerID, 'CHANNEL', name, channelId + ' -> pre', event.data)
+      devtools(traceID, 'event', multiplexerID, 'CHANNEL', name, `${channelId} -> pre`, event.data)
       devtools(traceID, 'event', multiplexerID, 'CHANNEL', name, channelId, data)
     }
 
@@ -91,7 +91,7 @@ export const createMultiplexedEndpoint = (
         
         if (__DEV__ || __PROD_DEVTOOLS__) {
           const traceID = getTraceID(data, channelData)
-          devtools(traceID, "postMessage", multiplexerID, 'CHANNEL', name, channelId + ' -> pre', data)
+          devtools(traceID, "postMessage", multiplexerID, 'CHANNEL', name, `${channelId} -> pre`, data)
           devtools(traceID, "postMessage", multiplexerID, 'CHANNEL', name, channelId, data)
         }
 
