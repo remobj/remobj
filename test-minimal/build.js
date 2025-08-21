@@ -1,7 +1,7 @@
 import { rolldown } from 'rolldown'
-import { createHash } from 'crypto'
-import { readFileSync } from 'fs'
-import { gzipSync, brotliCompressSync, constants } from 'zlib'
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { brotliCompressSync, constants, gzipSync } from 'node:zlib'
 
 async function build() {
   console.log('Building minimal test bundle...\n')
@@ -75,17 +75,17 @@ async function build() {
     }
   }
   
-  await writeFileSync('./dist/size-report.json', JSON.stringify(report, null, 2))
+  await writeFileSync('./dist/size-report.json', JSON.stringify(report, undefined, 2))
   console.log('\n✅ Build complete! Run `npm test` to execute the bundle.')
 }
 
 function formatBytes(bytes) {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  if (bytes < 1024) {return `${bytes} B`}
+  if (bytes < 1024 * 1024) {return `${(bytes / 1024).toFixed(1)} KB`}
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
 }
 
 // Fix the import
-import { writeFileSync } from 'fs'
+import { writeFileSync } from 'node:fs'
 
 build().catch(console.error)

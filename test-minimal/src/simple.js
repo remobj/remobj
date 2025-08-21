@@ -1,4 +1,4 @@
-import { provide, consume } from '@remobj/core'
+import { consume, provide } from '@remobj/core'
 
 // Create a MessageChannel for communication
 const channel = new MessageChannel()
