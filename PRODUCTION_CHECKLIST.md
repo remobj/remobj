@@ -1,84 +1,89 @@
 # Production Ready Checklist für RemObj
 
-## 🔴 Kritisch (Blocker für Production Release)
+## 📍 Nach Arbeitsort sortiert
 
-### 1. **LICENSE Datei** 
-- [ ] MIT License hinzufügen
-- **Blockiert:** Rechtlich notwendig für Open Source
-- **Aufwand:** 5 Minuten
-```bash
-curl -o LICENSE https://raw.githubusercontent.com/mit-license/mit-license/master/LICENSE
-```
+### 🔧 Im Code (Local)
 
-### 2. **NPM_TOKEN Secret**
-- [ ] In GitHub Secrets einrichten
-- **Blockiert:** Ohne Token kein npm publish möglich
-- **Aufwand:** 5 Minuten
-- **Anleitung:** 
-  1. Gehe zu https://www.npmjs.com/settings/YOUR_USERNAME/tokens
-  2. Create New Access Token → Type: Publish
-  3. Kopiere Token
-  4. GitHub: Settings → Secrets → Actions → New repository secret
-  5. Name: `NPM_TOKEN`, Value: dein Token
+#### 🔴 Kritisch
+- [ ] **LICENSE Datei hinzufügen** (5 Min)
+  ```bash
+  curl -o LICENSE https://raw.githubusercontent.com/mit-license/mit-license/master/LICENSE
+  ```
 
-## 🟡 Wichtig (Security & Stability)
-
-### Security Improvements (aus CLAUDE.md)
+#### 🟡 Security Fixes
 - [ ] Input Size Validation für RPC Messages
-- [ ] Prototype Chain Traversal Vulnerability beheben
+- [ ] Prototype Chain Traversal Vulnerability beheben  
 - [ ] Event Listener Accumulation in Multiplexer fixen
 - [ ] Circular Proxy Reference Handling verbessern
 
-### CI/CD Qualitätsverbesserungen
-- [x] Bundle Size Limits (max. 5KB Gzip im CI, PR-Kommentare mit Vergleich)
-- [x] OS Matrix Testing (Windows, macOS, Linux) - Tests laufen auf allen 3 OS
-- [x] Performance Regression Tests (Benchmark Workflow mit PR-Kommentaren)
-
-## 🟢 Nice-to-Have (Developer Experience)
-
-### Developer Tools
+#### 🟢 Developer Experience
 - [ ] .vscode/extensions.json mit empfohlenen Extensions
 - [ ] .vscode/launch.json für Debugging
 - [ ] Devcontainer Konfiguration
-- [ ] Branch Protection Rules für main
 - [ ] Error Codes (E001-E011) dokumentieren
-
-### Automation & Tooling
-- [ ] Renovate Bot als Alternative zu Dependabot
-- [ ] Automatische Minor/Patch Updates konfigurieren
-- [x] Bundle Size Tracking (mit eigenem System + PR-Kommentare)
-- [x] Benchmark System (Vitest Bench + PR-Kommentare)
-
-### Release Management
-- [ ] Semantic Versioning Automation (semantic-release)
-- [ ] Beta/Canary Release Channels dokumentieren
-- [ ] Release Notes Template erstellen
-- [ ] Discord/Slack Webhook für Release Notifications
 
 ---
 
-## ✅ Was bereits erledigt ist
+### 🌐 In GitHub Settings
 
-Eine vollständige production-ready Infrastruktur mit:
+#### 🔴 Kritisch
+- [ ] **NPM_TOKEN Secret einrichten** (5 Min)
+  1. Erstelle Token auf https://www.npmjs.com/settings/YOUR_USERNAME/tokens
+  2. GitHub → Settings → Secrets → Actions → New repository secret
+  3. Name: `NPM_TOKEN`, Value: dein Token
 
-- **Automatisierter Release Workflow** mit NPM Provenance
-- **100% Code Coverage** Enforcement (80% Threshold)
-- **Security Scanning** (CodeQL, Trivy, npm audit)
-- **Pre-commit Hooks** mit Husky & lint-staged
-- **Conventional Commits** mit commitlint
-- **Source Maps** für alle Build-Formate
-- **API Documentation** (VitePress + TypeDoc)
-- **Monorepo Setup** mit PNPM Workspaces
-- **Build System** mit Rolldown
-- **Community Files** (CONTRIBUTING, CODE_OF_CONDUCT, SECURITY)
-- **GitHub Actions** für CI/CD/Security/Coverage/Release
-- **Bundle Size Tracking** mit automatischen PR-Kommentaren
-- **Performance Benchmarks** mit Vitest + PR-Kommentaren
-- **Bundle Size CI Checks** mit 5KB Gzip Limit
+#### 🟢 Nice-to-Have
+- [ ] Branch Protection Rules für main Branch aktivieren
 
-## 📚 Dokumentation
+---
 
-- **[RELEASE.md](./RELEASE.md)** - Wie man Releases erstellt
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution Guidelines
-- **[SECURITY.md](./SECURITY.md)** - Security Policy
-- **[CLAUDE.md](./CLAUDE.md)** - AI Assistant Guidelines
+## ✅ Bereits erledigt
+
+### CI/CD & Automation
+- **GitHub Actions Workflows:**
+  - CI Pipeline mit OS Matrix Testing (Ubuntu, Windows, macOS)
+  - Security Scanning (CodeQL, Trivy, npm audit)
+  - Coverage Reports mit 80% Threshold
+  - Bundle Size Checks (5KB Gzip Limit)
+  - Performance Benchmarks mit PR-Kommentaren
+  - Automatisierter Release Workflow mit NPM Provenance
+
+- **Dependency Management:**
+  - Dependabot für wöchentliche Updates
+  - Gruppierung von dev/prod Dependencies
+
+- **Release Management:**
+  - Semantic Versioning mit conventional-changelog
+  - Beta/Alpha/RC Release Channels (npm tags)
+  - Automatische Release Notes aus Commits
+
+### Development Setup
+- **Build System:**
+  - Rolldown mit TypeScript Support
+  - Multiple Output Formate (ESM, CJS, UMD)
+  - Source Maps für alle Formate
+  - Bundle Size Tracking mit PR-Kommentaren
+
+- **Code Quality:**
+  - Pre-commit Hooks (Husky + lint-staged)
+  - Conventional Commits (commitlint)
+  - TypeScript mit strikten Checks
+  - 100% Code Coverage möglich
+
+- **Dokumentation:**
+  - VitePress + TypeDoc für API Docs
+  - Community Files (CONTRIBUTING, CODE_OF_CONDUCT, SECURITY)
+  - CLAUDE.md für AI-Unterstützung
+  - RELEASE.md für Release-Prozess
+
+- **Monorepo:**
+  - PNPM Workspaces
+  - Isolierte TypeScript Declarations
+  - Workspace Aliasing
+
+## 📊 Status Zusammenfassung
+
+**Production Ready:** ❌ (2 kritische Blocker)
+- 🔴 **Blocker:** LICENSE Datei, NPM_TOKEN
+- 🟡 **Empfohlen:** Security Fixes (4 Issues)
+- 🟢 **Optional:** Developer Tools, Branch Protection
