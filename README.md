@@ -13,8 +13,6 @@ A modern monorepo library scaffolding based on Vue.js patterns, designed to supp
 | Package | Description |
 |---------|-------------|
 | [`@remobj/shared`](./packages/shared) | Shared utilities and helper functions |
-| [`@remobj/add`](./packages/add) | Addition functionality |
-| [`@remobj/mul`](./packages/mul) | Multiplication functionality |
 | [`@remobj/core`](./packages/core) | Core package that re-exports all functionality |
 
 ## 🚀 Quick Start
