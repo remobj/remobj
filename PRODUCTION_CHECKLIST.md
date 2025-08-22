@@ -1,5 +1,6 @@
 # Production Ready Checklist für RemObj
 
+## 🔴 Kritisch (Blocker für Production Release)
 
 ### 1. **LICENSE Datei** 
 - [ ] MIT License hinzufügen
@@ -20,31 +21,35 @@ curl -o LICENSE https://raw.githubusercontent.com/mit-license/mit-license/master
   4. GitHub: Settings → Secrets → Actions → New repository secret
   5. Name: `NPM_TOKEN`, Value: dein Token
 
+## 🟡 Wichtig (Security & Stability)
+
 ### Security Improvements (aus CLAUDE.md)
 - [ ] Input Size Validation für RPC Messages
 - [ ] Prototype Chain Traversal Vulnerability beheben
 - [ ] Event Listener Accumulation in Multiplexer fixen
 - [ ] Circular Proxy Reference Handling verbessern
-- [ ] Error Codes (E001-E011) dokumentieren
 
-### CI/CD Erweiterungen
-- [ ] OS Matrix Testing (Windows, macOS, Linux)
-- [ ] Bundle Size Tracking mit size-limit
+### CI/CD Qualitätsverbesserungen
 - [ ] Bundle Size Limits (max. 3KB Brotli)
-- [ ] Benchmark System überarbeiten
+- [ ] OS Matrix Testing (Windows, macOS, Linux)
 - [ ] Performance Regression Tests
 
-### Developer Experience
+## 🟢 Nice-to-Have (Developer Experience)
+
+### Developer Tools
 - [ ] .vscode/extensions.json mit empfohlenen Extensions
 - [ ] .vscode/launch.json für Debugging
 - [ ] Devcontainer Konfiguration
 - [ ] Branch Protection Rules für main
+- [ ] Error Codes (E001-E011) dokumentieren
 
-### Dependency Management
+### Automation & Tooling
 - [ ] Renovate Bot als Alternative zu Dependabot
 - [ ] Automatische Minor/Patch Updates konfigurieren
+- [ ] Bundle Size Tracking mit size-limit
+- [ ] Benchmark System überarbeiten
 
-### Release Enhancements
+### Release Management
 - [ ] Semantic Versioning Automation (semantic-release)
 - [ ] Beta/Canary Release Channels dokumentieren
 - [ ] Release Notes Template erstellen

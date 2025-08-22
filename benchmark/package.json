@@ -1,0 +1,20 @@
+{
+  "name": "@remobj/benchmark",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Performance benchmarks for RemObj",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "bench": "node index.js"
+  },
+  "dependencies": {
+    "@remobj/core": "file:../packages/core",
+    "@remobj/shared": "file:../packages/shared",
+    "@remobj/weakbimap": "file:../packages/weakbimap"
+  },
+  "devDependencies": {
+    "benchmark": "^2.1.4"
+  }
+}

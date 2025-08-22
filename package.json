@@ -27,15 +27,9 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "docs:full": "npm run build && npm run docs:generate && npm run docs:build",
-    "bench": "node benchmarks/organized-benchmarks.mjs",
-    "bench:old": "node benchmarks/run-benchmarks.mjs",
-    "bench:simple": "node benchmarks/simple-runner.js",
-    "bench:core": "tsx benchmarks/runner.ts core",
-    "bench:shared": "tsx benchmarks/runner.ts shared",
-    "bench:scenarios": "tsx benchmarks/runner.ts scenarios",
-    "bench:compare": "tsx benchmarks/compare.ts",
-    "bench:baseline": "tsx benchmarks/compare.ts update-baseline",
-    "bench:ci": "npm run bench && npm run bench:compare",
+    "bench": "npm run build && cd benchmark && npm start",
+    "benchmark": "npm run bench",
+    "bench:ci": "npm run build && cd benchmark && npm start",
     "demo": "node demo/server.js"
   },
   "devDependencies": {
