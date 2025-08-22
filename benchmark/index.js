@@ -210,6 +210,10 @@ async function main() {
   
   console.log()
   console.log(`${colors.green}${colors.bright}✓ Benchmark complete${colors.reset}`)
+  
+  // Force exit to ensure Node.js terminates
+  // MessageChannel ports can keep the event loop alive
+  process.exit(0)
 }
 
 // Run benchmarks
