@@ -68,7 +68,7 @@
     "**/docs/.vitepress/dist/**",
     "**/docs/.vitepress/cache/**",
     "**/__tests__/**",
-    "benchmarks/**",
+    "benchmark/**",
     "scripts/**",
     "test-minimal/**",
     "demo/**",
