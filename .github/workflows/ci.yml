@@ -9,13 +9,21 @@ on:
 
 jobs:
   test:
-    name: Test
-    runs-on: ubuntu-latest
+    name: Test (${{ matrix.os }} / Node ${{ matrix.node-version }})
+    runs-on: ${{ matrix.os }}
     if: ${{ !startsWith(github.event.head_commit.message, 'release:') }}
     
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         node-version: [20, 22]
+        exclude:
+          # Reduce matrix size - skip some combinations
+          - os: macos-latest
+            node-version: 20
+          - os: windows-latest
+            node-version: 20
     
     steps:
       - name: Checkout
@@ -119,21 +127,26 @@ jobs:
       - name: Build packages
         run: pnpm run build
         
-      - name: Check minimal bundle size
+      - name: Build minimal bundle
         run: |
           cd test-minimal
           pnpm install
           pnpm run build
           
-          # Check if size report was generated
-          if [ ! -f dist/size-report.json ]; then
-            echo "❌ Size report not generated"
-            exit 1
-          fi
-          
-          # Parse the report and display
+      - name: Check bundle size
+        run: |
+          cd test-minimal
           node -e "
-            const report = JSON.parse(require('fs').readFileSync('dist/size-report.json'));
+            const fs = require('fs');
+            const path = require('path');
+            const reportPath = path.join('dist', 'size-report.json');
+            
+            if (!fs.existsSync(reportPath)) {
+              console.error('❌ Size report not generated');
+              process.exit(1);
+            }
+            
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
             const formatBytes = (b) => b < 1024 ? b + ' B' : (b/1024).toFixed(1) + ' KB';
             
             console.log('📦 Bundle Size Report');

@@ -31,7 +31,7 @@ curl -o LICENSE https://raw.githubusercontent.com/mit-license/mit-license/master
 
 ### CI/CD Qualitätsverbesserungen
 - [x] Bundle Size Limits (max. 5KB Gzip im CI, PR-Kommentare mit Vergleich)
-- [ ] OS Matrix Testing (Windows, macOS, Linux) - Aktuell nur Ubuntu
+- [x] OS Matrix Testing (Windows, macOS, Linux) - Tests laufen auf allen 3 OS
 - [x] Performance Regression Tests (Benchmark Workflow mit PR-Kommentaren)
 
 ## 🟢 Nice-to-Have (Developer Experience)
