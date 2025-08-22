@@ -93,3 +93,67 @@ jobs:
         
       - name: Run npm audit (production only)
         run: pnpm audit --prod --audit-level=moderate
+        
+  bundle-size:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.event.head_commit.message, 'release:') }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+    
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          
+      - name: Install dependencies  
+        run: pnpm install --no-frozen-lockfile
+        
+      - name: Build packages
+        run: pnpm run build
+        
+      - name: Check minimal bundle size
+        run: |
+          cd test-minimal
+          pnpm install
+          pnpm run build
+          
+          # Check if size report was generated
+          if [ ! -f dist/size-report.json ]; then
+            echo "❌ Size report not generated"
+            exit 1
+          fi
+          
+          # Parse the report and display
+          node -e "
+            const report = JSON.parse(require('fs').readFileSync('dist/size-report.json'));
+            const formatBytes = (b) => b < 1024 ? b + ' B' : (b/1024).toFixed(1) + ' KB';
+            
+            console.log('📦 Bundle Size Report');
+            console.log('='.repeat(50));
+            console.log('Original: ' + formatBytes(report.sizes.original));
+            console.log('Gzip:     ' + formatBytes(report.sizes.gzip));
+            console.log('Brotli:   ' + formatBytes(report.sizes.brotli));
+            console.log('='.repeat(50));
+            
+            // Check threshold
+            const MAX_GZIP = 5120; // 5KB
+            if (report.sizes.gzip > MAX_GZIP) {
+              console.log('❌ Bundle exceeds ' + formatBytes(MAX_GZIP) + ' limit!');
+              process.exit(1);
+            } else {
+              console.log('✅ Bundle within size limits');
+            }
+          "
+          
+      - name: Run minimal bundle test
+        run: |
+          cd test-minimal
+          pnpm test

@@ -1,0 +1,80 @@
+name: Bundle Size Report
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  bundle-size-report:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        
+      - name: Checkout Base
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+          
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+    
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          
+      - name: Install dependencies (PR)
+        run: pnpm install --no-frozen-lockfile
+        
+      - name: Build PR version
+        run: |
+          pnpm run build
+          cd test-minimal
+          pnpm install
+          pnpm run build
+          cp dist/size-report.json ../pr-size-report.json
+          
+      - name: Build base version
+        run: |
+          cd base
+          pnpm install --no-frozen-lockfile
+          pnpm run build
+          cd test-minimal
+          pnpm install
+          pnpm run build
+          cp dist/size-report.json ../../base-size-report.json
+          
+      - name: Generate size comparison
+        id: size-compare
+        run: |
+          node scripts/bundle-size-compare.js > size-comment.md
+          echo "comment<<EOF" >> $GITHUB_OUTPUT
+          cat size-comment.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+      - name: Find existing comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '📦 Bundle Size Report'
+          
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.size-compare.outputs.comment }}
+          edit-mode: replace

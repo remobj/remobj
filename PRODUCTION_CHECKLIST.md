@@ -30,9 +30,9 @@ curl -o LICENSE https://raw.githubusercontent.com/mit-license/mit-license/master
 - [ ] Circular Proxy Reference Handling verbessern
 
 ### CI/CD Qualitätsverbesserungen
-- [ ] Bundle Size Limits (max. 3KB Brotli)
-- [ ] OS Matrix Testing (Windows, macOS, Linux)
-- [ ] Performance Regression Tests
+- [x] Bundle Size Limits (max. 5KB Gzip im CI, PR-Kommentare mit Vergleich)
+- [ ] OS Matrix Testing (Windows, macOS, Linux) - Aktuell nur Ubuntu
+- [x] Performance Regression Tests (Benchmark Workflow mit PR-Kommentaren)
 
 ## 🟢 Nice-to-Have (Developer Experience)
 
@@ -46,8 +46,8 @@ curl -o LICENSE https://raw.githubusercontent.com/mit-license/mit-license/master
 ### Automation & Tooling
 - [ ] Renovate Bot als Alternative zu Dependabot
 - [ ] Automatische Minor/Patch Updates konfigurieren
-- [ ] Bundle Size Tracking mit size-limit
-- [ ] Benchmark System überarbeiten
+- [x] Bundle Size Tracking (mit eigenem System + PR-Kommentare)
+- [x] Benchmark System (Vitest Bench + PR-Kommentare)
 
 ### Release Management
 - [ ] Semantic Versioning Automation (semantic-release)
@@ -72,6 +72,9 @@ Eine vollständige production-ready Infrastruktur mit:
 - **Build System** mit Rolldown
 - **Community Files** (CONTRIBUTING, CODE_OF_CONDUCT, SECURITY)
 - **GitHub Actions** für CI/CD/Security/Coverage/Release
+- **Bundle Size Tracking** mit automatischen PR-Kommentaren
+- **Performance Benchmarks** mit Vitest + PR-Kommentaren
+- **Bundle Size CI Checks** mit 5KB Gzip Limit
 
 ## 📚 Dokumentation
 
