@@ -158,8 +158,15 @@ export async function setupRPC() {
 }
 
 export async function cleanupRPC() {
-  if (rpcPort1) rpcPort1.close()
-  if (rpcPort2) rpcPort2.close()
+  if (rpcPort1) {
+    // Unref to allow process to exit
+    if (rpcPort1.unref) rpcPort1.unref()
+    rpcPort1.close()
+  }
+  if (rpcPort2) {
+    if (rpcPort2.unref) rpcPort2.unref()
+    rpcPort2.close()
+  }
   rpcRemote = null
   rpcPort1 = null
   rpcPort2 = null

@@ -44,6 +44,8 @@ jobs:
           pnpm install
           pnpm run build
           cp dist/size-report.json ../pr-size-report.json
+          echo "PR Bundle size report:"
+          cat ../pr-size-report.json
           
       - name: Build base version
         run: |
@@ -54,6 +56,8 @@ jobs:
           pnpm install
           pnpm run build
           cp dist/size-report.json ../../base-size-report.json
+          echo "Base Bundle size report:"
+          cat ../../base-size-report.json
           
       - name: Generate size comparison
         id: size-compare

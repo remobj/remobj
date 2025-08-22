@@ -1,0 +1,37 @@
+{
+  "recommendations": [
+    // TypeScript & JavaScript
+    "dbaeumer.vscode-eslint",
+    "ms-vscode.vscode-typescript-next",
+    
+    // Code Quality
+    "streetsidesoftware.code-spell-checker",
+    "editorconfig.editorconfig",
+    
+    // Git
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+    
+    // Testing
+    "vitest.explorer",
+    "ryanluker.vscode-coverage-gutters",
+    
+    // Markdown & Documentation
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    
+    // Development Tools
+    "christian-kohler.npm-intellisense",
+    "christian-kohler.path-intellisense",
+    "mikestead.dotenv",
+    
+    // Formatting
+    "esbenp.prettier-vscode",
+    
+    // YAML
+    "redhat.vscode-yaml"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-typescript-tslint-plugin" // Deprecated
+  ]
+}

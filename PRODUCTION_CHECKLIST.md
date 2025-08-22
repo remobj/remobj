@@ -17,10 +17,10 @@
 - [ ] Circular Proxy Reference Handling verbessern
 
 #### 🟢 Developer Experience
-- [ ] .vscode/extensions.json mit empfohlenen Extensions
-- [ ] .vscode/launch.json für Debugging
-- [ ] Devcontainer Konfiguration
-- [ ] Error Codes (E001-E011) dokumentieren
+- [x] .vscode/extensions.json mit empfohlenen Extensions
+- [x] .vscode/launch.json für Debugging (6 Debug-Konfigurationen)
+- [x] Devcontainer Konfiguration (TypeScript-Node mit PNPM)
+- [x] Error Codes (E001-E011) dokumentiert in docs/error-codes.md
 
 ---
 

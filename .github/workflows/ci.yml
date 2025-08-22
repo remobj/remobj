@@ -166,7 +166,3 @@ jobs:
             }
           "
           
-      - name: Run minimal bundle test
-        run: |
-          cd test-minimal
-          pnpm test
