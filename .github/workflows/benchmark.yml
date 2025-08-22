@@ -16,6 +16,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         node-version: [20.x]
+        runtime: [node, deno]
       fail-fast: false
         
     steps:
@@ -35,6 +36,12 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
     
+    - name: Setup Deno
+      if: matrix.runtime == 'deno'
+      uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.x
+    
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
     
@@ -42,12 +49,14 @@ jobs:
       run: npm run build
     
     - name: Install benchmark dependencies
+      if: matrix.runtime == 'node'
       run: |
         cd benchmark
         npm install
     
-    - name: Run benchmarks
-      id: bench
+    - name: Run Node benchmarks
+      if: matrix.runtime == 'node'
+      id: bench-node
       run: |
         cd benchmark
         node index.js > results.txt 2>&1
@@ -55,10 +64,20 @@ jobs:
         cat results.txt >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
     
+    - name: Run Deno benchmarks
+      if: matrix.runtime == 'deno'
+      id: bench-deno
+      run: |
+        cd benchmark
+        deno run --allow-read deno.ts > results.txt 2>&1
+        echo "results<<EOF" >> $GITHUB_OUTPUT
+        cat results.txt >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
     - name: Upload benchmark results
       uses: actions/upload-artifact@v4
       with:
-        name: benchmark-${{ matrix.os }}-node${{ matrix.node-version }}
+        name: benchmark-${{ matrix.os }}-${{ matrix.runtime }}${{ matrix.runtime == 'node' && matrix.node-version || '' }}
         path: benchmark/results.txt
     
     # For PRs, compare with main branch
@@ -74,12 +93,18 @@ jobs:
         pnpm install --frozen-lockfile
         npm run build
     
-    - name: Run main branch benchmarks
-      if: github.event_name == 'pull_request'
+    - name: Run main branch Node benchmarks
+      if: github.event_name == 'pull_request' && matrix.runtime == 'node'
       run: |
         cd benchmark
         npm install
         node index.js > main-results.txt 2>&1
+    
+    - name: Run main branch Deno benchmarks
+      if: github.event_name == 'pull_request' && matrix.runtime == 'deno'
+      run: |
+        cd benchmark
+        deno run --allow-read --allow-hrtime deno.ts > main-results.txt 2>&1
     
     - name: Generate comparison
       if: github.event_name == 'pull_request'
@@ -163,8 +188,10 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const comparison = `${{ steps.compare.outputs.comparison }}`;
+          const runtime = '${{ matrix.runtime }}';
+          const nodeVersion = runtime === 'node' ? ' ${{ matrix.node-version }}' : '';
           
-          const body = `## Benchmark Results (${{ matrix.os }} - Node ${{ matrix.node-version }})
+          const body = `## Benchmark Results (${{ matrix.os }} - ${runtime.charAt(0).toUpperCase() + runtime.slice(1)}${nodeVersion})
           
           ${comparison}
           

@@ -30,6 +30,7 @@
     "bench": "npm run build && cd benchmark && npm start",
     "benchmark": "npm run bench",
     "bench:ci": "npm run build && cd benchmark && npm start",
+    "bench:deno": "npm run build && cd benchmark && deno run --allow-read deno.ts",
     "demo": "node demo/server.js"
   },
   "devDependencies": {
