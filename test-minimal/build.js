@@ -1,14 +1,36 @@
 import { rolldown } from 'rolldown'
 import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
 import { brotliCompressSync, constants, gzipSync } from 'node:zlib'
+import { join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 async function build() {
   console.log('Building minimal test bundle...\n')
   
+  // Check if packages are built
+  const corePath = resolve(__dirname, '../packages/core/dist/core.esm.js')
+  const coreExists = existsSync(corePath)
+  
+  if (!coreExists) {
+    console.warn('⚠️  @remobj/core not built yet, bundling with external import')
+    console.warn('   Run "npm run build" in the root first for accurate size!')
+  }
+  
   const build = await rolldown({
     input: './src/simple.js',
-    external: [],
+    external: coreExists ? [] : ['@remobj/core'],
+    plugins: coreExists ? [{
+      name: 'resolve-remobj',
+      resolveId(source) {
+        if (source === '@remobj/core') {
+          return corePath
+        }
+        return null
+      }
+    }] : [],
     treeshake: {
       preset: 'recommended',
       moduleSideEffects: false

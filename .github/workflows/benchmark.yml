@@ -7,6 +7,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   benchmark:
     name: Run Benchmarks
@@ -102,16 +107,18 @@ jobs:
     
     - name: Run main branch Node benchmarks
       if: github.event_name == 'pull_request' && matrix.runtime == 'node'
+      shell: bash
       run: |
         cd benchmark
         npm install
-        node index.js > main-results.txt 2>&1
+        timeout 60 node index.js > main-results.txt 2>&1 || true
     
     - name: Run main branch Deno benchmarks
       if: github.event_name == 'pull_request' && matrix.runtime == 'deno'
+      shell: bash
       run: |
         cd benchmark
-        deno run --allow-read --allow-hrtime deno.ts > main-results.txt 2>&1
+        deno run --allow-all deno.ts > main-results.txt 2>&1 || true
     
     - name: Generate comparison
       if: github.event_name == 'pull_request'
@@ -122,7 +129,9 @@ jobs:
         const fs = require('fs');
         
         function parseResults(text) {
-          const lines = text.split('\\n');
+          // Remove ANSI escape codes
+          const cleanText = text.replace(/\\x1b\\[[0-9;]*m/g, '');
+          const lines = cleanText.split('\\n');
           const results = {};
           let currentTest = null;
           
