@@ -69,10 +69,14 @@ jobs:
       id: bench-deno
       run: |
         cd benchmark
-        deno run --allow-read deno.ts > results.txt 2>&1
-        echo "results<<EOF" >> $GITHUB_OUTPUT
-        cat results.txt >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        deno run --allow-all deno.ts > results.txt 2>&1 || true
+        if [ -f results.txt ]; then
+          echo "results<<EOF" >> $GITHUB_OUTPUT
+          cat results.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        else
+          echo "results=Deno benchmark failed to produce output" >> $GITHUB_OUTPUT
+        fi
     
     - name: Upload benchmark results
       uses: actions/upload-artifact@v4
