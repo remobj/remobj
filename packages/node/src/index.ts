@@ -1,7 +1,6 @@
-import type { Listener, PostMessageEndpoint } from '@remobj/core';
-import { devtools, getTraceID } from '@remobj/core'
-import { onGarbageCollected } from '@remobj/shared';
-import { WeakBiMap } from '@remobj/weakbimap';
+import { type Listener, type PostMessageEndpoint, devtools, getTraceID } from '@remobj/core'
+import { onGarbageCollected } from '@remobj/shared'
+import { WeakBiMap } from '@remobj/weakbimap'
 
 export interface NodeEndpoint {
   postMessage(message: any, transfer?: any[]): void;

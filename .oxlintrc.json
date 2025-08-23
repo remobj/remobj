@@ -38,17 +38,17 @@
     "max-params": "off",
     "max-lines": "off",
     "no-undefined": "off",
-    "no-inferrable-types": "off",
-    "no-unnecessary-type-constraint": "off",
-    "typescript-eslint/no-unnecessary-type-constraint": "off",
+    "no-inferrable-types": "warn",
+    "no-unnecessary-type-constraint": "warn",
+    "typescript-eslint/no-unnecessary-type-constraint": "warn",
     "no-plusplus": "off",
     "no-continue": "off",
     "no-empty-function": "off",
     "typescript-eslint/prefer-for-of": "off",
     "@typescript-eslint/prefer-for-of": "off",
     "unicorn/no-typeof-undefined": "off",
-    "no-return-assign": "off",
-    "require-await": "off"
+    "no-return-assign": "warn",
+    "require-await": "warn"
   },
   "globals": {
     "__DEV__": "readonly",

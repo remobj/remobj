@@ -1,6 +1,6 @@
-import { isObject, onGarbageCollected } from "@remobj/shared";
-import { realmId } from "./constants";
-import type { PostMessageEndpoint } from "./types";
+import { isObject, onGarbageCollected } from "@remobj/shared"
+import type { PostMessageEndpoint } from "./types"
+import { realmId } from "./constants"
 
 let devEP: WebSocket
 export function setDevtoolsEP(ep: WebSocket): void {
@@ -30,7 +30,7 @@ export function devtools(traceID: string, side: 'postMessage' | 'event', objectI
 
 export const getTraceID = (...data: unknown[]): string => {
   if(__DEV__ || __PROD_DEVTOOLS__) {
-    let traceID: string = ''
+    let traceID = ''
     for (let i = 0; i < data.length; i++) {
       const el = data[i];
       if(isObject(el) && 'traceID' in el) {
@@ -64,7 +64,7 @@ export function wrapEndpointDevtools(ep: PostMessageEndpoint, type = '', name = 
     const objectID = crypto.randomUUID()
 
     const mainListener = (ev: MessageEvent) => {
-      const data = ev.data
+      const { data } = ev
       const traceID = getTraceID(data)
       devtools(traceID, 'postMessage', objectID, type, name, '', data)
     }

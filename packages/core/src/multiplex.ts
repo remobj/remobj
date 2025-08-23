@@ -44,7 +44,7 @@ const endpointToRootChannel = new WeakBiMap<PostMessageEndpointBase<any>, Channe
  */
 export const createMultiplexedEndpoint = (
   baseEndpoint: PostMessageEndpointBase<any>,
-  name: string = ''
+  name = ''
 ): Channel<any> => {
   const existingChannelRef = endpointToRootChannel.get(baseEndpoint);
   if (existingChannelRef) {

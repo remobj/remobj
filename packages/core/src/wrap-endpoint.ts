@@ -33,8 +33,8 @@ export const wrapPostMessageEndpoint = <TThisRealm, TThatRealm>(
   endpoint: PostMessageEndpointBase<TThatRealm>,
   serializeOutgoing: (data: TThisRealm) => TThatRealm = (data: any) => data,
   deserializeIncoming: (data: TThatRealm) => TThisRealm = (data: any) => data,
-  type: string = '',
-  name: string = ''
+  type = '',
+  name = ''
 ): PostMessageEndpointBase<TThisRealm> => {
   const activeListeners = new WeakBiMap<Listener<TThisRealm>, true>()
   const wrapperID = /*#__PURE__*/ crypto.randomUUID();
@@ -106,7 +106,7 @@ export const wrapPostMessageEndpoint = <TThisRealm, TThatRealm>(
  */
 export const createJsonEndpoint = (
   stringEndpoint: PostMessageEndpointBase<string>,
-  name: string = ''
+  name = ''
 ): PostMessageEndpointBase<any> => {
   return /*#__PURE__*/ wrapPostMessageEndpoint(
     stringEndpoint,
@@ -123,7 +123,7 @@ export const connectEndpoints = (ep1: PostMessageEndpoint, ep2: PostMessageEndpo
 }
 
 
-export const createWebsocketEndpoint = (ws: WebSocket, name: string = ''): PostMessageEndpoint => {
+export const createWebsocketEndpoint = (ws: WebSocket, name = ''): PostMessageEndpoint => {
   const webSocketEpID = /*#__PURE__*/ crypto.randomUUID()
   const listenerMap = /*#__PURE__*/ new WeakBiMap<Listener<any>, true>()
 
