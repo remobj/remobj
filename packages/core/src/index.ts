@@ -30,5 +30,4 @@ export type {
   ForbiddenProperty 
 } from './rpc-types.js'
 
-// Development tools
-export { setDevtoolsEP } from './devtools.js'
+export { devtools, getTraceID, setDevtoolsEP, wrapEndpointDevtools } from './devtools.js'

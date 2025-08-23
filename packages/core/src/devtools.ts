@@ -1,12 +1,13 @@
-import { isObject } from "@remobj/shared";
+import { isObject, onGarbageCollected } from "@remobj/shared";
 import { realmId } from "./constants";
+import type { PostMessageEndpoint } from "./types";
 
 let devEP: WebSocket
 export function setDevtoolsEP(ep: WebSocket): void {
     if(__DEV__ || __PROD_DEVTOOLS__) {devEP = ep}
 }
 
-export function devtools(traceID: string, side: 'in' | 'out' | 'postMessage' | 'event', objectID: string, type: string, name: string, subName: string, data: any): void {
+export function devtools(traceID: string, side: 'postMessage' | 'event', objectID: string, type: string, name: string, subName: string, data: any): void {
   // console.log(JSON.stringify({
   //   side,
   //   objectID,
@@ -55,4 +56,33 @@ export const getTraceID = (...data: unknown[]): string => {
     return traceID
   }
   return ''
+}
+
+/** @internal */
+export function wrapEndpointDevtools(ep: PostMessageEndpoint, type = '', name = ''): PostMessageEndpoint {
+  if (__DEV__ || __PROD_DEVTOOLS__) {
+    const objectID = crypto.randomUUID()
+
+    const mainListener = (ev: MessageEvent) => {
+      const data = ev.data
+      const traceID = getTraceID(data)
+      devtools(traceID, 'postMessage', objectID, type, name, '', data)
+    }
+    ep.addEventListener('message', mainListener)
+
+    const wrapedEP: PostMessageEndpoint =  {
+      postMessage: (data) => {
+        const traceID = getTraceID(data)
+        devtools(traceID, 'postMessage', objectID, type, name, '', data)
+        ep.postMessage(data)
+      }, 
+      addEventListener: (type, listener) => ep.addEventListener(type, listener),
+      removeEventListener: (type, listener) => ep.removeEventListener(type, listener)
+    }
+
+    onGarbageCollected(wrapedEP, () => ep.removeEventListener('message', mainListener))
+
+    return wrapedEP
+  }
+  return ep
 }
