@@ -1,5 +1,5 @@
-import { defineWorkspace } from 'vitest/config'
 import { createWorkspaceAliases } from './scripts/workspace-aliases.js'
+import { defineWorkspace } from 'vitest/config'
 
 export default defineWorkspace([
   {

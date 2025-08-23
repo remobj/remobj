@@ -91,9 +91,37 @@ importers:
         specifier: ^8.5.10
         version: 8.18.1
 
+  packages/node:
+    dependencies:
+      '@remobj/core':
+        specifier: workspace:*
+        version: link:../core
+      '@remobj/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@remobj/weakbimap':
+        specifier: workspace:*
+        version: link:../weakbimap
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.11
+
   packages/shared: {}
 
   packages/weakbimap: {}
+
+  packages/web:
+    dependencies:
+      '@remobj/core':
+        specifier: workspace:*
+        version: link:../core
+      '@remobj/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@types/web':
+        specifier: ^0.0.263
+        version: 0.0.263
 
 packages:
 
@@ -716,6 +744,9 @@ packages:
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
 
+  '@types/node@20.19.11':
+    resolution: {integrity: sha512-uug3FEEGv0r+jrecvUUpbY8lLisvIjg6AAic6a2bSP5OEOLeJsDSnvhCDov7ipFFMXS3orMpzlmi0ZcuGkBbow==}
+
   '@types/node@24.3.0':
     resolution: {integrity: sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==}
 
@@ -724,6 +755,9 @@ packages:
 
   '@types/web-bluetooth@0.0.21':
     resolution: {integrity: sha512-oIQLCGWtcFZy2JW77j9k8nHzAOpqMHLQejDA48XXMWH6tjCQHz5RCFz1bzsmROyL6PUm+LLnUiI4BCn221inxA==}
+
+  '@types/web@0.0.263':
+    resolution: {integrity: sha512-wxGFP3aj57jvnCZPsKEt1cZF83ohN95A/tJME6oa2mjPlMmVZONos5LmRWJuaYtVw1WjDW36hMBYosMUGEo9Xw==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -1843,6 +1877,9 @@ packages:
   uc.micro@2.1.0:
     resolution: {integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==}
 
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+
   undici-types@7.10.0:
     resolution: {integrity: sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag==}
 
@@ -2543,6 +2580,10 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
+  '@types/node@20.19.11':
+    dependencies:
+      undici-types: 6.21.0
+
   '@types/node@24.3.0':
     dependencies:
       undici-types: 7.10.0
@@ -2550,6 +2591,8 @@ snapshots:
   '@types/unist@3.0.3': {}
 
   '@types/web-bluetooth@0.0.21': {}
+
+  '@types/web@0.0.263': {}
 
   '@types/ws@8.18.1':
     dependencies:
@@ -3688,6 +3731,8 @@ snapshots:
   typescript@5.9.2: {}
 
   uc.micro@2.1.0: {}
+
+  undici-types@6.21.0: {}
 
   undici-types@7.10.0: {}
 

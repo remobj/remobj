@@ -1,16 +1,16 @@
 import { isSymbol, onGarbageCollected } from "@remobj/shared"
 import { WeakBiMap } from "@remobj/weakbimap"
 import { realmId } from "./constants"
-import { createMultiplexedEndpoint } from "./multiplex"
-import type { PostMessageEndpoint } from "./types"
-import { devtools, getTraceID } from "./devtools"
 import { createArgumentWrappingEndpoint } from "./rpc-wrapper"
+import { devtools, getTraceID } from "./devtools"
+import { createMultiplexedEndpoint } from "./multiplex"
 import type {
   ConsumeConfig,
   Remote,
   RemoteCallRequest,
   RemoteCallResponse
 } from "./rpc-types"
+import type { PostMessageEndpoint } from "./types"
 
 // Constants for connection management
 const PING_INTERVAL_MS = 60 * 1000 // 60 seconds

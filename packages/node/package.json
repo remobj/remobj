@@ -1,0 +1,47 @@
+{
+  "name": "@remobj/node",
+  "version": "0.0.0",
+  "description": "Node.js specific implementations for RemObj",
+  "type": "module",
+  "main": "./dist/node.cjs.js",
+  "module": "./dist/node.esm-bundler.js",
+  "types": "./dist/node.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.esm-bundler.js",
+      "require": "./dist/node.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node ../../scripts/build.js node",
+    "dev": "node ../../scripts/build.js node --dev",
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "dependencies": {
+    "@remobj/core": "workspace:*",
+    "@remobj/shared": "workspace:*",
+    "@remobj/weakbimap": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "buildOptions": {
+    "name": "RemObjNode",
+    "formats": [
+      "esm-production",
+      "esm-bundler",
+      "umd"
+    ],
+    "globalName": "RemObjNode",
+    "external": []
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

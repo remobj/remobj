@@ -1,8 +1,4 @@
 import { isArray, isFunction, isObject, isString } from "@remobj/shared"
-import { createMultiplexedEndpoint } from "./multiplex"
-import type { PostMessageEndpoint } from "./types"
-import { devtools, getTraceID } from "./devtools"
-import { createArgumentWrappingEndpoint } from "./rpc-wrapper"
 import {
     FORBIDDEN_PROPERTIES,
     type ForbiddenProperty,
@@ -10,6 +6,10 @@ import {
     type RemoteCallRequest,
     type RemoteCallResponse
 } from "./rpc-types"
+import { createArgumentWrappingEndpoint } from "./rpc-wrapper"
+import { devtools, getTraceID } from "./devtools"
+import { createMultiplexedEndpoint } from "./multiplex"
+import type { PostMessageEndpoint } from "./types"
 
 // Constants for connection management
 const PROVIDER_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
@@ -23,10 +23,11 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
     let timeoutHandle: any;
     const setProviderTimeout = () => {
         if (timeoutHandle) { clearTimeout(timeoutHandle) }
-        return timeoutHandle = setTimeout(() => multiplexedEndpoint.removeEventListener('message', messageListener), PROVIDER_TIMEOUT_MS)
+        timeoutHandle = setTimeout(() => multiplexedEndpoint.removeEventListener('message', messageListener), PROVIDER_TIMEOUT_MS)
+        return timeoutHandle
     }
 
-    const messageListener = async (event: MessageEvent) => {
+    const messageListener = (event: MessageEvent) => {
         setProviderTimeout()
         const messageData: RemoteCallRequest = event.data
 

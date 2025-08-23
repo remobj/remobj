@@ -1,11 +1,11 @@
 import { isArray, isClonable, isObject, isString, onGarbageCollected } from "@remobj/shared"
 import { WeakBiMap } from "@remobj/weakbimap"
 import type { Channel } from "./multiplex"
-import { wrapPostMessageEndpoint } from "./wrap-endpoint"
-import type { Plugins, RemoteCallRequest, RemoteCallResponse, WrappedArgument } from "./rpc-types"
-import { provide } from "./rpc-provider"
-import { consume } from "./rpc-consumer"
 import type { PostMessageEndpoint } from "./types"
+import type { Plugins, RemoteCallRequest, RemoteCallResponse, WrappedArgument } from "./rpc-types"
+import { consume } from "./rpc-consumer"
+import { provide } from "./rpc-provider"
+import { wrapPostMessageEndpoint } from "./wrap-endpoint"
 
 const plugins = new Map<keyof Plugins, { check: (v: unknown) => boolean, wrap: (v: any, wrap: (data: any) => WrappedArgument, unwrap: (data: WrappedArgument) => any) => any, unwrap: (v: any, wrap: (data: any) => WrappedArgument, unwrap: (data: WrappedArgument) => any) => any }>()
 
@@ -15,7 +15,7 @@ export const registerPlugin = <K extends keyof Plugins>(key: K, check: (v: unkno
 
 registerPlugin('Date', d => d instanceof Date, d => d.getTime(), d => new Date(d))
 
-export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: string = ''): PostMessageEndpoint {
+export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name = ''): PostMessageEndpoint {
   const objectToIdMap = new WeakMap<any, string>()
   const idToProxyMap = new WeakBiMap<string, any>()
   const idToObjectMap = new WeakBiMap<string, any>()

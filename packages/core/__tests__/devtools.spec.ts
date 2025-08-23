@@ -20,7 +20,7 @@ describe('devtools', () => {
     setDevtoolsEP(mockWebSocket)
     
     const traceID = 'test-trace-123:1'
-    devtools(traceID, 'in', 'obj123', 'method', 'getData', 'subName', { value: 42 })
+    devtools(traceID, 'postMessage', 'obj123', 'method', 'getData', 'subName', { value: 42 })
     
     if (__DEV__ || __PROD_DEVTOOLS__) {
       expect(mockWebSocket.send).toHaveBeenCalled()
@@ -29,7 +29,7 @@ describe('devtools', () => {
       
       expect(parsed).toMatchObject({
         traceID,
-        side: 'in',
+        side: 'postMessage',
         objectID: 'obj123',
         type: 'method',
         subName: 'subName',
@@ -50,7 +50,7 @@ describe('devtools', () => {
     setDevtoolsEP(mockWebSocket)
     
     const traceID = 'test-trace-456:2'
-    devtools(traceID, 'out', 'obj456', 'property', 'name', 'test', 'testData')
+    devtools(traceID, 'event', 'obj456', 'property', 'name', 'test', 'testData')
     
     if (__DEV__ || __PROD_DEVTOOLS__) {
       expect(mockWebSocket.send).toHaveBeenCalled()
@@ -59,7 +59,7 @@ describe('devtools', () => {
       
       expect(parsed).toMatchObject({
         traceID,
-        side: 'out',
+        side: 'event',
         objectID: 'obj456',
         type: 'property',
         subName: 'test',
@@ -74,6 +74,6 @@ describe('devtools', () => {
     
     // Should not throw even without endpoint
     const traceID = 'test-trace-789:3'
-    expect(() => devtools(traceID, 'in', 'obj789', 'method', 'test', 'subtest', null)).not.toThrow()
+    expect(() => devtools(traceID, 'postMessage', 'obj789', 'method', 'test', 'subtest', null)).not.toThrow()
   })
 })
