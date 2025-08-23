@@ -1,7 +1,7 @@
 import { onGarbageCollected } from "@remobj/shared"
 import { WeakBiMap } from "@remobj/weakbimap"
 import { devtools, getTraceID } from "./devtools.js"
-import type { Listener, PostMessageEndpointBase } from "./types.js"
+import type { Listener, PostMessageEndpoint, PostMessageEndpointBase } from "./types.js"
 
 /**
  * Creates a wrapped PostMessageEndpoint that transforms data using provided functions
@@ -115,4 +115,45 @@ export const createJsonEndpoint = (
     'JSON-ENDPOINT',
     name
   )
+}
+
+export const connectEndpoints = (ep1: PostMessageEndpoint, ep2: PostMessageEndpoint): void => {
+  ep1.addEventListener('message', ev => ep2.postMessage(ev.data))
+  return ep2.addEventListener('message', ev => ep1.postMessage(ev.data))
+}
+
+
+export const createWebsocketEndpoint = (ws: WebSocket, name: string = ''): PostMessageEndpoint => {
+  const webSocketEpID = /*#__PURE__*/ crypto.randomUUID()
+  const listenerMap = /*#__PURE__*/ new WeakBiMap<Listener<any>, true>()
+
+  const mainListener = (ev: MessageEvent) => {
+    const data = /*#__PURE__*/ JSON.parse(ev.data)
+
+    if(__DEV__ || __PROD_DEVTOOLS__) {
+      const traceID = getTraceID(data)
+      devtools(traceID, 'event', webSocketEpID, 'WEBSOCKET', name, '', data)
+    }
+
+    const ev2 = /*#__PURE__*/ new MessageEvent('message', {data})
+    listenerMap.forEach((_, l) => l(ev2))
+  }
+
+  ws.addEventListener('message', mainListener)
+
+  const ep: PostMessageEndpoint = {
+    addEventListener: (_type, listener) => listenerMap.set(listener, true),
+    removeEventListener: (_type, listener) => listenerMap.delete(listener),
+    postMessage: (data) => {
+      if(__DEV__ || __PROD_DEVTOOLS__) {
+        const traceID = getTraceID(data)
+        devtools(traceID, 'postMessage', webSocketEpID, 'WEBSOCKET', name, '', data)
+      }
+      return ws.send(JSON.stringify(data))
+    }
+  }
+
+  onGarbageCollected(ep, () => ws.removeEventListener('message', mainListener))
+
+  return ep
 }
