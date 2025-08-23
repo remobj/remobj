@@ -114,7 +114,7 @@ export const createMultiplexedEndpoint = (
     baseEndpoint.removeEventListener('message', mainListener)
     channelRegistry.clear()
     channelListeners.clear()
-    endpointToRootChannel.delete(baseEndpoint)
+    return endpointToRootChannel.delete(baseEndpoint)
   })
 
   const rootChannel = createChannel('')

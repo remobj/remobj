@@ -122,8 +122,9 @@ export const connectEndpoints = (ep1: PostMessageEndpoint, ep2: PostMessageEndpo
   return ep2.addEventListener('message', ev => ep1.postMessage(ev.data))
 }
 
+type BaseSendingEndpoint = Omit<PostMessageEndpoint, 'postMessage'> & {send: PostMessageEndpoint['postMessage']}
 
-export const createWebsocketEndpoint = (ws: WebSocket, name = ''): PostMessageEndpoint => {
+export const createSendingEndpoint = (sendingEp: BaseSendingEndpoint, type = '', name = ''): PostMessageEndpoint => {
   const webSocketEpID = /*#__PURE__*/ crypto.randomUUID()
   const listenerMap = /*#__PURE__*/ new WeakBiMap<Listener<any>, true>()
 
@@ -132,14 +133,14 @@ export const createWebsocketEndpoint = (ws: WebSocket, name = ''): PostMessageEn
 
     if(__DEV__ || __PROD_DEVTOOLS__) {
       const traceID = getTraceID(data)
-      devtools(traceID, 'event', webSocketEpID, 'WEBSOCKET', name, '', data)
+      devtools(traceID, 'event', webSocketEpID, type, name, '', data)
     }
 
     const ev2 = /*#__PURE__*/ new MessageEvent('message', {data})
     listenerMap.forEach((_, l) => l(ev2))
   }
 
-  ws.addEventListener('message', mainListener)
+  sendingEp.addEventListener('message', mainListener)
 
   const ep: PostMessageEndpoint = {
     addEventListener: (_type, listener) => listenerMap.set(listener, true),
@@ -147,13 +148,15 @@ export const createWebsocketEndpoint = (ws: WebSocket, name = ''): PostMessageEn
     postMessage: (data) => {
       if(__DEV__ || __PROD_DEVTOOLS__) {
         const traceID = getTraceID(data)
-        devtools(traceID, 'postMessage', webSocketEpID, 'WEBSOCKET', name, '', data)
+        devtools(traceID, 'postMessage', webSocketEpID, type, name, '', data)
       }
-      return ws.send(JSON.stringify(data))
+      return sendingEp.send(JSON.stringify(data))
     }
   }
 
-  onGarbageCollected(ep, () => ws.removeEventListener('message', mainListener))
+  onGarbageCollected(ep, () => sendingEp.removeEventListener('message', mainListener))
 
   return ep
 }
+
+export const createWebsocketEndpoint = (ws: WebSocket, name: string): PostMessageEndpoint => createSendingEndpoint(ws, 'WEBSOCKET', name)

@@ -13,7 +13,7 @@ export type {
 
 
 // Endpoint functionality
-export { wrapPostMessageEndpoint, createJsonEndpoint, connectEndpoints, createWebsocketEndpoint } from './wrap-endpoint.js'
+export { wrapPostMessageEndpoint, createJsonEndpoint, connectEndpoints, createWebsocketEndpoint, createSendingEndpoint } from './wrap-endpoint.js'
 
 // Multiplexing functionality
 export { createMultiplexedEndpoint, type Channel } from './multiplex.js'

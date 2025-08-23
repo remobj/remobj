@@ -3,29 +3,31 @@ import type { PostMessageEndpoint } from "./types"
 import { realmId } from "./constants"
 
 let devEP: WebSocket
-export function setDevtoolsEP(ep: WebSocket): void {
+export const setDevtoolsEP = (ep: WebSocket): void => {
     if(__DEV__ || __PROD_DEVTOOLS__) {devEP = ep}
 }
 
-export function devtools(traceID: string, side: 'postMessage' | 'event', objectID: string, type: string, name: string, subName: string, data: any): void {
-  // console.log(JSON.stringify({
-  //   side,
-  //   objectID,
-  //   type,
-  //   name,
-  //   data
-  // }, undefined, 2))
-  devEP?.send(JSON.stringify({
-    traceID,
-    side,
-    objectID,
-    type, 
-    subName,
-    data,
-    realmId,
-    timeStamp: performance.now(),
-    date: (new Date().toISOString())
-  }))
+export const devtools = (traceID: string, side: 'postMessage' | 'event', objectID: string, type: string, name: string, subName: string, data: any): void => {
+  if(__DEV__ || __PROD_DEVTOOLS__) {
+    // console.log(JSON.stringify({
+    //   side,
+    //   objectID,
+    //   type,
+    //   name,
+    //   data
+    // }, undefined, 2))
+    devEP?.send(JSON.stringify({
+      traceID,
+      side,
+      objectID,
+      type, 
+      subName,
+      data,
+      realmId,
+      timeStamp: performance.now(),
+      date: (new Date().toISOString())
+    }))
+  }
 }
 
 export const getTraceID = (...data: unknown[]): string => {
@@ -59,7 +61,7 @@ export const getTraceID = (...data: unknown[]): string => {
 }
 
 /** @internal */
-export function wrapEndpointDevtools(ep: PostMessageEndpoint, type = '', name = ''): PostMessageEndpoint {
+export const wrapEndpointDevtools = (ep: PostMessageEndpoint, type = '', name = ''): PostMessageEndpoint => {
   if (__DEV__ || __PROD_DEVTOOLS__) {
     const objectID = crypto.randomUUID()
 
