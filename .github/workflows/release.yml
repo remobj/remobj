@@ -349,7 +349,7 @@ jobs:
           tar -czf "remobj-v${VERSION}.tar.gz" packages/*/dist/
       
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.validate.outputs.version }}
           name: v${{ needs.validate.outputs.version }}
