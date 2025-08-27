@@ -12,6 +12,16 @@ export const BUILD_FORMATS = {
       __PROD_DEVTOOLS__: "false",
     },
   },
+  "dts": {
+    file: (name) => `${name}.d.ts`,
+    format: "es",
+    defines: {
+      __DEV__: "false",
+      __TEST__: "false",
+      __BROWSER__: "false",
+      __PROD_DEVTOOLS__: "false",
+    },
+  },
   "esm-bundler": {
     file: (name) => `${name}.bundler.js`,
     format: "es",
@@ -93,20 +103,23 @@ export function resolveExternals(format, pkg, buildOptions = {}) {
   const userExternal = buildOptions.external || [];
 
   switch (format) {
-    case "umd":
+    case "umd": {
       // UMD builds bundle everything for standalone usage
       return userExternal;
+    }
 
     case "esm-production":
-    case "esm-bundler":
+    case "esm-bundler": {
       // ESM builds keep dependencies external for bundler compatibility
       return [
         ...Object.keys(pkg.dependencies || {}),
         ...Object.keys(pkg.peerDependencies || {}),
         ...userExternal,
       ];
+    }
 
-    default:
+    default: {
       return userExternal;
+    }
   }
 }

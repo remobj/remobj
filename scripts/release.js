@@ -23,7 +23,7 @@ function updateVersions(targetVersion) {
   const rootPkgPath = 'package.json'
   const rootPkg = require(`../${rootPkgPath}`)
   rootPkg.version = targetVersion
-  require('fs').writeFileSync(rootPkgPath, JSON.stringify(rootPkg, null, 2) + '\n')
+  require('node:fs').writeFileSync(rootPkgPath, JSON.stringify(rootPkg, undefined, 2) + '\n')
   
   // Update each package
   packages.forEach(packageName => {
@@ -41,7 +41,7 @@ function updateVersions(targetVersion) {
       })
     }
     
-    require('fs').writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n')
+    require('node:fs').writeFileSync(pkgPath, JSON.stringify(pkg, undefined, 2) + '\n')
   })
   
   console.log(`✅ Updated version to ${targetVersion} in all packages`)

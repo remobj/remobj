@@ -1,14 +1,16 @@
-import { describe, it, expect } from 'vitest'
-import { 
-  version, 
-  realmId,
-  wrapPostMessageEndpoint, 
-  createJsonEndpoint, 
-  createMultiplexedEndpoint,
-  consume,
+import { describe, expect, it } from 'vitest'
+import type {
   PostMessageEndpoint,
-  provide,
   Remote
+} from '../src/index';
+import { 
+  consume, 
+  createJsonEndpoint,
+  createMultiplexedEndpoint, 
+  provide, 
+  realmId,
+  version,
+  wrapPostMessageEndpoint
 } from '../src/index'
 
 describe('@remobj/core', () => {
@@ -71,7 +73,7 @@ describe('provide / consume', () => {
       const instance = await new api.c()
       
       if (instance) {
-        const result = await instance.a()
+        const result = await (instance as any).a()
         expect(result).toBe(42)
       } else {
         throw new Error('Instance is null!')
@@ -98,7 +100,7 @@ describe('provide / consume', () => {
       const instance = await new api.TestClass()
       
       // if (instance) {
-        const value = await instance.getValue()
+        const value = await (instance as any).getValue()
         expect(value).toBe(123)
       // }
     })
@@ -114,7 +116,7 @@ describe('provide / consume', () => {
       const obj = {
         TestClass,
         a: (x: Remote<TestClass>) => {
-          return x.getValue().then(v=>(v as any as number)*2)
+          return (x as any).getValue().then((v: any)=>(v as any as number)*2)
         }
       }
 
@@ -125,7 +127,7 @@ describe('provide / consume', () => {
       const instance = await new api.TestClass()
       
       // if (instance) {
-        const value = await instance.getValue()
+        const value = await (instance as any).getValue()
         expect(value).toBe(123)
 
 

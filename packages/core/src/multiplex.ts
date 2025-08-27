@@ -1,6 +1,7 @@
-import { WeakBiMap, onGarbageCollected } from "@remobj/shared"
+import { onGarbageCollected } from "@remobj/shared"
+import { WeakBiMap } from "@remobj/weakbimap"
 import { devtools, getTraceID } from "./devtools.js"
-import type { PostMessageEndpointBase, Listener } from "./types.js"
+import type { Listener, PostMessageEndpointBase } from "./types.js"
 
 interface MultiplexedMessage<T = unknown> {
   channelId: string
@@ -43,7 +44,7 @@ const endpointToRootChannel = new WeakBiMap<PostMessageEndpointBase<any>, Channe
  */
 export const createMultiplexedEndpoint = (
   baseEndpoint: PostMessageEndpointBase<any>,
-  name: string = ''
+  name = ''
 ): Channel<any> => {
   const existingChannelRef = endpointToRootChannel.get(baseEndpoint);
   if (existingChannelRef) {
@@ -60,7 +61,7 @@ export const createMultiplexedEndpoint = (
     
     if (__DEV__ || __PROD_DEVTOOLS__) {
       const traceID = getTraceID(data, event.data)
-      devtools(traceID, 'event', multiplexerID, 'CHANNEL', name, channelId + ' -> pre', event.data)
+      devtools(traceID, 'event', multiplexerID, 'CHANNEL', name, `${channelId} -> pre`, event.data)
       devtools(traceID, 'event', multiplexerID, 'CHANNEL', name, channelId, data)
     }
 
@@ -90,7 +91,7 @@ export const createMultiplexedEndpoint = (
         
         if (__DEV__ || __PROD_DEVTOOLS__) {
           const traceID = getTraceID(data, channelData)
-          devtools(traceID, "postMessage", multiplexerID, 'CHANNEL', name, channelId + ' -> pre', data)
+          devtools(traceID, "postMessage", multiplexerID, 'CHANNEL', name, `${channelId} -> pre`, data)
           devtools(traceID, "postMessage", multiplexerID, 'CHANNEL', name, channelId, data)
         }
 
@@ -113,7 +114,7 @@ export const createMultiplexedEndpoint = (
     baseEndpoint.removeEventListener('message', mainListener)
     channelRegistry.clear()
     channelListeners.clear()
-    endpointToRootChannel.delete(baseEndpoint)
+    return endpointToRootChannel.delete(baseEndpoint)
   })
 
   const rootChannel = createChannel('')

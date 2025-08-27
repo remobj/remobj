@@ -1,6 +1,5 @@
-import { WebSocketServer, type WebSocket } from "ws"
-import { createServer } from "http"
-import { type DevToolsMessage, type DevToolsServer } from "./types"
+import { WebSocket, WebSocketServer } from "ws"
+import type { DevToolsMessage, DevToolsServer } from "./types"
 
 export * from "./types"
 

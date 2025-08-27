@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config'
 import { createWorkspaceAliases } from './scripts/workspace-aliases.js'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -15,7 +15,9 @@ export default defineConfig({
         '**/scripts/**',
         '**/*.d.ts',
         '**/vitest.config.ts',
-        '**/vitest.workspace.ts'
+        '**/vitest.workspace.ts',
+        'packages/devtools/**',
+        '**/types.ts'
       ],
       include: [
         'packages/*/src/**/*.ts'

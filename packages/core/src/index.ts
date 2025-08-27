@@ -13,7 +13,7 @@ export type {
 
 
 // Endpoint functionality
-export { wrapPostMessageEndpoint, createJsonEndpoint } from './wrap-endpoint.js'
+export { wrapPostMessageEndpoint, createJsonEndpoint, connectEndpoints, createWebsocketEndpoint, createSendingEndpoint } from './wrap-endpoint.js'
 
 // Multiplexing functionality
 export { createMultiplexedEndpoint, type Channel } from './multiplex.js'
@@ -30,5 +30,4 @@ export type {
   ForbiddenProperty 
 } from './rpc-types.js'
 
-// Development tools
-export { setDevtoolsEP } from './devtools.js'
+export { devtools, getTraceID, setDevtoolsEP, wrapEndpointDevtools } from './devtools.js'

@@ -1,10 +1,11 @@
-import { isClonable, isObject, isString, WeakBiMap, onGarbageCollected, isArray } from "@remobj/shared"
-import { Channel } from "./multiplex"
-import { wrapPostMessageEndpoint } from "./wrap-endpoint"
-import { RemoteCallRequest, RemoteCallResponse, WrappedArgument, Plugins } from "./rpc-types"
-import { provide } from "./rpc-provider"
+import { isArray, isClonable, isObject, isString, onGarbageCollected } from "@remobj/shared"
+import { WeakBiMap } from "@remobj/weakbimap"
+import type { Channel } from "./multiplex"
+import type { PostMessageEndpoint } from "./types"
+import type { Plugins, RemoteCallRequest, RemoteCallResponse, WrappedArgument } from "./rpc-types"
 import { consume } from "./rpc-consumer"
-import { PostMessageEndpoint } from "./types"
+import { provide } from "./rpc-provider"
+import { wrapPostMessageEndpoint } from "./wrap-endpoint"
 
 const plugins = new Map<keyof Plugins, { check: (v: unknown) => boolean, wrap: (v: any, wrap: (data: any) => WrappedArgument, unwrap: (data: WrappedArgument) => any) => any, unwrap: (v: any, wrap: (data: any) => WrappedArgument, unwrap: (data: WrappedArgument) => any) => any }>()
 
@@ -14,7 +15,7 @@ export const registerPlugin = <K extends keyof Plugins>(key: K, check: (v: unkno
 
 registerPlugin('Date', d => d instanceof Date, d => d.getTime(), d => new Date(d))
 
-export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: string = ''): PostMessageEndpoint {
+export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name = ''): PostMessageEndpoint {
   const objectToIdMap = new WeakMap<any, string>()
   const idToProxyMap = new WeakBiMap<string, any>()
   const idToObjectMap = new WeakBiMap<string, any>()
@@ -26,7 +27,7 @@ export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: str
         type: 'raw',
         value: data
       }
-    } else {
+    }
       for (const [name, h] of plugins) {
         if (h.check(data)) {
           const e = h.wrap(data, wrapArgument, unwrapArgument)
@@ -54,17 +55,17 @@ export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: str
         type: 'wrapped',
         value: id
       }
-    }
+    
   }
 
   function unwrapArgument(data: WrappedArgument): any {
     if (data.type === 'raw') {
       return data.value
-    } else {
+    }
       const h = plugins.get(data.type as keyof Plugins)
       if (h) {
         const d = h.unwrap(data.value, wrapArgument, unwrapArgument)
-        if (d) return d
+        if (d) {return d}
       }
 
       // Handle wrapped type
@@ -76,10 +77,10 @@ export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: str
         }
 
         const cacheData = idToObjectMap.get(channelId)
-        if (cacheData) return cacheData
+        if (cacheData) {return cacheData}
 
         const cachedProxy = idToProxyMap.get(channelId)
-        if (cachedProxy) return cachedProxy
+        if (cachedProxy) {return cachedProxy}
 
         const channel = endpoint.createSubChannel(channelId)
         const proxy = consume(channel)
@@ -95,23 +96,21 @@ export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: str
 
       // Return undefined for unknown types
       return undefined
-    }
+    
   }
 
   function handleData(data: RemoteCallRequest | RemoteCallResponse, isOutgoing: boolean) {
     
-    if ('type' in data && data.type === 'response') {
+    if ('type' in data && data.type === 'response' && data.resultType === 'result') {
       // Only process non-error results
-      if (data.resultType === 'result') {
-        // If we're wrapping (provider side), wrap the result
-        if (isOutgoing) {
-          data.result = wrapArgument(data.result)
-        }
+      // If we're wrapping (provider side), wrap the result
+      if (isOutgoing) {
+        data.result = wrapArgument(data.result)
+      }
 
-        // If we're unwrapping (consumer side), check if result is wrapped
-        else if (!isOutgoing && data.result && isObject(data.result) && 'type' in data.result && 'value' in data.result) {
-          data.result = unwrapArgument(data.result as WrappedArgument)
-        }
+      // If we're unwrapping (consumer side), check if result is wrapped
+      else if (!isOutgoing && data.result && isObject(data.result) && 'type' in data.result && 'value' in data.result) {
+        data.result = unwrapArgument(data.result as any as WrappedArgument)
       }
     }
 
@@ -120,13 +119,13 @@ export function createArgumentWrappingEndpoint(endpoint: Channel<any>, name: str
         if (isOutgoing) {
           // When sending, wrap all arguments
           return wrapArgument(v)
-        } else {
+        }
           // When receiving, unwrap only if it's a wrapped argument
           if (isObject(v) && 'type' in v && 'value' in v) {
-            return unwrapArgument(v as WrappedArgument)
+            return unwrapArgument(v as any as WrappedArgument)
           }
           return v;
-        }
+        
       })
     }
 

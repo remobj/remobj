@@ -27,7 +27,7 @@ export interface Plugins {
  * @template T - The original type to transform
  * @template B - Whether to enable deep proxying (default: true)
  */
-export type Remote<T extends unknown, B = true> =
+export type Remote<T, B = true> =
     T extends symbol ? Promise<null> :
     T extends number | string | boolean | bigint | null | undefined ? Promise<T> :
     T extends { new(...args: infer ARGS): infer RETURN } ? { new(...args: ARGS): Promise<Remote<RETURN>> } :
@@ -64,6 +64,7 @@ export interface RemoteCallResponse {
     resultType: 'result' | 'error'
     result: any
     providerID: string
+    consumerID: string
 }
 
 /**
@@ -85,4 +86,4 @@ export interface ConsumeConfig {
 /**
  * Represents wrapped function arguments that may need special handling
  */
-export type WrappedArgument =  { type: string; value: any }
+export interface WrappedArgument { type: string; value: any }

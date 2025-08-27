@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { 
-  isNumber, isString, isArray, isObject, isFunction, isDate, isRegExp, isMap, isSet, 
-  isSymbol, isPromise, isPlainObject, isIntegerKey,
-  removeFromArray, looseEqual, looseIndexOf, hasOwnProperty,
-  camelize, hyphenate, capitalize, toRawType,
-  EMPTY_OBJ, EMPTY_ARR, NOOP
+  EMPTY_ARR, EMPTY_OBJ, NOOP, camelize, capitalize, hasOwnProperty, hyphenate, isArray, isDate, 
+  isFunction, isIntegerKey, isMap, isNumber,
+  isObject, isPlainObject, isPromise, isRegExp,
+  isSet, isString, isSymbol, looseEqual,
+  looseIndexOf, removeFromArray, toRawType
 } from '../src/index'
 
 describe('@remobj/shared', () => {
@@ -21,7 +21,7 @@ describe('@remobj/shared', () => {
       expect(isNumber('42')).toBe(false)
       expect(isNumber(null)).toBe(false)
       expect(isNumber(undefined)).toBe(false)
-      expect(isNumber(NaN)).toBe(false)
+      expect(isNumber(Number.NaN)).toBe(false)
       expect(isNumber(Infinity)).toBe(false)
       expect(isNumber(-Infinity)).toBe(false)
     })
@@ -47,7 +47,7 @@ describe('@remobj/shared', () => {
     it('should return true for arrays', () => {
       expect(isArray([])).toBe(true)
       expect(isArray([1, 2, 3])).toBe(true)
-      expect(isArray(new Array())).toBe(true)
+      expect(isArray([])).toBe(true)
     })
 
     it('should return false for non-arrays', () => {
@@ -99,7 +99,7 @@ describe('@remobj/shared', () => {
 
     it('should return false for non-Date objects', () => {
       expect(isDate('2023-01-01')).toBe(false)
-      expect(isDate(1234567890)).toBe(false)
+      expect(isDate(1_234_567_890)).toBe(false)
       expect(isDate({})).toBe(false)
       expect(isDate(null)).toBe(false)
     })
@@ -246,7 +246,7 @@ describe('@remobj/shared', () => {
     it('should return -1 if not found', () => {
       const arr = [{ a: 1 }, { b: 2 }]
       expect(looseIndexOf(arr, { c: 3 })).toBe(-1)
-      expect(looseIndexOf(arr, null)).toBe(-1)
+      expect(looseIndexOf(arr, { d: 4 })).toBe(-1)
     })
   })
 

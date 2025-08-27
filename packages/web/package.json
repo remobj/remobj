@@ -1,0 +1,42 @@
+{
+  "name": "@remobj/web",
+  "version": "0.1.0",
+  "description": "Web browser specific implementations for RemObj",
+  "type": "module",
+  "main": "./dist/web.cjs.js",
+  "module": "./dist/web.esm-bundler.js",
+  "unpkg": "./dist/web.global.js",
+  "types": "./dist/web.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/web.d.ts",
+      "import": "./dist/web.esm-bundler.js",
+      "require": "./dist/web.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node ../../scripts/build.js web",
+    "dev": "node ../../scripts/build.js web --dev",
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "dependencies": {
+    "@remobj/core": "workspace:*",
+    "@remobj/shared": "workspace:*",
+    "@types/web": "^0.0.263"
+  },
+  "buildOptions": {
+    "name": "RemObjWeb",
+    "formats": [
+      "esm-production",
+      "esm-bundler",
+      "umd"
+    ],
+    "globalName": "RemObjWeb",
+    "external": []
+  }
+}

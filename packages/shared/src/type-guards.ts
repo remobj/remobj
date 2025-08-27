@@ -50,6 +50,7 @@ export const toRawType = (value: unknown): string => /*#__PURE__*/ toTypeString(
  * }
  * ```
  */
+// eslint-disable-next-line prefer-destructuring
 export const isArray: typeof Array.isArray = Array.isArray
 
 /**
@@ -308,7 +309,7 @@ export const isIntegerKey = (key: unknown): boolean =>
   /*#__PURE__*/ isString(key) &&
   key !== 'NaN' &&
   key[0] !== '-' &&
-  '' + /*#__PURE__*/ Number.parseInt(key, 10) === key
+  `${/*#__PURE__*/ Number.parseInt(key, 10)}` === key
 
 
 
@@ -323,12 +324,12 @@ export function hasOnlyPlainObjects(data: unknown): boolean {
 
   const checkObject = (value: unknown): boolean => {
     // Primitives are OK
-    if (value === null || value === undefined) return true
+    if (value === null || value === undefined) {return true}
 
-    if (!isObject(value)) return true
+    if (!isObject(value)) {return true}
 
     // Prevent infinite recursion
-    if (seen.has(value as object)) return true
+    if (seen.has(value as object)) {return true}
     seen.add(value as object)
 
     // Arrays are OK, but check their contents
@@ -353,7 +354,7 @@ const clonableCache = new WeakMap<object, boolean>()
 
 export const isClonable = (data: unknown): boolean => {
   // Fast path for primitives
-  if (data === null || data === undefined) return true
+  if (data === null || data === undefined) {return true}
   
   const type = typeof data
   if (type === 'string' || type === 'number' || type === 'boolean' || type === 'bigint') {
@@ -368,10 +369,10 @@ export const isClonable = (data: unknown): boolean => {
   if (type === 'object') {
     // Check cache
     const cached = clonableCache.get(data as object)
-    if (cached !== undefined) return cached
+    if (cached !== undefined) {return cached}
     
     // Fast checks for known clonable types
-    const constructor = (data as any).constructor
+    const { constructor } = data as any
     if (constructor === Object || constructor === Array || constructor === null) {
       // For plain objects and arrays, we still need to check contents
       const result = hasOnlyPlainObjects(data)

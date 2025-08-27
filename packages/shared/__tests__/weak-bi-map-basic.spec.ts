@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { WeakBiMap } from '../src/weak-bi-map'
+import { describe, expect, it } from 'vitest'
+import { WeakBiMap } from '@remobj/weakbimap'
 
 describe('WeakBiMap basic functionality', () => {
   it('should handle basic map operations', () => {
@@ -41,8 +41,8 @@ describe('WeakBiMap basic functionality', () => {
     map.set('key1', obj1)
     map.set('key2', obj2)
     
-    const collected: Array<[string, object]> = []
-    map.forEach((value, key) => {
+    const collected: [string, object][] = []
+    map.forEach((value: any, key: any) => {
       collected.push([key, value])
     })
     
@@ -60,19 +60,19 @@ describe('WeakBiMap basic functionality', () => {
     map.set('key2', obj2)
     
     // Keys iterator
-    const keys = Array.from(map.keys())
+    const keys = [...map.keys()]
     expect(keys).toHaveLength(2)
     expect(keys).toContain('key1')
     expect(keys).toContain('key2')
     
     // Values iterator
-    const values = Array.from(map.values())
+    const values = [...map.values()]
     expect(values).toHaveLength(2)
     expect(values).toContain(obj1)
     expect(values).toContain(obj2)
     
     // Entries iterator
-    const entries = Array.from(map.entries())
+    const entries = [...map.entries()]
     expect(entries).toHaveLength(2)
     expect(entries).toContainEqual(['key1', obj1])
     expect(entries).toContainEqual(['key2', obj2])
@@ -86,7 +86,7 @@ describe('WeakBiMap basic functionality', () => {
     map.set('key1', obj1)
     map.set('key2', obj2)
     
-    const collected: Array<[string, object]> = []
+    const collected: [string, object][] = []
     for (const entry of map) {
       collected.push(entry)
     }

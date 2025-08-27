@@ -113,6 +113,8 @@ export const looseEqual = (firstValue: unknown, secondValue: unknown): boolean =
  * @param value - The value to search for
  * @returns The index of the first matching element, or -1 if not found
  * 
+ * @__NO_SIDE_EFFECTS__
+ * 
  * @example
  * ```typescript
  * const arr = [1, {a: 1}, [1, 2], new Date('2024-01-01')]
@@ -124,6 +126,5 @@ export const looseEqual = (firstValue: unknown, secondValue: unknown): boolean =
  * console.log(looseIndexOf(arr, 'not found'))         // -1
  * ```
  */
-/* @__NO_SIDE_EFFECTS__ */
 export const looseIndexOf = (array: unknown[], value: unknown): number => 
   array.findIndex((item: unknown): boolean => /*#__PURE__*/ looseEqual(item, value))

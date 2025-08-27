@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+# Exit on error
+set -e
+
+echo "📝 Validating commit message..."
+
+# Run commitlint on the commit message
+npx --no -- commitlint --edit "$1"
+
+echo "✅ Commit message follows conventional format!"

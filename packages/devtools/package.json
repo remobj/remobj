@@ -1,6 +1,6 @@
 {
   "name": "@remobj/devtools",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "DevTools server for RemObj debugging",
   "sideEffects": false,
   "type": "module",
@@ -19,11 +19,26 @@
   },
   "files": [
     "dist",
-    "client"
+    "client",
+    "dist/*.map"
   ],
   "buildOptions": {
-    "formats": ["esm-bundler"],
-    "external": ["ws", "http", "path", "url", "fs", "process", "fs/promises", "node:fs", "node:path", "node:url", "node:http"],
+    "formats": [
+      "esm-bundler"
+    ],
+    "external": [
+      "ws",
+      "http",
+      "path",
+      "url",
+      "fs",
+      "process",
+      "fs/promises",
+      "node:fs",
+      "node:path",
+      "node:url",
+      "node:http"
+    ],
     "globalName": "RemObjDevTools"
   },
   "dependencies": {
@@ -38,5 +53,15 @@
     "start": "tsx ./src/server.ts",
     "dev": "node ../../scripts/build.js devtools --dev",
     "build": "node ../../scripts/build.js devtools"
-  }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remobj/remobj.git",
+    "directory": "packages/devtools"
+  },
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "homepage": "https://github.com/remobj/remobj/tree/main/packages/devtools#readme"
 }

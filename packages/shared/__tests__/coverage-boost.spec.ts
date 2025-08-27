@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
-  NOOP,
-  EMPTY_OBJ,
   EMPTY_ARR,
+  EMPTY_OBJ,
+  NOOP,
   isPromise,
-  toRawType,
   looseEqual,
-  looseIndexOf
+  looseIndexOf,
+  toRawType
 } from '../src/index'
 
 describe('shared coverage boost', () => {

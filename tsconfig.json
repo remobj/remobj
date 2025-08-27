@@ -13,11 +13,12 @@
     "skipLibCheck": true,
     "paths": {
       "@remobj/shared": ["packages/shared/src"],
-      "@remobj/add": ["packages/add/src"],
-      "@remobj/mul": ["packages/mul/src"],
-      "@remobj/core": ["packages/core/src"]
+      "@remobj/web": ["packages/web/src"],
+      "@remobj/node": ["packages/node/src"],
+      "@remobj/core": ["packages/core/src"],
+      "@remobj/weakbimap": ["packages/weakbimap/src"]
     },
-    "types": ["vitest/globals", "node"]
+    "types": ["vitest/globals"]
   },
   "include": [
     "packages/global.d.ts",

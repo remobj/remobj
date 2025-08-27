@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
-import { provide, consume } from '../src/index'
+import { describe, expect, it, vi } from 'vitest'
+import { consume, provide } from '../src/index'
 import { wrapPostMessageEndpoint } from '../src/wrap-endpoint'
 import { createArgumentWrappingEndpoint } from '../src/rpc-wrapper'
 import type { PostMessageEndpoint } from '../src/types'
@@ -146,6 +146,7 @@ describe('coverage boost tests', () => {
   describe('RPC wrapper plugin system', () => {
     it('should handle Date objects through wrapper', () => {
       const mockChannel = {
+        id: 'mock-channel',
         postMessage: vi.fn(),
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
@@ -156,7 +157,7 @@ describe('coverage boost tests', () => {
           close: vi.fn()
         }),
         close: vi.fn()
-      }
+      } as any
 
       const endpoint = createArgumentWrappingEndpoint(mockChannel)
       
@@ -173,6 +174,7 @@ describe('coverage boost tests', () => {
 
     it('should handle RegExp objects through wrapper', () => {
       const mockChannel = {
+        id: 'mock-channel',
         postMessage: vi.fn(),
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
@@ -183,7 +185,7 @@ describe('coverage boost tests', () => {
           close: vi.fn()
         }),
         close: vi.fn()
-      }
+      } as any
 
       const endpoint = createArgumentWrappingEndpoint(mockChannel)
       

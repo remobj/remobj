@@ -1,15 +1,16 @@
-import { isSymbol, WeakBiMap, onGarbageCollected } from "@remobj/shared"
+import { isSymbol, onGarbageCollected } from "@remobj/shared"
+import { WeakBiMap } from "@remobj/weakbimap"
 import { realmId } from "./constants"
-import { createMultiplexedEndpoint } from "./multiplex"
-import { PostMessageEndpoint } from "./types"
-import { devtools, getTraceID } from "./devtools"
 import { createArgumentWrappingEndpoint } from "./rpc-wrapper"
-import {
+import { devtools, getTraceID } from "./devtools"
+import { createMultiplexedEndpoint } from "./multiplex"
+import type {
+  ConsumeConfig,
   Remote,
   RemoteCallRequest,
-  RemoteCallResponse,
-  ConsumeConfig
+  RemoteCallResponse
 } from "./rpc-types"
+import type { PostMessageEndpoint } from "./types"
 
 // Constants for connection management
 const PING_INTERVAL_MS = 60 * 1000 // 60 seconds
@@ -25,7 +26,7 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
   const pendingPromises = new Map<string, { resolve: (data: any) => void, reject: (data: any) => void }>()
   const proxyCache = new WeakBiMap<string, any>()
   const consumerID: string = /*#__PURE__*/ crypto.randomUUID()
-  const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), name + ' -> ArgumentWrapper')
+  const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), `${name} -> ArgumentWrapper`)
   const timeoutHandles = new Map<string, any>()
 
   const createPromise = (requestID: string, traceID: string) => {
@@ -33,25 +34,25 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
       let isSettled = false
       
       const cleanup = (): undefined => {
-        if (isSettled) return
+        if (isSettled) {return}
         isSettled = true
         
         const timeoutHandle = timeoutHandles.get(requestID)
-        if (timeoutHandle) clearTimeout(timeoutHandle)
+        if (timeoutHandle) {clearTimeout(timeoutHandle)}
         pendingPromises.delete(requestID)
         timeoutHandles.delete(requestID)
       }
 
       pendingPromises.set(requestID, {
         resolve: (data) => {
-          if (isSettled) return
-          if ((__DEV__ || __PROD_DEVTOOLS__)) devtools(traceID, 'event', traceID, 'PROMISE', requestID, 'resolve', data)
+          if (isSettled) {return}
+          if ((__DEV__ || __PROD_DEVTOOLS__)) {devtools(traceID, 'event', traceID, 'PROMISE', requestID, 'resolve', data)}
           cleanup()
           resolve(data)
         },
         reject: (error) => {
-          if (isSettled) return
-          if ((__DEV__ || __PROD_DEVTOOLS__)) devtools(traceID, 'event', traceID, 'PROMISE', requestID, 'reject', error)
+          if (isSettled) {return}
+          if ((__DEV__ || __PROD_DEVTOOLS__)) {devtools(traceID, 'event', traceID, 'PROMISE', requestID, 'reject', error)}
           cleanup()
           reject(error)
         }
@@ -86,7 +87,7 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
 
       if (message.resultType === 'error') {
         return pendingPromise?.reject(message.result)
-      } else if (message.resultType === 'result') {
+      }if (message.resultType === 'result') {
         return pendingPromise?.resolve(message.result)
       }
     }
@@ -127,36 +128,36 @@ export function consume<T = any>(endpoint: PostMessageEndpoint, config: ConsumeC
       return cachedProxy
     }
 
-    const remoteProxy = /*#__PURE__*/ new Proxy(class { }, {
-      get: (target, property, receiver) => {
+    const remoteProxy = /*#__PURE__*/ new Proxy(class {}, {
+      get: (_target, property, _receiver) => {
         if (property === 'then') {
           if (!propertyPath) {
-            return undefined;
+            return;
           }
           // Return a thenable that performs the await operation
           return remoteCall('await', propertyPath, []).then
-        } else {
+        }
           if (isSymbol(property)) {
             // Return undefined for symbols to prevent conversion errors
-            return undefined
+            return
           }
 
-          return createProxy(propertyPath + '/' + property)
-        }
+          return createProxy(`${propertyPath}/${property}`)
+        
       },
 
-      construct: (target, argumentsList, newTarget) => {
+      construct: (_target, argumentsList, _newTarget) => {
         return remoteCall('construct', propertyPath, argumentsList)
       },
 
-      apply: (target, thisArg, argumentsList) => {
+      apply: (_target, _thisArg, argumentsList) => {
         return remoteCall('call', propertyPath, argumentsList)
       },
 
-      set: (target, property, newValue, receiver) => {
-        if (isSymbol(property)) return false
+      set: (_target, property, newValue, _receiver) => {
+        if (isSymbol(property)) {return false}
 
-        remoteCall('set', propertyPath + '/' + property, [newValue])
+        remoteCall('set', `${propertyPath}/${property}`, [newValue])
         return true
       }
     })

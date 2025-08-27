@@ -12,25 +12,46 @@
       "import": "./dist/core.esm.js",
       "require": "./dist/core.umd.js",
       "browser": "./dist/core.umd.js",
-      "bundler": "./dist/core.bundler.js",
+      "bundler": {
+        "default": "./dist/core.bundler.js",
+        "source": "./dist/core.bundler.js.map"
+      },
       "types": "./dist/core.d.ts"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "dist/*.map"
   ],
   "sideEffects": false,
   "dependencies": {
     "@remobj/shared": "workspace:*",
-    "@remobj/add": "workspace:*",
-    "@remobj/mul": "workspace:*"
+    "@remobj/weakbimap": "workspace:*"
   },
   "buildOptions": {
     "name": "RemObjCore",
-    "formats": ["esm-production", "esm-bundler", "umd"],
+    "formats": [
+      "esm-production",
+      "esm-bundler",
+      "umd"
+    ],
     "globalName": "RemObj",
     "external": []
   },
-  "keywords": ["remobj", "core", "math", "utilities"],
-  "license": "MIT"
+  "keywords": [
+    "remobj",
+    "core",
+    "math",
+    "utilities"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remobj/remobj.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "homepage": "https://github.com/remobj/remobj/tree/main/packages/core#readme"
 }

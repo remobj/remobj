@@ -1,14 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { 
-  EMPTY_OBJ,
   EMPTY_ARR,
+  EMPTY_OBJ,
   NOOP,
-  remove,
   looseEqual,
   looseIndexOf,
-  toTypeString, 
-  toRawType,
-  def
+  toRawType
 } from '../src/index'
 
 describe('utils', () => {

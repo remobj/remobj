@@ -1,82 +1,282 @@
-name: Benchmarks
+name: Performance Benchmarks
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
 
 jobs:
   benchmark:
-    runs-on: ubuntu-latest
+    name: Run Benchmarks
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10  # Kill benchmarks after 10 minutes
     
+    strategy:
+      matrix:
+        os: [ubuntu-latest]  # Only Ubuntu - benchmarks hang on Windows
+        node-version: [20.x]
+        runtime: [node, deno]
+      fail-fast: false
+        
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     
-    - uses: pnpm/action-setup@v2
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
       with:
-        version: 8
+        version: 9
     
-    - uses: actions/setup-node@v4
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
     
+    - name: Setup Deno
+      if: matrix.runtime == 'deno'
+      uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.x
+    
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install --frozen-lockfile
     
     - name: Build packages
       run: npm run build
     
-    - name: Run benchmarks
-      run: npm run bench
-    
-    - name: Compare with baseline
-      if: github.event_name == 'pull_request'
+    - name: Install benchmark dependencies
+      if: matrix.runtime == 'node'
       run: |
-        # Checkout baseline from main branch
-        git checkout origin/main -- benchmarks/baseline.json || echo "No baseline found"
-        npm run bench:compare
+        cd benchmark
+        npm install
     
-    - name: Upload results
+    - name: Run Node benchmarks
+      if: matrix.runtime == 'node'
+      id: bench-node
+      shell: bash
+      run: |
+        cd benchmark
+        node index.js > results.txt 2>&1
+        echo "results<<EOF" >> $GITHUB_OUTPUT
+        cat results.txt >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Run Deno benchmarks
+      if: matrix.runtime == 'deno'
+      id: bench-deno
+      shell: bash
+      run: |
+        cd benchmark
+        deno run --allow-all deno.ts > results.txt 2>&1 || true
+        if [ -f results.txt ]; then
+          echo "results<<EOF" >> $GITHUB_OUTPUT
+          cat results.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        else
+          echo "results=Deno benchmark failed to produce output" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Upload benchmark results
       uses: actions/upload-artifact@v4
       with:
-        name: benchmark-results
-        path: benchmarks/results/*.json
+        name: benchmark-${{ matrix.os }}-${{ matrix.runtime }}${{ matrix.runtime == 'node' && matrix.node-version || '' }}
+        path: benchmark/results.txt
     
-    - name: Comment PR
+    # For PRs, compare with main branch
+    - name: Checkout main for comparison
+      if: github.event_name == 'pull_request'
+      run: |
+        git fetch origin main
+        git checkout origin/main -- .
+    
+    - name: Build main branch
+      if: github.event_name == 'pull_request'
+      run: |
+        pnpm install --frozen-lockfile
+        npm run build
+    
+    - name: Run main branch Node benchmarks
+      if: github.event_name == 'pull_request' && matrix.runtime == 'node'
+      shell: bash
+      run: |
+        cd benchmark
+        npm install
+        timeout 60 node index.js > main-results.txt 2>&1 || true
+    
+    - name: Run main branch Deno benchmarks
+      if: github.event_name == 'pull_request' && matrix.runtime == 'deno'
+      shell: bash
+      run: |
+        cd benchmark
+        deno run --allow-all deno.ts > main-results.txt 2>&1 || true
+    
+    - name: Generate comparison
+      if: github.event_name == 'pull_request'
+      id: compare
+      run: |
+        cd benchmark
+        node -e "
+        const fs = require('fs');
+        
+        function parseResults(text) {
+          // Remove ANSI escape codes
+          const cleanText = text.replace(/\\x1b\\[[0-9;]*m/g, '');
+          const lines = cleanText.split('\\n');
+          const results = {};
+          let currentTest = null;
+          
+          for (const line of lines) {
+            if (line.includes('✓')) {
+              currentTest = line.split('✓')[1].trim();
+              results[currentTest] = {};
+            } else if (currentTest && line.includes('Ops/sec:')) {
+              const match = line.match(/([\\d.]+[KM]?)\\s+ops/);
+              if (match) results[currentTest].ops = match[1];
+            } else if (currentTest && line.includes('Average:')) {
+              const match = line.match(/([\\d.]+)\\s+μs/);
+              if (match) results[currentTest].avg = parseFloat(match[1]);
+            }
+          }
+          return results;
+        }
+        
+        function parseOps(ops) {
+          if (ops.endsWith('M')) return parseFloat(ops) * 1000000;
+          if (ops.endsWith('K')) return parseFloat(ops) * 1000;
+          return parseFloat(ops);
+        }
+        
+        const current = fs.readFileSync('results.txt', 'utf8');
+        const main = fs.readFileSync('main-results.txt', 'utf8');
+        
+        const currentResults = parseResults(current);
+        const mainResults = parseResults(main);
+        
+        let output = '## 📊 Benchmark Comparison\\n\\n';
+        output += '| Test | Main | PR | Change |\\n';
+        output += '|------|------|----|---------:|\\n';
+        
+        let improved = 0, regressed = 0, unchanged = 0;
+        
+        for (const test in currentResults) {
+          if (mainResults[test]) {
+            const mainOps = parseOps(mainResults[test].ops || '0');
+            const currentOps = parseOps(currentResults[test].ops || '0');
+            const change = mainOps ? ((currentOps - mainOps) / mainOps * 100) : 0;
+            
+            let emoji = '⚪';
+            if (change > 5) { emoji = '🟢'; improved++; }
+            else if (change < -5) { emoji = '🔴'; regressed++; }
+            else unchanged++;
+            
+            const changeStr = change > 0 ? '+' + change.toFixed(1) : change.toFixed(1);
+            output += \`| \${test} | \${mainResults[test].ops || 'N/A'} | \${currentResults[test].ops || 'N/A'} | \${emoji} \${changeStr}% |\\n\`;
+          }
+        }
+        
+        output += '\\n### Summary\\n';
+        output += \`- 🟢 Improved: \${improved}\\n\`;
+        output += \`- 🔴 Regressed: \${regressed}\\n\`;
+        output += \`- ⚪ Unchanged: \${unchanged}\\n\`;
+        
+        fs.writeFileSync('comparison.md', output);
+        console.log(output);
+        " > /dev/null
+        
+        echo "comparison<<EOF" >> $GITHUB_OUTPUT
+        cat comparison.md >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Comment PR with results
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v7
       with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const fs = require('fs');
-          const path = require('path');
+          const comparison = `${{ steps.compare.outputs.comparison }}`;
+          const runtime = '${{ matrix.runtime }}';
+          const nodeVersion = runtime === 'node' ? ' ${{ matrix.node-version }}' : '';
           
-          // Find latest results
-          const resultsDir = 'benchmarks/results';
-          const files = fs.readdirSync(resultsDir);
-          const latest = files.sort().pop();
+          const body = `## Benchmark Results (${{ matrix.os }} - ${runtime.charAt(0).toUpperCase() + runtime.slice(1)}${nodeVersion})
           
-          if (!latest) return;
+          ${comparison}
           
-          // Read comparison output (would need to save this)
-          const output = '## Benchmark Results\n\nSee artifacts for detailed results.';
+          <details>
+          <summary>View full benchmark output</summary>
           
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
+          \`\`\`
+          ${{ steps.bench.outputs.results }}
+          \`\`\`
+          </details>`;
+          
+          // Try to find and update existing comment
+          const { data: comments } = await github.rest.issues.listComments({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: output
+            issue_number: context.issue.number,
           });
+          
+          const botComment = comments.find(comment => 
+            comment.user.type === 'Bot' && 
+            comment.body.includes('Benchmark Results') &&
+            comment.body.includes('${{ matrix.os }}')
+          );
+          
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: body
+            });
+          } else {
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+          }
+  
+  benchmark-summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    needs: benchmark
+    if: always()
     
-    - name: Update baseline
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: benchmark-*
+    
+    - name: Generate summary
       run: |
-        npm run bench:baseline
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git add benchmarks/baseline.json
-        git commit -m "chore: update benchmark baseline [skip ci]" || echo "No changes"
-        git push || echo "No changes to push"
+        echo "# 📊 Benchmark Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        for dir in benchmark-*/; do
+          if [ -d "$dir" ]; then
+            os_node=$(basename "$dir")
+            echo "## $os_node" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            # Extract key metrics
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            grep -E "(✓|Fastest operations:|Slowest operations:)" "$dir/results.txt" | head -20 >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+        done
+        
+        echo "✅ All benchmarks completed" >> $GITHUB_STEP_SUMMARY

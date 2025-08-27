@@ -1,6 +1,6 @@
 import type { DevToolsMessage } from "./types"
 
-let ws: WebSocket | null = null
+let ws: WebSocket | null
 let messageQueue: DevToolsMessage[] = []
 let isConnected = false
 
@@ -86,7 +86,7 @@ export function createDevToolsIntegration(): DevToolsIntegration {
 }
 
 // Global devtools instance
-let devtools: DevToolsIntegration | null = null
+let devtools: DevToolsIntegration | null
 
 export function getDevTools(): DevToolsIntegration {
   if (!devtools) {

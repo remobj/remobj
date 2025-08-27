@@ -11,20 +11,41 @@
     ".": {
       "import": "./dist/shared.esm.js",
       "require": "./dist/shared.umd.js",
-      "bundler": "./dist/shared.bundler.js",
+      "bundler": {
+        "default": "./dist/shared.bundler.js",
+        "source": "./dist/shared.bundler.js.map"
+      },
       "types": "./dist/shared.d.ts"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "dist/*.map"
   ],
-  "sideEffects": false, 
+  "sideEffects": false,
   "buildOptions": {
     "name": "RemObjShared",
-    "formats": ["esm-production", "esm-bundler", "umd"],
+    "formats": [
+      "esm-production",
+      "esm-bundler",
+      "umd"
+    ],
     "globalName": "RemObjShared",
     "external": []
   },
-  "keywords": ["utility", "shared", "remobj"],
-  "license": "MIT"
+  "keywords": [
+    "utility",
+    "shared",
+    "remobj"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remobj/remobj.git",
+    "directory": "packages/shared"
+  },
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "homepage": "https://github.com/remobj/remobj/tree/main/packages/shared#readme"
 }

@@ -1,0 +1,57 @@
+{
+  "name": "@remobj/weakbimap",
+  "version": "0.1.0",
+  "description": "Bidirectional weak map implementation supporting both primitive and object keys/values",
+  "main": "dist/weakbimap.umd.js",
+  "module": "dist/weakbimap.esm.js",
+  "browser": "dist/weakbimap.umd.js",
+  "types": "dist/weakbimap.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/weakbimap.esm.js",
+      "require": "./dist/weakbimap.umd.js",
+      "browser": "./dist/weakbimap.umd.js",
+      "bundler": {
+        "default": "./dist/weakbimap.bundler.js",
+        "source": "./dist/weakbimap.bundler.js.map"
+      },
+      "types": "./dist/weakbimap.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "dist/*.map"
+  ],
+  "sideEffects": false,
+  "buildOptions": {
+    "name": "WeakBiMap",
+    "formats": [
+      "esm-production",
+      "esm-bundler",
+      "umd"
+    ],
+    "globalName": "WeakBiMap",
+    "external": []
+  },
+  "keywords": [
+    "weakmap",
+    "bimap",
+    "bidirectional",
+    "map",
+    "weak",
+    "gc",
+    "memory",
+    "collection"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remobj/remobj.git",
+    "directory": "packages/weakbimap"
+  },
+  "bugs": {
+    "url": "https://github.com/remobj/remobj/issues"
+  },
+  "homepage": "https://github.com/remobj/remobj/tree/main/packages/weakbimap#readme"
+}

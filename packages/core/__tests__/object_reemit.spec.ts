@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { consume,  provide } from '../src/index'
 
 describe('object Reemit', () => {
@@ -21,7 +21,7 @@ describe('object Reemit', () => {
     const remote = consume<typeof api>(port2 as any)
 
     const instance = await (new remote.a())
-    expect(await instance.c).toBe(55)
+    expect(await (instance as any).c).toBe(55)
     console.log('=================')
     expect(await remote.b(instance)).toBe(55)
     

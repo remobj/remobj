@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+# Exit on error
+set -e
+
+echo "🚀 Running pre-push checks..."
+
+# Run type checking
+echo "📋 Type checking..."
+npm run typecheck
+
+# Run tests
+echo "🧪 Running tests..."
+npm test
+
+# Run build to ensure it works
+echo "🔨 Building packages..."
+npm run build
+
+echo "✅ All pre-push checks passed! Ready to push."

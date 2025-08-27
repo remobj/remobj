@@ -9,35 +9,47 @@ on:
 
 jobs:
   test:
-    name: Test
-    runs-on: ubuntu-latest
+    name: Test (${{ matrix.os }} / Node ${{ matrix.node-version }})
+    runs-on: ${{ matrix.os }}
     if: ${{ !startsWith(github.event.head_commit.message, 'release:') }}
     
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [18, 20, 22]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [20, 22]
+        exclude:
+          # Reduce matrix size - skip some combinations
+          - os: macos-latest
+            node-version: 20
+          - os: windows-latest
+            node-version: 20
     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+              
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: 'pnpm'
           
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --no-frozen-lockfile
         
       - name: Type check
-        run: npm run typecheck
+        run: pnpm run typecheck
         
       - name: Run tests
-        run: npm test
+        run: pnpm test
         
       - name: Build packages
-        run: npm run build
+        run: pnpm run build
         
   lint:
     name: Lint
@@ -46,15 +58,111 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+    
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: 'pnpm'
           
       - name: Install dependencies  
-        run: npm ci
+        run: pnpm install --no-frozen-lockfile
         
-      - name: Type check
-        run: npm run typecheck:build
+      - name: Lint files
+        run: pnpm run lint
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+    
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          
+      - name: Install dependencies  
+        run: pnpm install --no-frozen-lockfile
+        
+      - name: Run npm audit
+        run: pnpm audit --audit-level=moderate
+        continue-on-error: true
+        
+      - name: Run npm audit (production only)
+        run: pnpm audit --prod --audit-level=moderate
+        
+  bundle-size:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.event.head_commit.message, 'release:') }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+    
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          
+      - name: Install dependencies  
+        run: pnpm install --no-frozen-lockfile
+        
+      - name: Build packages
+        run: pnpm run build
+        
+      - name: Build minimal bundle
+        run: |
+          cd test-minimal
+          pnpm install
+          pnpm run build
+          
+      - name: Check bundle size
+        run: |
+          cd test-minimal
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const reportPath = path.join('dist', 'size-report.json');
+            
+            if (!fs.existsSync(reportPath)) {
+              console.error('❌ Size report not generated');
+              process.exit(1);
+            }
+            
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            const formatBytes = (b) => b < 1024 ? b + ' B' : (b/1024).toFixed(1) + ' KB';
+            
+            console.log('📦 Bundle Size Report');
+            console.log('='.repeat(50));
+            console.log('Original: ' + formatBytes(report.sizes.original));
+            console.log('Gzip:     ' + formatBytes(report.sizes.gzip));
+            console.log('Brotli:   ' + formatBytes(report.sizes.brotli));
+            console.log('='.repeat(50));
+            
+            // Check threshold
+            const MAX_GZIP = 5120; // 5KB
+            if (report.sizes.gzip > MAX_GZIP) {
+              console.log('❌ Bundle exceeds ' + formatBytes(MAX_GZIP) + ' limit!');
+              process.exit(1);
+            } else {
+              console.log('✅ Bundle within size limits');
+            }
+          "
+          

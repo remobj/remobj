@@ -1,15 +1,23 @@
-# RemObj Library
+# RemObj
 
-A modern monorepo library scaffolding based on Vue.js patterns, designed to support complex library architecture.
+[![CI Status](https://github.com/remobj/remobj/workflows/CI/badge.svg)](https://github.com/remobj/remobj/actions)
+[![Coverage](https://github.com/remobj/remobj/workflows/Code%20Coverage/badge.svg)](https://github.com/remobj/remobj/actions/workflows/coverage.yml)
+[![codecov](https://codecov.io/gh/remobj/remobj/branch/main/graph/badge.svg)](https://codecov.io/gh/remobj/remobj)
+[![npm version](https://img.shields.io/npm/v/@remobj/core.svg)](https://www.npmjs.com/package/@remobj/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A powerful JavaScript library for transparent remote object access and RPC (Remote Procedure Call) communication. RemObj enables seamless interaction with remote objects as if they were local, supporting multiple transport layers and advanced features like multiplexing and DevTools integration.
 
 ## 📦 Packages
 
 | Package | Description |
 |---------|-------------|
-| [`@remobj/shared`](./packages/shared) | Shared utilities and helper functions |
-| [`@remobj/add`](./packages/add) | Addition functionality |
-| [`@remobj/mul`](./packages/mul) | Multiplication functionality |
-| [`@remobj/core`](./packages/core) | Core package that re-exports all functionality |
+| [`@remobj/core`](./packages/core) | Core RPC functionality, provider/consumer pattern, and multiplexing |
+| [`@remobj/shared`](./packages/shared) | Shared utilities, type guards, and garbage collection helpers |
+| [`@remobj/weakbimap`](./packages/weakbimap) | Bidirectional weak map implementation for memory-efficient caching |
+| [`@remobj/web`](./packages/web) | Web-specific endpoints for WebSockets, Web Workers, and MessagePort |
+| [`@remobj/node`](./packages/node) | Node.js-specific endpoints for child processes and worker threads |
+| [`@remobj/devtools`](./packages/devtools) | DevTools integration for debugging and monitoring RPC communication |
 
 ## 🚀 Quick Start
 
@@ -17,46 +25,84 @@ A modern monorepo library scaffolding based on Vue.js patterns, designed to supp
 # Install the core package
 npm install @remobj/core
 
-# Or install individual packages
-npm install @remobj/shared @remobj/add @remobj/mul
+# Or install specific packages
+npm install @remobj/core @remobj/web  # For web applications
+npm install @remobj/core @remobj/node # For Node.js applications
 ```
+
+### Basic Usage
 
 ```typescript
-// Using the core package
-import { isNumber, add, multiply } from '@remobj/core'
+import { createProvider, createConsumer, createEndpoint } from '@remobj/core'
 
-if (isNumber(5) && isNumber(3)) {
-  console.log(add(5, 3)) // 8
-  console.log(multiply(5, 3)) // 15
+// Provider side - expose an object
+const api = {
+  greet: (name: string) => `Hello, ${name}!`,
+  calculate: async (a: number, b: number) => a + b
 }
 
-// Using individual packages
-import { isNumber } from '@remobj/shared'
-import { add } from '@remobj/add'
-import { multiply } from '@remobj/mul'
+const provider = createProvider(api, endpoint1)
+
+// Consumer side - access the remote object
+const remote = createConsumer<typeof api>(endpoint2)
+
+await remote.greet('World') // "Hello, World!"
+await remote.calculate(5, 3) // 8
 ```
+
+### Web Worker Example
+
+```typescript
+// main.js
+import { createConsumer } from '@remobj/core'
+import { createWebWorkerEndpoint } from '@remobj/web'
+
+const worker = new Worker('./worker.js')
+const endpoint = createWebWorkerEndpoint(worker)
+const api = createConsumer<WorkerAPI>(endpoint)
+
+const result = await api.heavyComputation(data)
+
+// worker.js
+import { createProvider } from '@remobj/core'
+import { createWebWorkerEndpoint } from '@remobj/web'
+
+const api = {
+  heavyComputation: async (data) => {
+    // Perform CPU-intensive work
+    return processData(data)
+  }
+}
+
+createProvider(api, createWebWorkerEndpoint(self))
+```
+
+## ✨ Features
+
+- **Transparent RPC**: Access remote objects as if they were local
+- **Multiple Transports**: WebSocket, Web Worker, MessagePort, Node.js child processes
+- **TypeScript Support**: Full type safety for remote APIs
+- **Multiplexing**: Share a single connection for multiple RPC channels
+- **Memory Efficient**: Automatic garbage collection and weak references
+- **DevTools Integration**: Monitor and debug RPC communication
+- **Tree-shaking**: Optimized builds with dead code elimination
+- **Extensible**: Plugin system for custom type serialization
 
 ## 🏗️ Architecture
 
-This project implements modern monorepo patterns inspired by Vue.js:
+RemObj uses a provider-consumer pattern for RPC communication:
 
-- **Build System**: Rolldown-based with `__DEV__` variable support for tree-shaking
-- **TypeScript**: Full type support with isolated declarations
-- **Testing**: Vitest workspace configuration
-- **Documentation**: VitePress v2 with auto-generated API docs from TypeDoc
-- **Release**: Automated versioning and publishing
-- **Development**: Hot reloading and watch mode support
+1. **Provider**: Exposes local objects/functions for remote access
+2. **Consumer**: Creates proxies to interact with remote objects
+3. **Endpoint**: Handles message transport between provider and consumer
+4. **Multiplexer**: Enables multiple RPC channels over a single connection
 
-### Tree-shaking Support
+### Key Concepts
 
-The library supports pure function annotations for optimal tree-shaking:
-
-```typescript
-// Functions marked with /*#__PURE__*/ will be eliminated if unused
-export const getDefaultConfig = /*#__PURE__*/ () => ({
-  debug: __DEV__,
-  version: __VERSION__
-})
+- **Endpoints**: Abstract transport layer (WebSocket, Worker, MessagePort, etc.)
+- **Wrapping**: Transform arguments/returns for serialization
+- **Multiplexing**: Multiple logical channels over one physical connection
+- **Garbage Collection**: Automatic cleanup of unused remote references
 
 ## 🛠️ Development
 
@@ -151,12 +197,14 @@ npm run release
 
 ```
 remobj/
-├── packages/              # All packages
-│   ├── shared/           # Shared utilities
-│   ├── add/             # Addition functionality  
-│   ├── mul/             # Multiplication functionality
-│   └── core/            # Main package (re-exports)
-├── scripts/             # Build and release scripts
+├── packages/            # All packages
+│   ├── core/           # Core RPC functionality
+│   ├── shared/         # Shared utilities
+│   ├── weakbimap/      # Bidirectional weak map
+│   ├── web/            # Web-specific endpoints
+│   ├── node/           # Node.js-specific endpoints
+│   └── devtools/       # DevTools integration
+├── scripts/            # Build and release scripts
 ├── docs/               # VitePress documentation
 │   ├── .vitepress/     # VitePress configuration
 │   ├── guide/          # User guides

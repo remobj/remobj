@@ -1,15 +1,15 @@
 import { isArray, isFunction, isObject, isString } from "@remobj/shared"
-import { createMultiplexedEndpoint } from "./multiplex"
-import { PostMessageEndpoint } from "./types"
-import { devtools, getTraceID } from "./devtools"
-import { createArgumentWrappingEndpoint } from "./rpc-wrapper"
 import {
     FORBIDDEN_PROPERTIES,
-    ForbiddenProperty,
-    RemoteCallRequest,
-    RemoteCallResponse,
-    ProvideConfig
+    type ForbiddenProperty,
+    type ProvideConfig,
+    type RemoteCallRequest,
+    type RemoteCallResponse
 } from "./rpc-types"
+import { createArgumentWrappingEndpoint } from "./rpc-wrapper"
+import { devtools, getTraceID } from "./devtools"
+import { createMultiplexedEndpoint } from "./multiplex"
+import type { PostMessageEndpoint } from "./types"
 
 // Constants for connection management
 const PROVIDER_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
@@ -17,46 +17,48 @@ const PROVIDER_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
 export function provide(data: any, endpoint: PostMessageEndpoint, config: ProvideConfig = {}): void {
     const { allowWrite = false, name = '' } = config
     const providerID: string = /*#__PURE__*/ crypto.randomUUID()
-    const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), name + ' -> ArgumentWrapper')    
+    const multiplexedEndpoint = /*#__PURE__*/ createArgumentWrappingEndpoint(createMultiplexedEndpoint(endpoint), `${name} -> ArgumentWrapper`)
     const registered = new Set<string>()
 
     let timeoutHandle: any;
     const setProviderTimeout = () => {
-        if(timeoutHandle) clearTimeout(timeoutHandle)
-        return timeoutHandle = setTimeout(() => multiplexedEndpoint.removeEventListener('message', messageListener), PROVIDER_TIMEOUT_MS)
+        if (timeoutHandle) { clearTimeout(timeoutHandle) }
+        timeoutHandle = setTimeout(() => multiplexedEndpoint.removeEventListener('message', messageListener), PROVIDER_TIMEOUT_MS)
+        return timeoutHandle
     }
 
-    const messageListener = async (event: MessageEvent) => {
+    const messageListener = (event: MessageEvent) => {
         setProviderTimeout()
         const messageData: RemoteCallRequest = event.data
-        
-        
+
+
         if ((__DEV__ || __PROD_DEVTOOLS__)) {
             const traceID = getTraceID(messageData)
             devtools(traceID, "event", providerID, "PROVIDER", name, '', messageData)
         }
 
-        const sendResponse = async (data: any, err: any = null) => {
+        const sendResponse = async (data: any, err?: any) => {
             let result: any
             let resultType: 'error' | 'result' = err ? 'error' : 'result'
-            
+
             if (err) {
                 result = err
             } else {
                 try {
                     result = await data
-                } catch (e) {
+                } catch (error) {
                     resultType = 'error'
-                    result = e
+                    result = error
                 }
             }
-            
+
             const returnData: RemoteCallResponse = {
                 type: 'response',
                 requestID: messageData.requestID,
                 resultType,
                 result,
-                providerID
+                providerID,
+                consumerID: messageData.consumerID
             }
 
 
@@ -68,7 +70,7 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
             multiplexedEndpoint.postMessage(returnData)
         }
 
-        const sendError = (err: any) => sendResponse(null, err)
+        const sendError = (err: any) => sendResponse(undefined, err)
 
         // Validate input
         if (!isString(messageData.propertyPath) || !isString(messageData.operationType) || !isArray(messageData.args)) {
@@ -76,12 +78,12 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
         }
 
         // Parse property chain and check for forbidden properties
-        const propertyChain = messageData.propertyPath.split('/').filter(key => key)
+        const propertyChain = messageData.propertyPath.split('/').filter(Boolean)
 
         // Navigate to target property
         let target = data
         let navigationLength = propertyChain.length;
-        
+
         // Validate set operation
         if (messageData.operationType === 'set') {
             if (propertyChain.length === 0) {
@@ -101,36 +103,37 @@ export function provide(data: any, endpoint: PostMessageEndpoint, config: Provid
         const lastProperty = propertyChain[propertyChain.length - 1]
         try {
             const op = messageData.operationType;
-            if(op === 'gc-register') {
+            if (op === 'gc-register') {
                 return registered.add(messageData.args[0])
-            } else if(op === 'gc-collect') {
+            } if (op === 'gc-collect') {
                 registered.delete(messageData.args[0])
-                return !registered.size && multiplexedEndpoint.removeEventListener('message', messageListener) 
-            } else if(op === 'ping') {
+                return registered.size === 0 && multiplexedEndpoint.removeEventListener('message', messageListener)
+            } if (op === 'ping') {
                 // Ping received, connection is alive
                 return sendResponse(true)
-            } else if (op === 'await') {
+            } if (op === 'await') {
                 return sendResponse(target)
-            } else if (op === 'call') {
+            } if (op === 'call') {
                 if (isFunction(target)) {
                     return sendResponse(target(...messageData.args))
-                } else {
-                    return sendError(new Error(__DEV__ ? `REMOTE IS NOT A FUNCTION - You tried to call a function this is not a function.` : `E007`))
                 }
-            } else if (op === 'construct') {
+                return sendError(new Error(__DEV__ ? `REMOTE IS NOT A FUNCTION - You tried to call a function this is not a function.` : `E007`))
+            } if (op === 'construct') {
+                // eslint-disable-next-line new-cap
                 return sendResponse(new target(...messageData.args))
-            } else if (op === 'set') {
+            } if (op === 'set') {
                 if (allowWrite) {
                     if (FORBIDDEN_PROPERTIES.includes(lastProperty as ForbiddenProperty)) {
                         return sendError(new Error(__DEV__ ? `ACCESS DENIED - Access to property '${lastProperty}' is forbidden for security reasons` : `E008`))
                     }
 
                     if (Object.getOwnPropertyDescriptor(target, lastProperty)?.writable) {
-                        target[lastProperty] = messageData.args[0]
+                        const [value] = messageData.args
+                        target[lastProperty] = value
                         return sendResponse(true)
-                    } else {
-                        return sendError(new Error(__DEV__ ? 'ACCESS DENIED - WRITE TO READONLY NOT ALLOWED' : `E009`))
                     }
+                    return sendError(new Error(__DEV__ ? 'ACCESS DENIED - WRITE TO READONLY NOT ALLOWED' : `E009`))
+
                 }
                 return sendError(new Error(__DEV__ ? 'ACCESS DENIED - WRITE NOT ALLOWED' : `E010`))
             }
