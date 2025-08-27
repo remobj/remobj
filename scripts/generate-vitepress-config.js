@@ -38,7 +38,7 @@ function findMarkdownFiles(dir, baseDir = dir) {
  */
 function generateApiSidebar() {
   const apiDir = join(__dirname, '..', 'docs', 'api')
-  const packages = ['core', 'shared', 'add', 'mul']
+  const packages = ['core', 'web', 'node', 'shared', 'weakbimap', 'devtools']
   
   const sidebar = []
   
@@ -50,36 +50,90 @@ function generateApiSidebar() {
     const pkgDir = join(apiDir, pkg)
     if (!existsSync(pkgDir)) {continue}
     
-    const items = [{ text: 'Overview', link: `/api/${pkg}/src/` }]
+    const items = []
     
-    // Find all markdown files in package
-    const files = findMarkdownFiles(pkgDir, apiDir)
+    // Add package README as overview
+    const readmePath = join(pkgDir, 'src', 'README.md')
+    if (existsSync(readmePath)) {
+      items.push({ text: 'Overview', link: `/api/${pkg}/src/README` })
+    }
     
-    // Group by type (functions, variables, etc.)
-    const grouped = {}
-    for (const file of files) {
-      if (!file.path.includes('/src/')) {continue}
-      if (file.name === 'index') {continue}
-      
-      if (!grouped[file.type]) {
-        grouped[file.type] = []
+    // Find all markdown files in package source directory
+    const srcDir = join(pkgDir, 'src')
+    
+    // Group by type (functions, classes, interfaces, type-aliases, variables)
+    const grouped = {
+      functions: [],
+      classes: [],
+      interfaces: [],
+      'type-aliases': [],
+      variables: []
+    }
+    
+    // Check each category directory
+    const categories = ['functions', 'classes', 'interfaces', 'type-aliases', 'variables']
+    for (const category of categories) {
+      const categoryDir = join(srcDir, category)
+      if (existsSync(categoryDir)) {
+        const files = readdirSync(categoryDir).filter(f => f.endsWith('.md'))
+        for (const file of files) {
+          const name = file.replace('.md', '')
+          grouped[category].push({
+            text: name,
+            link: `/api/${pkg}/src/${category}/${name}`
+          })
+        }
       }
-      
-      grouped[file.type].push({
-        text: file.name,
-        link: `/api${file.path.replace('.md', '')}`
+    }
+    
+    // Add grouped items with proper section headers
+    if (grouped.functions.length > 0) {
+      items.push({
+        text: 'Functions',
+        collapsed: true,
+        items: grouped.functions.sort((a, b) => a.text.localeCompare(b.text))
       })
     }
     
-    // Add grouped items
-    for (const [type, typeItems] of Object.entries(grouped)) {
-      items.push(...typeItems.sort((a, b) => a.text.localeCompare(b.text)))
+    if (grouped.classes.length > 0) {
+      items.push({
+        text: 'Classes',
+        collapsed: true,
+        items: grouped.classes.sort((a, b) => a.text.localeCompare(b.text))
+      })
     }
     
-    if (items.length > 1) {
+    if (grouped.interfaces.length > 0) {
+      items.push({
+        text: 'Interfaces',
+        collapsed: true,
+        items: grouped.interfaces.sort((a, b) => a.text.localeCompare(b.text))
+      })
+    }
+    
+    if (grouped['type-aliases'].length > 0) {
+      items.push({
+        text: 'Type Aliases',
+        collapsed: true,
+        items: grouped['type-aliases'].sort((a, b) => a.text.localeCompare(b.text))
+      })
+    }
+    
+    if (grouped.variables.length > 0) {
+      items.push({
+        text: 'Variables',
+        collapsed: true,
+        items: grouped.variables.sort((a, b) => a.text.localeCompare(b.text))
+      })
+    }
+    
+    if (items.length > 0) {
+      // Determine if package should be collapsed by default
+      const isCollapsed = ['shared', 'weakbimap', 'devtools'].includes(pkg)
+      
       sidebar.push({
         text: `@remobj/${pkg}`,
-        collapsed: false,
+        collapsed: isCollapsed,
         items
       })
     }
