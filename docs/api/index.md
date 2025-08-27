@@ -4,37 +4,37 @@ Welcome to the RemObj API documentation. This reference covers all packages, fun
 
 ## Core Packages
 
-### [@remobj/core](/api/core/src/)
+### [@remobj/core](/api/core/src/README)
 The main package containing core RPC functionality:
 - **[provide()](/api/core/src/functions/provide)** - Expose objects for remote access
 - **[consume()](/api/core/src/functions/consume)** - Create proxies to remote objects
 - **[createMultiplexedEndpoint()](/api/core/src/functions/createMultiplexedEndpoint)** - Share endpoints for multiple channels
 - **[createWebsocketEndpoint()](/api/core/src/functions/createWebsocketEndpoint)** - WebSocket transport support
 
-### [@remobj/web](/api/web/src/)
+### [@remobj/web](/api/web/src/README)
 Web-specific endpoints and utilities:
 - **[windowEndpoint](/api/web/src/variables/windowEndpoint)** - PostMessage communication between windows
 - **[createRTCEndpoint()](/api/web/src/functions/createRTCEndpoint)** - WebRTC data channel support
 - **[getServiceWorkerEndpoint()](/api/web/src/functions/getServiceWorkerEndpoint)** - Service Worker communication
 
-### [@remobj/node](/api/node/src/)
+### [@remobj/node](/api/node/src/README)
 Node.js-specific implementations:
 - **[createNodeEndpoint()](/api/node/src/functions/createNodeEndpoint)** - Universal Node.js endpoint creation
 
 ## Utility Packages
 
-### [@remobj/shared](/api/shared/src/)
+### [@remobj/shared](/api/shared/src/README)
 Shared utilities and type guards used across all packages:
 - Type guards (`isObject`, `isFunction`, `isPromise`, etc.)
 - String utilities (`camelize`, `hyphenate`, `capitalize`)
 - Comparison utilities (`looseEqual`, `looseIndexOf`)
 - Advanced TypeScript types
 
-### [@remobj/weakbimap](/api/weakbimap/src/)
+### [@remobj/weakbimap](/api/weakbimap/src/README)
 Bidirectional weak map implementation:
 - **[WeakBiMap](/api/weakbimap/src/classes/WeakBiMap)** - Memory-efficient bidirectional mapping
 
-### [@remobj/devtools](/api/devtools/src/)
+### [@remobj/devtools](/api/devtools/src/README)
 Development tools and debugging:
 - **[createDevToolsServer()](/api/devtools/src/functions/createDevToolsServer)** - Start DevTools server for RPC monitoring
 

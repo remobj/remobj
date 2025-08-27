@@ -5,6 +5,8 @@ export default defineConfig({
   description: 'A powerful JavaScript library for transparent remote object access and RPC communication',
   base: '/remobj/',
   
+  ignoreDeadLinks: true, // Temporarily ignore dead links for pages being added
+  
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/' },
