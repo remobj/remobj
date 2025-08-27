@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -138,9 +138,75 @@ function updateVitePressConfig() {
   console.log('✅ Updated VitePress config with generated API sidebar')
 }
 
+/**
+ * Rename README.md to index.md for VitePress compatibility
+ */
+function renameReadmeToIndex() {
+  const apiDir = join(__dirname, '..', 'docs', 'api')
+  const readmePath = join(apiDir, 'README.md')
+  const indexPath = join(apiDir, 'index.md')
+  
+  if (existsSync(readmePath)) {
+    renameSync(readmePath, indexPath)
+    console.log('✅ Renamed api/README.md to api/index.md')
+  }
+}
+
+/**
+ * Recursively process all markdown files in a directory
+ * @param {string} dir - Directory to process
+ * @param {Function} processor - Function to process each file's content
+ */
+function processMarkdownFiles(dir, processor) {
+  const items = readdirSync(dir)
+  
+  for (const item of items) {
+    const fullPath = join(dir, item)
+    const stat = statSync(fullPath)
+    
+    if (stat.isDirectory()) {
+      processMarkdownFiles(fullPath, processor)
+    } else if (item.endsWith('.md')) {
+      const content = readFileSync(fullPath, 'utf8')
+      const newContent = processor(content)
+      if (content !== newContent) {
+        writeFileSync(fullPath, newContent, 'utf8')
+      }
+    }
+  }
+}
+
+/**
+ * Remove dead breadcrumb links from generated TypeDoc files
+ */
+function fixDeadLinks() {
+  const apiDir = join(__dirname, '..', 'docs', 'api')
+  let filesFixed = 0
+  
+  // Process all markdown files to remove dead breadcrumb links
+  processMarkdownFiles(apiDir, (content) => {
+    // Remove the breadcrumb navigation header that contains dead links
+    // Pattern: [**remobj**](../../../README.md) followed by *** and newlines
+    let newContent = content.replace(/\[\*\*remobj\*\*\]\(\.\.\/.*?README\.md\)\r?\n\r?\n\*\*\*\r?\n\r?\n/g, '')
+    
+    // Remove breadcrumb trail links like: [remobj](../../../README.md) / 
+    newContent = newContent.replace(/\[remobj\]\(\.\.\/.*?README\.md\) \/ /g, '')
+    
+    if (newContent !== content) {
+      filesFixed++
+    }
+    
+    return newContent
+  })
+  
+  console.log(`✅ Fixed dead breadcrumb links in ${filesFixed} API documentation files`)
+}
+
 // Run if called directly
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  renameReadmeToIndex()
+  fixDeadLinks()
   updateVitePressConfig()
 }
 
-export { generateApiSidebar, updateVitePressConfig }
+export { fixDeadLinks, generateApiSidebar, renameReadmeToIndex, updateVitePressConfig }

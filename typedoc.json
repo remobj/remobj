@@ -9,6 +9,7 @@
   "hideGenerator": true,
   "disableSources": true,
   "categorizeByGroup": true,
+  "hideBreadcrumbs": true,
   "navigation": {
     "includeCategories": true,
     "includeGroups": true

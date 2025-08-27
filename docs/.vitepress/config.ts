@@ -39,68 +39,10 @@ export default defineConfig({
       ],
       '/api/': [
         {
-          text: 'Overview',
-          link: '/api/'
-        },
-        {
-          text: '@remobj/core',
-          collapsed: false,
-          items: [
-            { text: 'Overview', link: '/api/core/src/README' },
-            { text: 'provide()', link: '/api/core/src/functions/provide' },
-            { text: 'consume()', link: '/api/core/src/functions/consume' },
-            { text: 'createMultiplexedEndpoint()', link: '/api/core/src/functions/createMultiplexedEndpoint' },
-            { text: 'createWebsocketEndpoint()', link: '/api/core/src/functions/createWebsocketEndpoint' },
-            { text: 'createJsonEndpoint()', link: '/api/core/src/functions/createJsonEndpoint' },
-            { text: 'connectEndpoints()', link: '/api/core/src/functions/connectEndpoints' }
-          ]
-        },
-        {
-          text: '@remobj/web',
-          collapsed: false,
-          items: [
-            { text: 'Overview', link: '/api/web/src/README' },
-            { text: 'createRTCEndpoint()', link: '/api/web/src/functions/createRTCEndpoint' },
-            { text: 'getServiceWorkerEndpoint()', link: '/api/web/src/functions/getServiceWorkerEndpoint' },
-            { text: 'windowEndpoint', link: '/api/web/src/variables/windowEndpoint' }
-          ]
-        },
-        {
-          text: '@remobj/node',
-          collapsed: false,
-          items: [
-            { text: 'Overview', link: '/api/node/src/README' },
-            { text: 'createNodeEndpoint()', link: '/api/node/src/functions/createNodeEndpoint' }
-          ]
-        },
-        {
-          text: '@remobj/shared',
-          collapsed: true,
-          items: [
-            { text: 'Overview', link: '/api/shared/src/README' },
-            { text: 'isObject()', link: '/api/shared/src/functions/isObject' },
-            { text: 'isFunction()', link: '/api/shared/src/functions/isFunction' },
-            { text: 'NOOP', link: '/api/shared/src/functions/NOOP' },
-            { text: 'LooseRequired', link: '/api/shared/src/type-aliases/LooseRequired' }
-          ]
-        },
-        {
-          text: '@remobj/weakbimap',
-          collapsed: true,
-          items: [
-            { text: 'Overview', link: '/api/weakbimap/src/README' },
-            { text: 'WeakBiMap', link: '/api/weakbimap/src/classes/WeakBiMap' }
-          ]
-        },
-        {
-          text: '@remobj/devtools',
-          collapsed: true,
-          items: [
-            { text: 'Overview', link: '/api/devtools/src/README' },
-            { text: 'createDevToolsServer()', link: '/api/devtools/src/functions/createDevToolsServer' }
-          ]
+                text: 'Overview',
+                link: '/api/'
         }
-      ],
+],
       '/examples/': [
         {
           text: 'Examples',
