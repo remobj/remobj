@@ -2,13 +2,14 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   title: 'RemObj',
-  description: 'Modern monorepo library scaffolding inspired by Vue.js patterns',
+  description: 'A powerful JavaScript library for transparent remote object access and RPC communication',
+  base: '/remobj/',
   
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/' },
       { text: 'API Reference', link: '/api/' },
-      { text: 'GitHub', link: 'https://github.com/user/remobj' }
+      { text: 'GitHub', link: 'https://github.com/remobj/remobj' }
     ],
 
     sidebar: {
