@@ -1,0 +1,180 @@
+name: ⚡ Performance Issue
+description: Report performance problems or bottlenecks in RemObj
+title: "[Performance]: "
+labels: ["performance", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us identify and fix performance issues in RemObj. Please provide detailed metrics and reproduction steps.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Performance Issue Description
+      description: Describe the performance problem you're experiencing
+      placeholder: |
+        When sending large arrays through RemObj, the serialization takes over 500ms...
+    validations:
+      required: true
+
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Performance Metrics
+      description: Provide specific measurements or benchmarks
+      placeholder: |
+        - Operation: Calling remote function with 10MB array
+        - Time taken: 500-800ms
+        - Memory usage: Increases by 200MB
+        - CPU usage: 100% for 5 seconds
+        - Comparison: Direct function call takes 10ms
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Code
+      description: Minimal code example that demonstrates the performance issue
+      render: typescript
+      placeholder: |
+        import { provide, consume } from '@remobj/core'
+        
+        // Setup
+        const largeArray = new Array(1000000).fill({ data: 'test' })
+        
+        // This is slow
+        const result = await remoteApi.processArray(largeArray)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected Package
+      description: Which package has the performance issue?
+      multiple: true
+      options:
+        - "@remobj/core"
+        - "@remobj/shared"
+        - "@remobj/weakbimap"
+        - "@remobj/web"
+        - "@remobj/node"
+        - "@remobj/devtools"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operation
+    attributes:
+      label: Operation Type
+      description: What type of operation is slow?
+      multiple: true
+      options:
+        - "Initial connection setup"
+        - "Function calls"
+        - "Data serialization"
+        - "Data deserialization"
+        - "Large data transfer"
+        - "Many small operations"
+        - "Memory cleanup / GC"
+        - "Multiplexing"
+        - "Other"
+    validations:
+      required: true
+
+  - type: input
+    id: data-size
+    attributes:
+      label: Data Size
+      description: Approximate size of data being processed (if applicable)
+      placeholder: "10MB, 1000 objects, 50000 function calls"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Where does this performance issue occur?
+      multiple: true
+      options:
+        - "Node.js"
+        - "Chrome"
+        - "Firefox"
+        - "Safari"
+        - "Edge"
+        - "React Native"
+        - "Electron"
+        - "Web Worker"
+        - "Service Worker"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: RemObj Version
+      description: Version where you're experiencing the issue
+      placeholder: 0.1.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: profiling
+    attributes:
+      label: Profiling Data
+      description: If available, attach profiling data or flame graphs
+      placeholder: |
+        Attach Chrome DevTools performance profile, flame graphs, or heap snapshots
+        
+        You can drag and drop files here or paste links to gists
+    validations:
+      required: false
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Attempted Optimizations
+      description: What have you tried to improve performance?
+      placeholder: |
+        - Tried batching calls but it didn't help
+        - Used smaller chunk sizes
+        - Implemented caching on the consumer side
+    validations:
+      required: false
+
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Is this a regression?
+      description: Did this work faster in a previous version?
+      options:
+        - "No - new usage"
+        - "Yes - worked fine in version X"
+        - "Not sure"
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected-performance
+    attributes:
+      label: Expected Performance
+      description: What performance would you expect for this operation?
+      placeholder: |
+        Based on similar libraries like Comlink, this should take less than 50ms
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have provided measurable performance metrics
+          required: true
+        - label: I have included a minimal reproduction example
+          required: true
+        - label: I have tested with the latest version
+          required: true

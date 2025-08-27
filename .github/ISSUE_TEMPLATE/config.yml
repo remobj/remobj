@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/remobj/remobj/discussions
+    about: Ask questions, share ideas, and discuss RemObj with the community
+  - name: 📖 Documentation
+    url: https://remobj.dev
+    about: Check out the official RemObj documentation
+  - name: 💡 Examples
+    url: https://github.com/remobj/remobj/tree/main/examples
+    about: Browse example projects and use cases
+  - name: 🔒 Security Issues
+    url: https://github.com/remobj/remobj/security/advisories/new
+    about: Report security vulnerabilities privately (do not use public issues)

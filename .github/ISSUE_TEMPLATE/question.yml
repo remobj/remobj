@@ -1,0 +1,110 @@
+name: ❓ Question / Support
+description: Ask a question or request help with RemObj
+title: "[Question]: "
+labels: ["question", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Need help with RemObj? We're here to assist! Please provide details about your question.
+        
+        **Note:** For general discussions, consider using [GitHub Discussions](https://github.com/remobj/remobj/discussions) instead.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know or need help with?
+      placeholder: |
+        How can I use RemObj with React Native? I'm trying to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-tried
+    attributes:
+      label: What I've Tried
+      description: What have you already attempted or researched?
+      placeholder: |
+        - Checked the documentation for React Native support
+        - Tried using the web endpoints but got an error
+        - Searched existing issues for similar problems
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-context
+    attributes:
+      label: Code Context
+      description: Share any relevant code to help us understand your use case
+      render: typescript
+      placeholder: |
+        import { consume } from '@remobj/core'
+        import { createWebWorkerEndpoint } from '@remobj/web'
+        
+        // Your code here
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What area does your question relate to?
+      options:
+        - "Installation / Setup"
+        - "Configuration"
+        - "Usage / Best Practices"
+        - "Integration with other tools"
+        - "Performance"
+        - "TypeScript types"
+        - "Testing"
+        - "Deployment"
+        - "Architecture / Design"
+        - "Other"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency
+      description: How urgent is this question for you?
+      options:
+        - "Just curious"
+        - "Planning to use"
+        - "Currently implementing"
+        - "Blocked on this"
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: RemObj Version
+      description: What version are you using or planning to use?
+      placeholder: 0.1.0
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any other context that might be helpful
+      placeholder: |
+        I'm building a collaborative editor and need real-time synchronization...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched the documentation
+          required: true
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: This is not a bug report or feature request
+          required: true

@@ -1,0 +1,135 @@
+name: 📚 Documentation
+description: Report issues or suggest improvements for documentation
+title: "[Docs]: "
+labels: ["documentation", "good first issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us improve the RemObj documentation! Report errors, suggest clarifications, or propose new examples.
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation issue is this?
+      options:
+        - "Error in documentation"
+        - "Missing documentation"
+        - "Unclear explanation"
+        - "Missing example"
+        - "Broken link"
+        - "Typo"
+        - "API documentation issue"
+        - "Other"
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Documentation Location
+      description: URL or file path where the issue exists
+      placeholder: https://remobj.dev/guide/getting-started or packages/core/README.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: Issue Description
+      description: Describe what's wrong or missing in the documentation
+      placeholder: |
+        The example for creating a multiplexed endpoint is missing the import statement...
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-improvement
+    attributes:
+      label: Suggested Improvement
+      description: How would you improve this documentation?
+      placeholder: |
+        Add the following import at the top of the example:
+        ```typescript
+        import { createMultiplexedEndpoint } from '@remobj/core'
+        ```
+    validations:
+      required: false
+
+  - type: textarea
+    id: code-example
+    attributes:
+      label: Improved Code Example
+      description: If applicable, provide an improved code example
+      render: typescript
+      placeholder: |
+        // Complete working example
+        import { provide, consume, createMultiplexedEndpoint } from '@remobj/core'
+        
+        const endpoint = createMultiplexedEndpoint(baseEndpoint)
+        // ... rest of the example
+    validations:
+      required: false
+
+  - type: dropdown
+    id: affected-package
+    attributes:
+      label: Related Package
+      description: Which package does this documentation relate to?
+      options:
+        - "General/Overview"
+        - "@remobj/core"
+        - "@remobj/shared"
+        - "@remobj/weakbimap"
+        - "@remobj/web"
+        - "@remobj/node"
+        - "@remobj/devtools"
+        - "Website/Guides"
+        - "API Reference"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: user-level
+    attributes:
+      label: Target Audience
+      description: Who is affected by this documentation issue?
+      options:
+        - "Beginners"
+        - "Intermediate users"
+        - "Advanced users"
+        - "All users"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other information that might be helpful
+      placeholder: |
+        This confused me when I was trying to...
+        
+        Related to issue #123
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you like to help fix this?
+      options:
+        - label: I can submit a PR to fix this documentation issue
+          required: false
+        - label: I would like to help but need guidance
+          required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have checked that this issue hasn't been reported before
+          required: true
