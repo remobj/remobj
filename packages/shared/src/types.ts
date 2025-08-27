@@ -48,7 +48,7 @@ export type UnionToIntersection<UnionType> = (
 
 /**
  * Type utility that makes all properties required while preserving undefined values.
- * Unlike Required<T>, this allows properties to be undefined but ensures they exist.
+ * Unlike Required\<T\>, this allows properties to be undefined but ensures they exist.
  * 
  * @template TypeParameter - The type to make loosely required
  * 
