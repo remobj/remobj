@@ -235,6 +235,8 @@ const api = {
 
 ## Next Steps
 
-- Learn about [multiplexing](./multiplexing) for multiple channels
-- Explore [error handling](./error-handling) strategies
-- Set up [DevTools](./devtools) for debugging
+- Learn about multiplexing for multiple channels
+- Explore error handling strategies
+- Set up DevTools for debugging
+
+> Note: Additional guides for multiplexing, error handling, and DevTools are coming soon.

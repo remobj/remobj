@@ -143,9 +143,9 @@ const result = await math.add(5, 3) // TypeScript knows this returns Promise<num
 ## Next Steps
 
 - Learn about [different transport types](./transports)
-- Understand [advanced patterns](./advanced)
-- Explore [error handling](./error-handling)
-- Set up [DevTools integration](./devtools)
+- Understand advanced patterns (guide coming soon)
+- Explore error handling strategies (guide coming soon)
+- Set up DevTools integration (guide coming soon)
 
 ## Common Use Cases
 

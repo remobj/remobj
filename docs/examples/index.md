@@ -7,24 +7,15 @@ This section contains practical examples of using RemObj in various scenarios. E
 ### [Web Worker Example](./web-worker)
 Learn how to offload CPU-intensive tasks to Web Workers while maintaining type safety.
 
-### [Service Worker Example](./service-worker)
-Implement background processing and caching strategies with Service Workers.
-
-### [WebSocket Example](./websocket)
-Build real-time client-server communication with WebSockets.
-
 ## Framework Integration
 
-### [React Integration](./react)
-Use RemObj with React hooks for clean component architecture.
-
-### [Vue Integration](./vue)
-Integrate RemObj with Vue 3's Composition API.
+### Framework Integration Examples
+Coming soon: React, Vue, and Angular integration examples.
 
 ## Node.js Examples
 
-### [Node.js Workers](./nodejs)
-Leverage worker threads and child processes in Node.js applications.
+### Node.js Examples
+Coming soon: Worker threads and child process examples.
 
 ## Running the Examples
 
