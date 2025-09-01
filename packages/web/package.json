@@ -27,7 +27,7 @@
   "dependencies": {
     "@remobj/core": "workspace:*",
     "@remobj/shared": "workspace:*",
-    "@types/web": "^0.0.263"
+    "@types/web": "^0.0.265"
   },
   "buildOptions": {
     "name": "RemObjWeb",
