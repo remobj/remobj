@@ -29,7 +29,7 @@
     "@remobj/weakbimap": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0"
+    "@types/node": "^24.7.2"
   },
   "buildOptions": {
     "name": "RemObjNode",
